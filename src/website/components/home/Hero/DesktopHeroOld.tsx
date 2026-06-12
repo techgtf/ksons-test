@@ -250,6 +250,23 @@ export default function ButtonBannerVideo({ tagLine, logo, files }: Props) {
         }
       };
 
+      const handleWheel = (e: WheelEvent) => {
+        if (reachedLastVideo.current) return;
+
+        e.preventDefault();
+
+        if (e.deltaY > 0) {
+          startLoop();
+          window.removeEventListener("wheel", handleWheel);
+        }
+      };
+
+      window.addEventListener("wheel", handleWheel, {
+        passive: false,
+      });
+
+      cleaner.push(() => window.removeEventListener("wheel", handleWheel));
+
       /* skip */
       controlsRef.current.skip = () => {
         reachedLastVideo.current = true;
@@ -267,28 +284,9 @@ export default function ButtonBannerVideo({ tagLine, logo, files }: Props) {
         });
       };
 
-      // Check if homepage loader is active in the DOM
-      const isLoaderActive = !!document.getElementById("homepage-loader");
-
-      if (isLoaderActive) {
-        /* Lock scroll until loader is done */
-        lockScroll();
-        document.body.style.overflow = "hidden";
-
-        const handleLoaderDone = () => {
-          startLoop();
-          unlockScroll();
-          document.body.style.overflow = "";
-        };
-
-        window.addEventListener("loaderDone", handleLoaderDone);
-        cleaner.push(() => window.removeEventListener("loaderDone", handleLoaderDone));
-      } else {
-        /* No loader active, start video and ensure scroll is unlocked immediately */
-        startLoop();
-        unlockScroll();
-        document.body.style.overflow = "";
-      }
+      /* IMPORTANT: lock scroll initially */
+      lockScroll();
+      document.body.style.overflow = "hidden";
 
       cleaner.push(() => {
         videoEls.forEach((v) => {
