@@ -1,10 +1,8 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
-import { gsap, ScrollTrigger, registerGSAP } from "@/src/website/utils/gsap";
-import { agency, blauerNue } from "@/src/app/fonts";
-import { BsFillSkipForwardFill } from "react-icons/bs";
-import { scrollLock } from "../../SmoothScroller";
+import { useLayoutEffect, useRef } from "react";
+import { gsap, registerGSAP } from "@/src/website/utils/gsap";
+import { agency } from "@/src/app/fonts";
 import { FileType } from "./HeroContainer";
 import Image from "next/image";
 
@@ -19,12 +17,7 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
   const video1Ref = useRef<HTMLVideoElement | null>(null);
   const video2Ref = useRef<HTMLVideoElement | null>(null);
   const ctaRef = useRef<HTMLDivElement | null>(null);
-  const skipBtnRef = useRef<HTMLButtonElement | null>(null);
-  const [videoStarted, setVideoStarted] = useState(false);
   const totalVideos = files.length;
-
-  const reachedLastVideo = useRef(false);
-  const controlsRef = useRef<{ skip?: () => void }>({});
 
   useLayoutEffect(() => {
     registerGSAP();
@@ -38,25 +31,16 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
       if (!video1Ref.current || !video2Ref.current || !containerRef.current)
         return;
 
-      const container = containerRef.current;
       const videoEls = [video1Ref.current, video2Ref.current];
 
       let active = 0;
       let loopStarted = false;
-
-      // const getVideoSrc = (index: number) =>
-      //     `/images/home/banner/mobile/M${index}.mp4`;
 
       const getVideoSrc = (index: number) => {
         const file = files[index - 1];
         if (!file) return "";
         return `${file.mobile_file}${index}.mp4`;
       };
-
-      const lockScroll = () => scrollLock.lock();
-      const unlockScroll = () => scrollLock.unlock();
-
-      cleaner.push(() => unlockScroll());
 
       /* CTA animation */
       if (ctaRef.current) {
@@ -72,12 +56,6 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
             { opacity: 0, y: 15 },
             { opacity: 1, y: 0, duration: 0.5 },
             "-=0.3",
-          )
-          .fromTo(
-            skipBtnRef.current,
-            { opacity: 0, y: 15 },
-            { opacity: 1, y: 0, duration: 0.5 },
-            "-=0.3",
           );
       }
 
@@ -89,62 +67,18 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
         v.load();
       }
 
-      /* Pin section */
-      let triggerKilled = false;
-      let trigger = ScrollTrigger.create({
-        trigger: container,
-        start: "top top",
-        end: "+=1",
-        pin: true,
-        pinSpacing: true,
-      });
-
-      const killTriggerSafely = () => {
-        if (!trigger || triggerKilled) return;
-        trigger.kill(true);
-        triggerKilled = true;
-      };
-
       /* Play video at index */
       const playVideoAt = (index: number) => {
-        if (reachedLastVideo.current) return;
-
-        // if (index > totalVideos) {
-        //   reachedLastVideo.current = true;
-
-        //   videoEls.forEach((v) => v.pause());
-
-        //   killTriggerSafely();
-        //   unlockScroll();
-        //   document.body.style.overflow = "";
-
-        //   return;
-        // }
-
-        if (index > totalVideos) {
-          reachedLastVideo.current = true;
-
-          videoEls.forEach((v) => v.pause());
-
-          killTriggerSafely();
-          unlockScroll();
-
-          document.body.style.overflow = "";
-
-          requestAnimationFrame(() => {
-            scrollLock.scrollTo(window.innerHeight * 1, {
-              duration: 1.2,
-            });
-          });
-
-          return;
+        let targetIndex = index;
+        if (targetIndex > totalVideos) {
+          targetIndex = 1;
         }
 
         const next = (active + 1) % 2;
         const currentVideo = videoEls[active];
         const nextVideo = videoEls[next];
 
-        nextVideo.src = getVideoSrc(index);
+        nextVideo.src = getVideoSrc(targetIndex);
         nextVideo.load();
 
         const doPlay = () => {
@@ -164,7 +98,7 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
                 const triggerNext = () => {
                   nextVideo.ontimeupdate = null;
                   nextVideo.onended = null;
-                  playVideoAt(index + 1);
+                  playVideoAt(targetIndex + 1);
                 };
 
                 // Trigger next video 0.5s before current ends for seamless transition
@@ -180,6 +114,8 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
                 nextVideo.onended = triggerNext;
               },
             });
+          }).catch((err) => {
+            console.log("Next video play failed", err);
           });
         };
 
@@ -194,7 +130,6 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
       const startLoop = () => {
         if (loopStarted) return;
         loopStarted = true;
-        setVideoStarted(true);
 
         const firstVideo = videoEls[0];
         firstVideo.src = getVideoSrc(1);
@@ -202,25 +137,27 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
 
         const playFirst = () => {
           firstVideo.currentTime = 0;
-          firstVideo.play().catch(() => {});
+          firstVideo.play().then(() => {
+            const triggerNext = () => {
+              firstVideo.ontimeupdate = null;
+              firstVideo.onended = null;
+              playVideoAt(2);
+            };
 
-          const triggerNext = () => {
-            firstVideo.ontimeupdate = null;
-            firstVideo.onended = null;
-            playVideoAt(2);
-          };
+            // Trigger next video 0.5s before current ends for seamless transition
+            firstVideo.ontimeupdate = () => {
+              if (
+                firstVideo.duration &&
+                firstVideo.duration - firstVideo.currentTime < 0.5
+              ) {
+                triggerNext();
+              }
+            };
 
-          // Trigger next video 0.5s before current ends for seamless transition
-          firstVideo.ontimeupdate = () => {
-            if (
-              firstVideo.duration &&
-              firstVideo.duration - firstVideo.currentTime < 0.5
-            ) {
-              triggerNext();
-            }
-          };
-
-          firstVideo.onended = triggerNext;
+            firstVideo.onended = triggerNext;
+          }).catch((err) => {
+            console.log("First video play failed", err);
+          });
         };
 
         if (firstVideo.readyState >= 3) {
@@ -233,55 +170,8 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
         }
       };
 
-      /* Touch scroll to start (mobile equivalent of wheel) */
-      let touchStartY = 0;
-
-      const handleTouchStart = (e: TouchEvent) => {
-        touchStartY = e.touches[0].clientY;
-      };
-
-      const handleTouchEnd = (e: TouchEvent) => {
-        if (reachedLastVideo.current) return;
-        const deltaY = touchStartY - e.changedTouches[0].clientY;
-
-        // ✅ Swipe down (finger moves up) = scroll intent
-        if (deltaY > 20) {
-          startLoop();
-          window.removeEventListener("touchstart", handleTouchStart);
-          window.removeEventListener("touchend", handleTouchEnd);
-        }
-      };
-
-      window.addEventListener("touchstart", handleTouchStart, {
-        passive: true,
-      });
-      window.addEventListener("touchend", handleTouchEnd, { passive: true });
-
-      cleaner.push(() => {
-        window.removeEventListener("touchstart", handleTouchStart);
-        window.removeEventListener("touchend", handleTouchEnd);
-      });
-
-      /* Skip */
-
-      controlsRef.current.skip = () => {
-        reachedLastVideo.current = true;
-
-        videoEls.forEach((v) => v.pause());
-
-        killTriggerSafely();
-        unlockScroll();
-        document.body.style.overflow = "";
-
-        requestAnimationFrame(() => {
-          scrollLock.scrollTo(window.innerHeight * 1, {
-            duration: 1.2,
-          });
-        });
-      };
-
-      /* Lock scroll initially */
-      lockScroll();
+      // Start autoplay sequence
+      startLoop();
 
       cleaner.push(() => {
         videoEls.forEach((v) => {
@@ -349,16 +239,6 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
             {tagLine}
           </h2>
         </div>
-        {videoStarted && (
-          <button
-            ref={skipBtnRef}
-            onClick={() => controlsRef.current.skip?.()}
-            className={`${blauerNue.className}  flex items-center gap-2 px-4 py-2 text-[12px] bg-black/40 hover:bg-black/60 transition duration-300 text-white rounded-full`}
-          >
-            Skip
-            <BsFillSkipForwardFill />
-          </button>
-        )}
       </div>
     </section>
   );
