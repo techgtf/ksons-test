@@ -1,0 +1,67 @@
+import Link from "next/link";
+import { useContact } from "../../hooks/useContact";
+import { agency } from "@/src/app/fonts";
+import { LocationIcon2, MailIcon, PhoneIcon } from "../common/SVGIcons";
+import { useRef } from "react";
+import { useSlideY } from "../../hooks/useSlideY";
+
+export default function ContactDetails() {
+  const { contact } = useContact();
+  const contentWrapper = useRef<HTMLDivElement | null>(null);
+  useSlideY({ target: contentWrapper });
+  return (
+    <div
+      className="py-20"
+      style={{
+        background:
+          "radial-gradient(353.34% 207.4% at 108.26% 213.54%, #2FD2ED 0%, #0A3168 100%)",
+      }}
+    >
+      <div
+        ref={contentWrapper}
+        className="flex flex-wrap justify-center items-start lg:items-center lg:gap-y-0 gap-y-6 text-white"
+      >
+        <div className="phone px-4 lg:px-10 flex-1">
+          {contact.phone.map((ph, i) => (
+            <Link
+              key={i}
+              href={`tel:${ph}`}
+              className={`${agency.className} lg:text-[18px] lg:leading-[43px] flex items-center md:justify-center lg:gap-6.5 gap-4`}
+            >
+              <span className="border rounded-full min-h-9 min-w-9 flex items-center justify-center">
+                <PhoneIcon color="#fff" />
+              </span>{" "}
+              <span className="opacity-80">+91-{ph}</span>
+            </Link>
+          ))}
+        </div>
+        <span className="w-px h-[125px] bg-line lg:block hidden"></span>
+        <div className="mail px-4 lg:px-10 flex-1">
+          {contact.email.map((em, i) => (
+            <Link
+              key={i}
+              href={`mailto:${em}`}
+              className={`${agency.className} lg:text-[18px] lg:leading-[43px]  flex md:justify-center items-center gap-4 uppercase`}
+            >
+              <span className="border rounded-full min-h-9 min-w-9 flex items-center justify-center">
+                <MailIcon color="#fff" />
+              </span>{" "}
+              <span className="opacity-80">{em}</span>
+            </Link>
+          ))}
+        </div>
+        <span className="w-px h-[125px] bg-line lg:block hidden"></span>
+        <div className="location px-4 lg:px-10 flex items-start lg:items-center md:justify-center gap-4 flex-1">
+          <span className="border rounded-full min-h-9 min-w-9 flex items-center justify-center">
+            <LocationIcon2 color="#fff" />
+          </span>
+          <p
+            className={`${agency.className} capitalize lg:text-[18px] lg:leading-[32px] flex items-center gap-4 opacity-80 lg:max-w-[279px]`}
+          >
+            {contact.address}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

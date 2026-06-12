@@ -1,0 +1,331 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, EffectFade } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/effect-fade";
+import { gsap, ScrollTrigger } from "@/src/website/utils/gsap";
+import { agency, blauerNue } from "@/src/app/fonts";
+import {
+  LeftArrow,
+  RightArrow,
+} from "@/src/website/components/common/SVGIcons";
+import Image from "next/image";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface EventItem {
+  id: number;
+  title: string;
+  year: number;
+  description: string[];
+  images: string[];
+}
+
+// ─── Data ─────────────────────────────────────────────────────────────────────
+const EVENTS: EventItem[] = [
+  {
+    id: 1,
+    title: "Green Plantation & Sustainability Efforts",
+    year: 2026,
+    description: [
+      `Under the K.sons Foundation, large-scale
+plantation drives and environmental
+initiatives are undertaken across multiple
+regions. These efforts are focused on
+improving ecological balance, enhancing
+green cover and promoting environmental
+awareness among communities.`,
+    ],
+    images: [
+      "/images/csr/green-plantation/1.jpeg",
+      "/images/csr/green-plantation/2.jpeg",
+      "/images/csr/green-plantation/3.jpeg",
+      "/images/csr/green-plantation/4.jpeg",
+      "/images/csr/green-plantation/5.jpeg",
+    ],
+  },
+  {
+    id: 2,
+    title: "Braj Cleanliness & Heritage Preservation",
+    year: 2025,
+    description: [
+      `Through associated initiatives in the
+Braj Mandal region, K.sons supports
+cleanliness and heritage preservation
+efforts aimed at protecting and
+maintaining the spiritual and cultural
+landscape of Braj.`,
+    ],
+    images: ["/images/csr/cleanliness.png"],
+  },
+  {
+    id: 3,
+    title: "Education & Community Welfare",
+    year: 2025,
+    description: [
+      `Through the Shree Jee Baba Educational
+Society, K.sons supports initiatives that
+expand access to quality education and
+social care for underserved communities.
+The society runs institutions including
+Shree Jee Baba College of Law, Shree Jee
+Baba Institute, Shree Jee Baba Institute of
+Professional Studies, and Shree Jee Baba
+College of Pharmacy, while also supporting
+elderly care programs, pilgrim assistance
+and community welfare activities.`,
+    ],
+    images: ["/images/csr/education.png"],
+  },
+  {
+    id: 4,
+    title: "Eye Care for the Underprivileged",
+    year: 2024,
+    description: [
+      `In partnership with the NGO Kalyanam
+Karoti, K.sons supports accessible eye
+care and vision assistance initiatives for
+underserved communities, helping improve
+quality of life through essential healthcare
+support.`,
+    ],
+    images: ["/images/csr/eye-care.png"],
+  },
+];
+
+// ─── Component ────────────────────────────────────────────────────────────────
+export default function CSRGallery() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const panels = contentRefs.current.filter(Boolean) as HTMLDivElement[];
+
+      // Pin the sticky sidebar
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        pin: stickyRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        pinSpacing: false,
+        scrub: true,
+      });
+
+      // Switch active tab based on scroll position
+      panels.forEach((panel, i) => {
+        ScrollTrigger.create({
+          trigger: panel,
+          start: "top center",
+          end: "bottom center",
+          onEnter: () => setActiveIndex(i),
+          onEnterBack: () => setActiveIndex(i),
+        });
+      });
+
+      // Recalculate ScrollTrigger positions
+      ScrollTrigger.refresh();
+    }, sectionRef);
+
+    return () => {
+      ctx.revert();
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, []);
+
+  const scrollToPanel = (index: number) => {
+    const panel = contentRefs.current[index];
+    if (panel) {
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const title: string = "CSR & Sustainbility";
+  const description: string = "CSR: Building Communities with Purpose";
+  const long_description: string =
+    "K.sons Ventures is at the forefront of exploring new horizons, actively engaging in strategic partnerships that drive innovation growth across a wide range of sectors.";
+
+  return (
+    <div data-cursor="light" className="pt-16 lg:pt-26">
+      <div className="app-container">
+        {/* Header Section */}
+        <div className="flex flex-col items-center text-center mb-10 lg:mb-28">
+          <div className="flex items-center gap-5 mb-6 md:mb-10">
+            <Image
+              src="/images/about/about-bullet.png"
+              alt="Icon"
+              width={16}
+              height={16}
+            />
+            <span
+              className={`${blauerNue.className} text-[#0F3C78] text-[14px] md:text-[18px] leading-[20px] tracking-[0.5px] capitalize`}
+            >
+              {title}
+            </span>
+          </div>
+          <h2
+            className={`${agency.className} text-[#0F3C78] text-[24px] md:text-[36px] mb-6 md:mb-8 lg:max-w-[755px]`}
+          >
+            {description}
+          </h2>
+          <p
+            className={`${blauerNue.className} text-[#0F3C78] text-[14px] lg:text-base lg:max-w-[818px] tracking-[0.5px] leading-[24px]`}
+          >
+            {long_description}
+          </p>
+        </div>
+
+        {/* Vertical Timeline With Images */}
+        <section ref={sectionRef} className="relative bg-white overflow-hidden">
+          {/* ── Background Shape ── */}
+
+          <div className="relative z-10">
+            <div className="flex flex-col lg:flex-row">
+              {/* ─────────────── LEFT — Sticky Tabs ─────────────── */}
+              <div
+                ref={stickyRef}
+                className="hidden lg:flex flex-col justify-center w-1/3 h-screen"
+              >
+                <nav className="space-y-6">
+                  {EVENTS.map((ev, i) => (
+                    <button
+                      key={ev.id}
+                      onClick={() => scrollToPanel(i)}
+                      className={`block text-left transition-all duration-500 max-w-[274px] text-[#0F3C78] lg:text-[18px] text-[16px] tracking-[-0.5px] lg:leading-[29px] ${
+                        agency.className
+                      } ${
+                        i === activeIndex
+                          ? "opacity-100 border-b border-[#0F3C78] pb-1"
+                          : "opacity-50 hover:opacity-70 border-b border-transparent"
+                      }`}
+                    >
+                      {ev.title}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+
+              {/* ─────────────── RIGHT — Scrolling Content ─────────────── */}
+              <div className="w-full lg:w-2/3">
+                {EVENTS.map((ev, i) => (
+                  <div
+                    key={ev.id}
+                    ref={(el) => {
+                      contentRefs.current[i] = el;
+                    }}
+                    className="lg:min-h-screen flex flex-col justify-center py-8 lg:py-10"
+                  >
+                    {/* Image Slider */}
+                    <div className="relative mb-12">
+                      <Swiper
+                        modules={[Navigation, Pagination, EffectFade]}
+                        navigation={{
+                          prevEl: `.prev-${ev.id}`,
+                          nextEl: `.next-${ev.id}`,
+                        }}
+                        pagination={{
+                          el: `.csr-pagination-${ev.id}`,
+                          clickable: true,
+                        }}
+                        effect="fade"
+                        loop
+                        className="rounded-[20px] overflow-hidden aspect-video"
+                      >
+                        {ev.images.map((img, idx) => (
+                          <SwiperSlide key={idx}>
+                            <Image
+                              src={img}
+                              alt={ev.title}
+                              width={800}
+                              height={500}
+                              className="w-full h-full object-cover"
+                              priority
+                            />
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                      <div className="triangle absolute lg:block hidden -left-[13%] top-[50%]">
+                        <Image
+                          width={235}
+                          height={235}
+                          src="/images/csr/csr-triangle.svg"
+                          alt="triangle"
+                          className="object-cover"
+                        />
+                      </div>
+
+                      {/* Custom Navigation Buttons */}
+                      <button
+                        className={`prev-${ev.id} absolute lg:left-6 left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 lg:w-14 lg:h-14 bg-white/80 rounded-full flex items-center justify-center transition-all  active:scale-95 hover:bg-white`}
+                      >
+                        <Image
+                          src="/images/home/testimonial-arrow.png"
+                          alt="arrow"
+                          width={17}
+                          height={17}
+                          className="rotate-180 prev-btn cursor-pointer"
+                        />
+                      </button>
+                      <button
+                        className={`next-${ev.id} absolute lg:right-6 right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 lg:w-14 lg:h-14 bg-white/80 rounded-full flex items-center justify-center transition-all active:scale-95 hover:bg-white`}
+                      >
+                        <Image
+                          src="/images/home/testimonial-arrow.png"
+                          alt="arrow"
+                          width={17}
+                          height={17}
+                          className="next-btn cursor-pointer"
+                        />
+                      </button>
+                    </div>
+
+                    {/* Content Section */}
+
+                    <div className="flex items-end justify-between mb-4 lg:mb-8">
+                      <h2
+                        className={`${agency.className} text-[#0F3C78] block md:hidden lg:text-[24px] text-[16px] tracking-[-0.5px] `}
+                      >
+                        {ev.title}
+                      </h2>
+                      <p
+                        className={`${agency.className} text-[#0F3C78]/50 text-sm tracking-[0.5px] lg:leading-[32px]`}
+                      >
+                        Year{" "}
+                        <span
+                          className={`${blauerNue.className} text-[#0F3C78] text-base lg:leading-[24px] tracking-[0.5px] ml-[10px]`}
+                        >
+                          {ev.year}
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="w-full h-px bg-black/10 mb-4 lg:mb-8" />
+
+                    <div className="space-y-4">
+                      {ev.description.map((para, pIdx) => (
+                        <p
+                          key={pIdx}
+                          className={`${blauerNue.className} text-[#0F3C78] text-[16px] lg:leading-[24px] tracking-[0.5px]`}
+                        >
+                          {para}
+                        </p>
+                      ))}
+                    </div>
+                    <div
+                      className={`csr-pagination-${ev.id} csr-pagination mt-6 hidden md:flex items-center gap-2`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
