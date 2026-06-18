@@ -1,44 +1,92 @@
+import { BASE_FRONTEND, SITE_LOGO } from "@/config";
 import CommonBanner, {
   CommonBannerProps,
 } from "@/src/website/components/common/CommonBanner";
 import InvestorDesc, {
   InvestorDescProps,
 } from "@/src/website/components/investor/InvestorDesc";
+import { fetchPageData } from "@/src/website/utils/api";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "K.Sons Group Investor Relations – Updates & Reports",
-  keywords:
-    "K.Sons Group investor, real estate investment Vrindavan, Mathura project reports, corporate updates, shareholder information",
-  description:
-    "Find investor-related information, financial updates, and corporate disclosures from K.Sons Group.",
-  alternates: {
-    canonical: "https://ksonsgroup.com/investor",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const pageRes = await fetchPageData("website/page/investor");
+  const seo = pageRes?.data?.seoTags;
 
-export default function investor() {
+  return {
+    title:
+      seo?.meta_title || "K.Sons Group Investor Relations – Updates & Reports",
+    description:
+      seo?.meta_description ||
+      "Find investor-related information, financial updates, and corporate disclosures from K.Sons Group.",
+    keywords:
+      seo?.meta_keywords ||
+      "K.Sons Group investor, real estate investment Vrindavan, Mathura project reports, corporate updates, shareholder information",
+    alternates: {
+      canonical:
+        `${BASE_FRONTEND}${pageRes?.data?.slug}` ||
+        "https://ksonsgroup.com/investor",
+    },
+    openGraph: {
+      type: "website",
+      url:
+        `${BASE_FRONTEND}${pageRes?.data?.slug}` ||
+        "https://ksonsgroup.com/investor",
+      siteName: "KSons Group",
+      title:
+        seo?.meta_title ||
+        "K.Sons Group Investor Relations – Updates & Reports",
+      description:
+        seo?.meta_description ||
+        "Find investor-related information, financial updates, and corporate disclosures from K.Sons Group.",
+      images: [
+        {
+          url: `${BASE_FRONTEND}${SITE_LOGO}`,
+          width: 1200,
+          height: 630,
+          alt: "KSons Group Logo",
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      site: "@KSonsGroup",
+      creator: "@KSonsGroup",
+      title:
+        seo?.meta_title ||
+        "K.Sons Group Investor Relations – Updates & Reports",
+      description:
+        seo?.meta_description ||
+        "Find investor-related information, financial updates, and corporate disclosures from K.Sons Group.",
+      images: [`${BASE_FRONTEND}${SITE_LOGO}`],
+    },
+  };
+}
+
+export default async function investor() {
+  const pageRes = await fetchPageData("website/page/investor");
+  const pageData = pageRes?.data;
+  const sectionRes = await fetchPageData("website/page-section/investor");
+  const sectionData = sectionRes?.data?.[0];
+
   const bannerData: CommonBannerProps = {
     tag: "investors",
-    heading:
-      "Investing in More Than Just Property—Building a Legacy, One Visionary Step at a Time.",
-    description:
-      "Where Your Investment Meets Purpose, Growth, and Timeless Value.",
+    heading: pageData?.title?.heading,
+    description: pageData?.title?.sub_heading,
     // bottomText:
     //     "We were impressed by the thoughtful design and attention to detail in every corner of the project. The amenities, peaceful surroundings, and easy access to daily essentials make living here both comfortable and convenient.",
     files: {
-      desktop_file: "/images/investor/hero.webp",
-      mobile_file: "/images/investor/hero.webp",
+      desktop_file: pageData?.files?.desktop_file,
+      mobile_file: pageData?.files?.mobile_file,
     },
     headingArea: "lg:w-[650px] 2xl:w-[850px]",
   };
 
   const investorDescData: InvestorDescProps = {
-    heading: "Where Your Investment Becomes a Timeless Legacy",
-    description:
-      "At K.sons, we view investment as a partnership, one rooted in trust, foresight, and long-term vision. Every project we undertake is crafted with the commitment to not only deliver returns but to build lasting value that endures for generations. Whether residential or commercial, our developments are shaped by a deep understanding of market dynamics and a dedication to excellence.",
+    heading: sectionData?.title?.main,
+    description: sectionData?.title?.description,
     icon: "/images/about/about-page-banner-bottom.png",
-    image: "/images/investor/pageimg.webp",
+    image: sectionData?.files?.desktop_file,
   };
 
   return (

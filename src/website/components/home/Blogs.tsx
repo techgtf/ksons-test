@@ -14,8 +14,6 @@ export type BlogItem = {
   date: string;
   title: string;
   description: string;
-  image: string;
-  arrowIcon: string;
   slug: string;
 };
 
@@ -127,7 +125,7 @@ export default function Blogs({
             <h3
               className={`${agency.className} text-2xl lg:mb-10 font-normal text-[22px] line-clamp-2`}
             >
-             {blog.title}
+              {blog.title}
             </h3>
 
             {/* Image */}

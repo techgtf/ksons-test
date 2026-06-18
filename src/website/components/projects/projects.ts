@@ -117,6 +117,7 @@ export type SEO = {
 };
 
 export type Category = {
+  id?: string;
   slug: string;
   label: string;
   // tagline: string;

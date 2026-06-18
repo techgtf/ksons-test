@@ -1,4 +1,3 @@
-import React from "react";
 import CommonBanner, {
   CommonBannerProps,
 } from "@/src/website/components/common/CommonBanner";
@@ -6,35 +5,76 @@ import BannerSubDesc from "@/src/website/components/common/BannerSubDesc";
 import LatestBlogs from "@/src/website/components/blogs/LatestBlogs";
 import PopularBlogs from "@/src/website/components/blogs/PopularBlogs";
 import { Metadata } from "next";
+import { BASE_FRONTEND, SITE_LOGO } from "@/config";
+import { fetchPageData } from "@/src/website/utils/api";
 
-export const metadata: Metadata = {
-  title: "K.Sons Group Blogs – Real Estate Insights",
-  keywords:
-    "K.Sons Group blogs, real estate insights Vrindavan, Mathura property updates, investment guides",
-  description:
-    "Read expert insights, market trends, and updates on real estate from K.Sons Group’s official blogs.",
-  alternates: {
-    canonical: "https://ksonsgroup.com/blogs",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const pageRes = await fetchPageData("website/page/blogs");
+  const seo = pageRes?.data?.seoTags;
 
-const page = () => {
+  return {
+    title: seo?.meta_title || "K.Sons Group Blogs – Real Estate Insights",
+    description:
+      seo?.meta_description ||
+      "Read expert insights, market trends, and updates on real estate from K.Sons Group’s official blogs.",
+    keywords:
+      seo?.meta_keywords ||
+      "K.Sons Group blogs, real estate insights Vrindavan, Mathura property updates, investment guides",
+    alternates: {
+      canonical:
+        `${BASE_FRONTEND}${pageRes?.data?.slug}` ||
+        "https://ksonsgroup.com/blogs",
+    },
+    openGraph: {
+      type: "website",
+      url:
+        `${BASE_FRONTEND}${pageRes?.data?.slug}` ||
+        "https://ksonsgroup.com/blogs",
+      siteName: "KSons Group",
+      title: seo?.meta_title || "K.Sons Group Blogs – Real Estate Insights",
+      description:
+        seo?.meta_description ||
+        "Read expert insights, market trends, and updates on real estate from K.Sons Group’s official blogs.",
+      images: [
+        {
+          url: `${BASE_FRONTEND}${SITE_LOGO}`,
+          width: 1200,
+          height: 630,
+          alt: "KSons Group Logo",
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      site: "@KSonsGroup",
+      creator: "@KSonsGroup",
+      title: seo?.meta_title || "K.Sons Group Blogs – Real Estate Insights",
+      description:
+        seo?.meta_description ||
+        "Read expert insights, market trends, and updates on real estate from K.Sons Group’s official blogs.",
+      images: [`${BASE_FRONTEND}${SITE_LOGO}`],
+    },
+  };
+}
+
+const page = async () => {
+  const pageRes = await fetchPageData("website/page/blogs");
+  const pageData = pageRes?.data;
+
   const bannerData: CommonBannerProps = {
     tag: "our Blogs",
     headingArea: "lg:w-[740px] 2xl:w-[900px]",
     peraArea: "lg:w-[450px]",
-    heading:
-      "Where Insight Meets Innovation, Stay Ahead with Our Curated Stories and Future-Focused Content.",
-    description:
-      "Your Gateway to the Latest Trends, Thought Leadership, and Visionary Insights.",
+    heading: pageData?.title?.heading,
+    description: pageData?.title?.sub_heading,
     files: {
-      desktop_file: "/images/blogs/hero.webp",
-      mobile_file: "/images/blogs/hero-mb.webp",
+      desktop_file: pageData?.files?.desktop_file,
+      mobile_file: pageData?.files?.mobile_file,
     },
   };
 
-  const sub_desc =
-    "Our latest blogs offer a deep dive into the evolving landscape of real estate, innovation, and investment. Each post is a reflection of K.sons’ commitment to sharing valuable insights that help you stay informed, inspired, and ahead of the curve.";
+  const sub_desc = pageData?.title?.description;
 
   const icon = "/images/about/about-page-banner-bottom.png";
 

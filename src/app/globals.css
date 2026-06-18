@@ -245,6 +245,14 @@ a:hover .icon-scale {
 }
 
 /*  */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
 @media (max-width: 1280px) {
   .app-container {

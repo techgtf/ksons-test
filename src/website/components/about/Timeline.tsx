@@ -42,36 +42,6 @@ export default function Timeline({ ranges, markerImage }: TimelineProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useLayoutEffect(() => {
-    const handleTouchStart = (e: Event) => {
-      const target = e.target;
-
-      if (target instanceof Element && target.closest(".normal-scroll")) {
-        lenisInstance?.stop();
-      }
-    };
-
-    const handleTouchEnd = (e: Event) => {
-      const target = e.target;
-
-      if (target instanceof Element && target.closest(".normal-scroll")) {
-        lenisInstance?.start();
-      }
-    };
-
-    document.addEventListener("touchstart", handleTouchStart, {
-      passive: true,
-    });
-    document.addEventListener("touchend", handleTouchEnd, { passive: true });
-    document.addEventListener("touchcancel", handleTouchEnd, { passive: true });
-
-    return () => {
-      document.removeEventListener("touchstart", handleTouchStart);
-      document.removeEventListener("touchend", handleTouchEnd);
-      document.removeEventListener("touchcancel", handleTouchEnd);
-    };
-  }, []);
-
-  useLayoutEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth < 768) return;
 
     const mm = gsap.matchMedia();
@@ -164,7 +134,7 @@ export default function Timeline({ ranges, markerImage }: TimelineProps) {
         <div
           ref={horizontalRef}
           className="overflow-x-auto pb-6 border-b border-white/20 -mx-6 px-6 touch-pan-x normal-scroll"
-          data-scroll-ignore
+          data-lenis-prevent
           onWheelCapture={(e) => e.stopPropagation()}
           onTouchMoveCapture={(e) => e.stopPropagation()}
           style={{

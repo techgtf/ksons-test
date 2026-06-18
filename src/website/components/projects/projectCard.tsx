@@ -193,7 +193,7 @@ export default function ProjectCard({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.35 }}
-            className={`${blauerNue.className} card-desc text-[#0F3C78] tracking-[0.5px] lg:leading-[24px] font-light text-base line-clamp-4`}
+            className={`${blauerNue.className} card-desc text-[#0F3C78] tracking-[0.5px] lg:leading-[24px] font-light text-base line-clamp-4 ${project.description.split(" ")?.length < 10 ? "break-all" : ""}`}
           >
             {project.description}
           </motion.p>

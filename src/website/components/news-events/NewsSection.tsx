@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { blauerNue, agency } from "@/src/app/fonts";
 import TabSwitcher from "../common/TabSwitcher";
 import Pagination from "../common/Pagination";
-import Link from "next/link";
-import Image from "next/image";
-import { useSlideY } from "../../hooks/useSlideY";
 import OnlineNewsCard from "./OnlineNewsCard";
 import OfflineNewsCard from "./OfflineNewsCard";
 import { useLightbox } from "@/src/website/context/LightboxContext";
+import { fetchPageData } from "../../utils/api";
+import { ScrollTrigger } from "../../utils/gsap";
+import { lenisInstance } from "@/src/website/components/SmoothScroller";
 
 export interface NewsItem {
-  id: number;
+  id: string;
   date?: string;
   monthYear?: string;
   title: string;
@@ -22,48 +22,42 @@ export interface NewsItem {
   image?: string;
 }
 
-const newsData: NewsItem[] = [
-  {
-    id: 1,
-    date: "05",
-    monthYear: "June / 26",
-    title:
-      "के.सन्स फाउंडेशन का शुभारंभ: मथुरा, वृंदावन और गोवर्धन में 500 पौधों के रोपण अभियान की शुरुआत",
-    description:
-      "के.सन्स फाउंडेशन का शुभारंभ: मथुरा, वृंदावन और गोवर्धन में 500 पौधों के रोपण अभियान की शुरुआतमथुरा, वृंदावन और गोवर्धन की पावन धरती पर अपनी मजबूत पहचान बना चुके के.सन्स ग्रुप के संस्थापक रियल एस्टेट क्षेत्र में 30+ वर्षों के समृद्ध अनुभव के साथ विश्वास, गुणवत्ता और उत्कृष्टता की नई मिसाल कायम कर रहे हैं। सामाजिक उत्तरदायित्व के प्रति अपनी प्रतिबद्धता को और सशक्त करते हुए कंपनी ने “के.सन्स फाउंडेशन” के शुभारंभ की घोषणा की है। रियल एस्टेट विकास के क्षेत्र में के.सन्स ग्रुप के संस्थापक अब समाज एवं प्रकृति से मिले इस विश्वास, सहयोग और अवसरों को लौटाने की भावना के साथ पर्यावरण संरक्षण और सामुदायिक कल्याण के लिए नई पहल कर रही है।",
-    type: "online",
-    link: "https://samacharsuperfastnews.com/ksons-foundation-launches-500-tree-plantation-drive-in-mathura-vrindavan-govardhan/",
-  },
-  // offline
-  {
-    id: 2,
-    // date: "28",
-    // monthYear: "July / 25",
-    title: "Hindustan",
-    type: "offline",
-    image: "/images/offline-news/hindustan.jpeg",
-  },
-  {
-    id: 3,
-    // date: "28",
-    // monthYear: "July / 25",
-    title: "Dainik Jagran",
-    type: "offline",
-    image: "/images/offline-news/dainik-jagran.jpeg",
-  },
-  {
-    id: 4,
-    // date: "28",
-    // monthYear: "July / 25",
-    title: "Amar Ujala",
-    type: "offline",
-    image: "/images/offline-news/amar-ujala.jpeg",
-  },
-];
+const parseDate = (dateStr: string) => {
+  if (!dateStr) return { date: "", monthYear: "" };
+  const dateObj = new Date(dateStr);
+  if (isNaN(dateObj.getTime())) return { date: "", monthYear: "" };
+
+  const date = String(dateObj.getDate()).padStart(2, "0");
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const month = monthNames[dateObj.getMonth()];
+  const year = String(dateObj.getFullYear()).slice(-2);
+
+  return {
+    date,
+    monthYear: `${month} / ${year}`,
+  };
+};
 
 const NewsSection = () => {
   const [activeTab, setActiveTab] = useState<string>("online");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [newsList, setNewsList] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const tabs = [
     { id: "online", title: "Online News" },
@@ -71,17 +65,113 @@ const NewsSection = () => {
   ];
 
   const { openLightbox } = useLightbox();
-  const filteredNews = newsData.filter((item) => item.type === activeTab);
+
+  useEffect(() => {
+    const loadNews = async () => {
+      setLoading(true);
+      try {
+        const newsRes = await fetchPageData(
+          `website/news?news_mode=${activeTab}`,
+        );
+        const data = newsRes?.data || [];
+        const formatted: NewsItem[] = data.map((item: any) => {
+          const { date, monthYear } = parseDate(item.dateAt);
+          return {
+            id: item.id,
+            date,
+            monthYear,
+            title: item.title,
+            description: item.description?.short || "",
+            link: item.newsLink || "",
+            type: item.news_mode,
+            image: item.files?.desktop_file || item.files?.mobile_file || "",
+          };
+        });
+        setNewsList(formatted);
+      } catch (error) {
+        console.error("Failed to fetch news:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadNews();
+  }, [activeTab]);
+
+  useEffect(() => {
+    ScrollTrigger.refresh();
+  }, [currentPage, newsList]);
 
   const itemsPerPage = 3;
-  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
-  const paginatedNews = filteredNews.slice(
+  const totalPages = Math.ceil(newsList.length / itemsPerPage);
+  const paginatedNews = newsList.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    if (lenisInstance && containerRef.current) {
+      lenisInstance.scrollTo(containerRef.current, {
+        offset: -96,
+        duration: 1.2,
+      });
+    } else {
+      containerRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full">
+        <TabSwitcher
+          tabs={tabs}
+          activeTab={activeTab}
+          onChange={(id) => {
+            setActiveTab(id);
+            setCurrentPage(1);
+          }}
+          className="mb-12 lg:mb-20"
+        />
+        {activeTab === "online" ? (
+          <div className="flex flex-col gap-6 lg:gap-10 px-4 lg:px-20 pb-10 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-10 border-b border-[#0F3C78]/10 pb-6 lg:pb-10"
+              >
+                <div className="hidden min-w-[80px] lg:flex flex-col items-center gap-2">
+                  <div className="h-6 w-8 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                </div>
+                <div className="flex-1">
+                  <div className="h-7 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-24"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 px-4 lg:px-20 pb-10 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex flex-col">
+                <div className="relative w-full aspect-[1.4/1] lg:mb-10 mb-5 bg-gray-200 rounded-[10px]"></div>
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full">
+    <div ref={containerRef} className="w-full scroll-mt-24">
       <TabSwitcher
         tabs={tabs}
         activeTab={activeTab}
@@ -95,23 +185,19 @@ const NewsSection = () => {
       {activeTab === "online" ? (
         <div className="flex flex-col gap-6 lg:gap-10 px-4 lg:px-20 pb-10">
           {paginatedNews.map((item) => (
-            // Online news items
             <OnlineNewsCard key={item.id} item={item} />
           ))}
         </div>
       ) : (
-        // Offline news items
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 px-4 lg:px-20 pb-10">
           {paginatedNews.map((item) => (
             <OfflineNewsCard
               key={item.id}
               item={item}
               onClick={() => {
-                const actualIndex = filteredNews.findIndex(
-                  (n) => n.id === item.id,
-                );
+                const actualIndex = newsList.findIndex((n) => n.id === item.id);
                 openLightbox(
-                  filteredNews.map((n) => ({
+                  newsList.map((n) => ({
                     src: n.image || "",
                     alt: n.title,
                     thumbnail: n.image || "",
@@ -124,11 +210,11 @@ const NewsSection = () => {
         </div>
       )}
 
-      {filteredNews.length > itemsPerPage && (
+      {newsList.length > itemsPerPage && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={(page) => setCurrentPage(page)}
+          onPageChange={handlePageChange}
         />
       )}
     </div>

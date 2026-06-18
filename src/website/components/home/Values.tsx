@@ -23,7 +23,7 @@ export type ValuesProps = {
   values: ValueItem[];
 };
 
-export default function Values({ tag, heading, values }: ValuesProps) {
+export default function Values({ tag, heading, values = [] }: ValuesProps) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);

@@ -52,7 +52,11 @@ const AnimatedLoader = forwardRef<AnimatedLoaderHandle>((_, ref) => {
     tlRef.current?.kill();
 
     // Set wrapper to visible, positioned normally (yPercent: 0)
-    gsap.set(wrapperRef.current, { opacity: 1, yPercent: 0, pointerEvents: "all" });
+    gsap.set(wrapperRef.current, {
+      opacity: 1,
+      yPercent: 0,
+      pointerEvents: "all",
+    });
 
     // Set logo elements initial state
     gsap.set(triangleRef.current, {
@@ -80,46 +84,55 @@ const AnimatedLoader = forwardRef<AnimatedLoaderHandle>((_, ref) => {
       duration: 0.5,
     });
 
-    tl.to(leftLogoRef.current, {
-      x: 0,
-      opacity: 1,
-      duration: 0.5,
-    }, "-=0.3");
+    tl.to(
+      leftLogoRef.current,
+      {
+        x: 0,
+        opacity: 1,
+        duration: 0.5,
+      },
+      "-=0.3",
+    );
 
-    tl.to(rightLogoRef.current, {
-      x: 0,
-      opacity: 1,
-      duration: 0.5,
-    }, "-=0.3");
+    tl.to(
+      rightLogoRef.current,
+      {
+        x: 0,
+        opacity: 1,
+        duration: 0.5,
+      },
+      "-=0.3",
+    );
 
-    tl.to(tagLine.current, {
-      y: 0,
-      opacity: 1,
-      duration: 0.4,
-    }, "-=0.2");
+    tl.to(
+      tagLine.current,
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.4,
+      },
+      "-=0.2",
+    );
 
     // Pause briefly so the user can see the logo
     tl.to({}, { duration: 0.6 });
 
     // 2️⃣ Slide the entire wrapper (curtain) up off-screen (logo content naturally slides up with it)
-    tl.to(
-      wrapperRef.current,
-      {
-        yPercent: -100,
-        duration: 1.2,
-        ease: "expo.inOut",
-        onUpdate: function () {
-          // Fire once at 20% progress of this tween
-          if (this.progress() >= 0.2) {
-            window.dispatchEvent(new CustomEvent("loaderDone"));
-            this.vars.onUpdate = undefined; // prevent firing again
-          }
-        },
-        onComplete: () => {
-          setShouldRender(false);
-        },
-      }
-    );
+    tl.to(wrapperRef.current, {
+      yPercent: -100,
+      duration: 1.2,
+      ease: "expo.inOut",
+      onUpdate: function () {
+        // Fire once at 20% progress of this tween
+        if (this.progress() >= 0.2) {
+          window.dispatchEvent(new CustomEvent("loaderDone"));
+          this.vars.onUpdate = undefined; // prevent firing again
+        }
+      },
+      onComplete: () => {
+        setShouldRender(false);
+      },
+    });
   };
 
   useLayoutEffect(() => {
@@ -212,242 +225,3 @@ const AnimatedLoader = forwardRef<AnimatedLoaderHandle>((_, ref) => {
 
 AnimatedLoader.displayName = "AnimatedLoader";
 export default AnimatedLoader;
-
-// =======================================//
-// Loader with Global State
-// =======================================//
-
-// "use client";
-// import { useRef, useEffect, forwardRef, useImperativeHandle, useLayoutEffect } from "react";
-// import Image from "next/image";
-// import { gsap } from "../../utils/gsap";
-// import { blauerNue } from "@/src/app/fonts";
-// import { bootState } from "@/src/website/utils/bootState";
-
-// export interface AnimatedLoaderHandle {
-//     show: () => void;
-// }
-
-// const AnimatedLoader = forwardRef<AnimatedLoaderHandle>((_, ref) => {
-//     const wrapperRef = useRef<HTMLDivElement | null>(null);
-//     const triangleRef = useRef<HTMLDivElement | null>(null);
-//     const maskTriangleRef = useRef<SVGGElement | null>(null);
-//     const overlayRef = useRef<HTMLDivElement | null>(null);
-//     const leftLogoRef = useRef<HTMLDivElement | null>(null);
-//     const rightLogoRef = useRef<HTMLDivElement | null>(null);
-//     const contentRef = useRef<HTMLDivElement | null>(null);
-//     const tlRef = useRef<gsap.core.Timeline | null>(null);
-//     const tagLine = useRef<HTMLParagraphElement | null>(null);
-
-//     const bootTriggered = useRef(false);
-
-//     const runAnimation = () => {
-//         if (
-//             !wrapperRef.current ||
-//             !triangleRef.current ||
-//             !maskTriangleRef.current ||
-//             !overlayRef.current ||
-//             !leftLogoRef.current ||
-//             !rightLogoRef.current ||
-//             !contentRef.current
-//         )
-//             return;
-
-//         tlRef.current?.kill();
-
-//         gsap.set(wrapperRef.current, { opacity: 1, pointerEvents: "all" });
-
-//         gsap.set([triangleRef.current, maskTriangleRef.current], {
-//             scale: 1,
-//             opacity: 0,
-//             transformOrigin: "center center",
-//         });
-
-//         gsap.set(leftLogoRef.current, { x: -50, opacity: 0 });
-//         gsap.set(rightLogoRef.current, { x: 50, opacity: 0 });
-//         gsap.set(tagLine.current, { y: 20, opacity: 0 });
-//         gsap.set(contentRef.current, { opacity: 1 });
-//         gsap.set(overlayRef.current, { opacity: 1 });
-
-//         triangleRef.current.getBoundingClientRect();
-
-//         const rect = triangleRef.current.getBoundingClientRect();
-//         const parentRect = wrapperRef.current.getBoundingClientRect();
-
-//         const centerX = rect.left - parentRect.left + rect.width / 2;
-//         const centerY = rect.top - parentRect.top + rect.height / 2;
-
-//         gsap.set(maskTriangleRef.current, {
-//             x: centerX - 50,
-//             y: centerY - 50,
-//             scale: 0.2,
-//             transformOrigin: "center center",
-//         });
-
-//         const tl = gsap.timeline();
-//         tlRef.current = tl;
-
-//         /* 1 Triangle */
-//         tl.to([triangleRef.current, maskTriangleRef.current], {
-//             opacity: 1,
-//             duration: 0.45,
-//         });
-
-//         /* 2 Left */
-//         tl.to(leftLogoRef.current, {
-//             x: 0,
-//             opacity: 1,
-//             duration: 0.45,
-//         });
-
-//         /* 3 Right */
-//         tl.to(rightLogoRef.current, {
-//             x: 0,
-//             opacity: 1,
-//             duration: 0.45,
-//         });
-
-//         /* 4 Tagline */
-//         tl.to(tagLine.current, {
-//             y: 0,
-//             opacity: 1,
-//             duration: 0.4,
-//         });
-
-//         /* 5 Zoom faster */
-//         tl.to([triangleRef.current, maskTriangleRef.current], {
-//             scale: 180,
-//             duration: 2.6, // before 3.5
-//             ease: "expo.inOut",
-//         });
-
-//         /* exit faster */
-//         tl.to(overlayRef.current, { opacity: 0, duration: 0.8 }, "-=0.6");
-
-//         tl.to(
-//             leftLogoRef.current,
-//             { x: -200, opacity: 0, duration: 1 },
-//             "-=2.3"
-//         );
-
-//         tl.to(
-//             rightLogoRef.current,
-//             { x: 200, opacity: 0, duration: 1 },
-//             "-=2.3"
-//         );
-
-//         tl.to(contentRef.current, { opacity: 0, duration: 0.8 }, "-=2.3");
-
-//         tl.set(wrapperRef.current, { pointerEvents: "none" }, "-=0.3");
-
-//         tl.to(
-//             wrapperRef.current,
-//             {
-//                 opacity: 0,
-//                 duration: 0.7,
-//                 ease: "power1.out",
-//                 // onComplete: () => {
-//                 //     bootState.isBooted = true;
-//                 //     window.dispatchEvent(new Event("boot-complete"));
-//                 // },
-//                 onStart: () => {
-//                     if (!bootTriggered.current) {
-//                         bootTriggered.current = true;
-//                         bootState.isBooted = true;
-
-//                         window.dispatchEvent(
-//                             new CustomEvent("boot-complete")
-//                         );
-//                     }
-//                 }
-//             },
-//             "-=0.1"
-//         );
-//     };
-
-//     useLayoutEffect(() => {
-//         const raf = requestAnimationFrame(() => {
-//             runAnimation();
-//         });
-
-//         return () => {
-//             cancelAnimationFrame(raf);
-//             tlRef.current?.kill();
-//         };
-//     }, []);
-
-//     useImperativeHandle(ref, () => ({
-//         show: () => runAnimation(),
-//     }));
-
-//     return (
-//         <div
-//             ref={wrapperRef}
-//             className="fixed inset-0 z-[9999] flex items-center justify-center will-change-transform opacity-0"
-//         // 👇 no pointerEvents here — gsap controls it entirely
-//         >
-//             <svg className="absolute inset-0 z-20 w-full h-full pointer-events-none">
-//                 <defs>
-//                     <mask id="triangle-mask">
-//                         <rect width="100%" height="100%" fill="white" />
-//                         <g ref={maskTriangleRef}>
-//                             <polygon points="50,0 0,100 100,100" fill="black" />
-//                         </g>
-//                     </mask>
-//                 </defs>
-//                 <rect width="100%" height="100%" fill="white" mask="url(#triangle-mask)" />
-//             </svg>
-
-//             <div ref={contentRef} className="flex flex-col items-start z-20">
-//                 <div className="flex items-end">
-//                     <div ref={leftLogoRef}>
-//                         <Image
-//                             src="/images/home/logo-initial.svg"
-//                             alt="left"
-//                             width={50}
-//                             height={50}
-//                             className="mr-2.5"
-//                         />
-//                     </div>
-
-//                     <div
-//                         ref={triangleRef}
-//                         className="mr-2.5 relative z-30 bg-white"
-//                         style={{
-//                             width: "20px",
-//                             height: "17px",
-//                             clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)",
-//                             transformOrigin: "center center",
-//                         }}
-//                     >
-//                         <div
-//                             ref={overlayRef}
-//                             className="absolute inset-0"
-//                             style={{
-//                                 background: "linear-gradient(180deg, #2FD2ED 0%, #1C71E8 100%)",
-//                                 clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)",
-//                             }}
-//                         />
-//                     </div>
-
-//                     <div ref={rightLogoRef}>
-//                         <Image
-//                             src="/images/home/logo-last.svg"
-//                             alt="right"
-//                             width={150}
-//                             height={30}
-//                         />
-//                     </div>
-//                 </div>
-
-//                 <p ref={tagLine} className={`${blauerNue.className} uppercase mt-3 flex items-center gap-2 w-full justify-between font-light tracking-[3.4px] text-sm`}>
-//                     <span className="w-14 h-[0.6px] bg-black"></span>
-//                     Creating Value
-//                 </p>
-//             </div>
-//         </div>
-//     );
-// });
-
-// AnimatedLoader.displayName = "AnimatedLoader";
-// export default AnimatedLoader;

@@ -44,11 +44,35 @@ const Location = ({ data }: LocationProps) => {
   );
 
   useEffect(() => {
-    if (!iframe) return;
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(iframe, "text/html");
-    const extractedSrc = doc.querySelector("iframe")?.getAttribute("src");
-    setiframeSrc(extractedSrc || null);
+    if (!iframe) {
+      setiframeSrc(null);
+      return;
+    }
+    if (iframe.includes("<iframe")) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(iframe, "text/html");
+      const extractedSrc = doc.querySelector("iframe")?.getAttribute("src");
+      if (
+        extractedSrc &&
+        (extractedSrc.startsWith("http://") ||
+          extractedSrc.startsWith("https://") ||
+          extractedSrc.startsWith("//"))
+      ) {
+        setiframeSrc(extractedSrc);
+      } else {
+        setiframeSrc(null);
+      }
+    } else {
+      if (
+        iframe.startsWith("http://") ||
+        iframe.startsWith("https://") ||
+        iframe.startsWith("//")
+      ) {
+        setiframeSrc(iframe);
+      } else {
+        setiframeSrc(null);
+      }
+    }
   }, [iframe]);
 
   useScrollScale(mapImgRef, { start: "top 85%" });
@@ -85,8 +109,8 @@ const Location = ({ data }: LocationProps) => {
 
         <div className="mb-16 lg:mb-24 overflow-hidden">
           {/* Map Image container */}
-          {iframe && iframe !== "undefined" ? (
-            <MapIframe src={iframeSrc ?? null} title="Google Map Location" />
+          {iframeSrc ? (
+            <MapIframe src={iframeSrc} title="Google Map Location" />
           ) : (
             <div
               ref={mapImgRef}
@@ -94,7 +118,7 @@ const Location = ({ data }: LocationProps) => {
               className="relative cursor-pointer w-full aspect-16/7 border bg-[#d9d9d9]/5 border-[#d9d9d9]/95 rounded-2xl"
             >
               <Image
-                src={mobile_file ?? ""}
+                src={mobile_file || "/images/home/banner.png"}
                 alt="Location Map"
                 fill
                 className="object-cover block md:hidden"
@@ -102,7 +126,7 @@ const Location = ({ data }: LocationProps) => {
 
               {/* Desktop */}
               <Image
-                src={desktop_file ?? ""}
+                src={desktop_file || "/images/home/banner.png"}
                 alt="Location Map"
                 fill
                 className="object-cover hidden md:block"
@@ -142,7 +166,7 @@ const Location = ({ data }: LocationProps) => {
               className="mb-5 md:mb-10 border-b border-[#d9d9d9]/95 pb-2"
             >
               <div className="flex items-center justify-between w-full">
-                <div className="flex items-center justify-between w-full gap-3">
+                <div className="flex items-center w-full gap-3">
                   {activeType === "drive" ? (
                     <Image
                       src="/images/projects/car.svg"

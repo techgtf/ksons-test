@@ -36,11 +36,11 @@ export default function OfflineNewsCard({
         >
           {item.title}
         </h3>
-        <span
+        {/* <span
           className={`${blauerNue.className} text-[#0F3C78]/75 text-[16px] lg:leading-[24px] tracking-[0.5px] font-semibold block`}
         >
           {item.date} {item.monthYear}
-        </span>
+        </span> */}
       </div>
     </div>
   );

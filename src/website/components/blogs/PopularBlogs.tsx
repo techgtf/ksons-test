@@ -5,7 +5,8 @@ import Link from "next/link";
 import { FiSearch } from "react-icons/fi";
 import { agency, blauerNue } from "@/src/app/fonts";
 import { useSlideY } from "../../hooks/useSlideY";
-import { blogs as allBlogs } from "./blogs";
+import { fetchPageData } from "../../utils/api";
+import { formatDate } from "../../utils/dateFormat";
 
 const PopularBlogItem = ({
   image,
@@ -27,7 +28,7 @@ const PopularBlogItem = ({
       href={`/blogs/${slug}`}
       className="group block lg:py-10 py-6 border-b border-[#0f3c78]/8 cursor-pointer"
     >
-      <div className="relative w-full aspect-16/10 lg:mb-6 mb-4 overflow-hidden rounded-[10px]">
+      <div className="relative w-full aspect-16/10 lg:mb-6 mb-4 overflow-hidden rounded-[10px] bg-gray-100">
         <Image
           src={image}
           alt={title}
@@ -50,17 +51,57 @@ const PopularBlogItem = ({
 };
 
 const PopularBlogs = () => {
-  const [randomBlogs, setRandomBlogs] = useState<any[]>([]);
-
-  useEffect(() => {
-    // Pick 2 random blogs from the imported blogs list to avoid hydration mismatch
-    const shuffled = [...allBlogs].sort(() => 0.5 - Math.random());
-    setRandomBlogs(shuffled.slice(0, 2));
-  }, []);
-
+  const [blogs, setBlogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const headingRef = useRef<HTMLHeadingElement | null>(null);
 
+  useEffect(() => {
+    const loadPopularBlogs = async () => {
+      try {
+        const blogsRes = await fetchPageData("website/blogs?isPopular=true");
+        const blogsData = blogsRes?.data || [];
+        const formatted = blogsData.map((blog: any) => ({
+          image:
+            blog?.files?.desktop_image || "/images/blogs/blog-fallback.jpg",
+          title: blog?.title,
+          date: formatDate(blog?.dateAt),
+          slug: blog?.slug,
+        }));
+        setBlogs(formatted.slice(0, 2));
+      } catch (error) {
+        console.error("Failed to load popular blogs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPopularBlogs();
+  }, []);
+
   useSlideY({ target: headingRef, direction: "down", distance: -120 });
+
+  if (loading) {
+    return (
+      <div className="py-2 animate-pulse">
+        {/* Search Bar Placeholder */}
+        <div className="relative lg:mb-10 mb-8 h-12 bg-gray-100 rounded-[8px]" />
+
+        <h2
+          className={`${agency.className} text-[24px] tracking-[-0.5px] leading-[32px] text-[#0f3c78] text-center lg:text-left`}
+        >
+          Popular Blogs
+        </h2>
+        <div className="flex flex-col">
+          {[1, 2].map((i) => (
+            <div key={i} className="lg:py-10 py-6 border-b border-[#0f3c78]/8">
+              <div className="w-full aspect-16/10 bg-gray-100 rounded-[10px]" />
+              <div className="h-4 bg-gray-100 rounded w-1/4 mt-4" />
+              <div className="h-4 bg-gray-100 rounded w-3/4 mt-2" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-2">
@@ -82,7 +123,7 @@ const PopularBlogs = () => {
       </h2>
 
       <div className="flex flex-col">
-        {randomBlogs.map((blog, index) => (
+        {blogs.map((blog, index) => (
           <PopularBlogItem key={index} {...blog} />
         ))}
       </div>

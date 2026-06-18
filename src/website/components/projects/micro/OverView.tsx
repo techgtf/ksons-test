@@ -15,10 +15,16 @@ import CommonBtn from "@/src/website/components/common/CommonBtn";
 import { useSlideX } from "@/src/website/hooks/useSlideX";
 import { useSlideY } from "@/src/website/hooks/useSlideY";
 import { useReveal } from "@/src/website/hooks/useReveal";
-import { Project } from "../projects";
 
 interface OverViewProps {
-  data?: Project;
+  data: {
+    title: string;
+    description: string;
+    location: string;
+    area: string;
+    status: string;
+    typology: string;
+  };
 }
 
 export default function OverView({ data }: OverViewProps) {

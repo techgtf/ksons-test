@@ -10,8 +10,6 @@ import Image from "next/image";
 import { agency, blauerNue } from "@/src/app/fonts";
 import { useLayoutEffect, useRef, useState } from "react";
 import { gsap, registerGSAP } from "../../utils/gsap";
-import { useReveal } from "../../hooks/useReveal";
-import { LeftArrow, RightArrow } from "../common/SVGIcons";
 import { useSlideX } from "../../hooks/useSlideX";
 import MicroHeader from "../projects/micro/MicroHeader";
 
@@ -36,11 +34,10 @@ export type TestimonialsProps = {
 export default function Testimonials({
   tag,
   heading,
-  testimonials,
+  testimonials = [],
   bgImage = "/images/home/testimonial-bg.png",
   triangleIcon = "/images/home/testimonial-triangle.svg",
   quoteIcon = "/images/home/testimonial-quote.png",
-  arrowIcon = "/images/home/testimonial-arrow.png",
   bgImg = true,
 }: TestimonialsProps) {
   const headingRef = useRef<HTMLDivElement | null>(null);
@@ -237,7 +234,25 @@ export default function Testimonials({
           {/* CONTROLS (Dots & Navigation) */}
           <div className="w-full flex items-center justify-between mt-8 md:pl-[calc(50%+2rem)] px-4 md:px-0">
             <div className="custom-pagination flex gap-2 m-0 p-0 items-center justify-center lg:justify-start w-full" />
+            {/* desktop */}
             <div className="md:flex gap-6 hidden">
+              <Image
+                src="/images/home/testimonial-arrow.png"
+                alt="arrow"
+                width={17}
+                height={17}
+                className="rotate-180 prev-btn cursor-pointer"
+              />
+              <Image
+                src="/images/home/testimonial-arrow.png"
+                alt="arrow"
+                width={17}
+                height={17}
+                className="next-btn cursor-pointer"
+              />
+            </div>
+            {/* Mobile */}
+            <div className="md:hidden flex w-[90%] mx-auto absolute z-2 left-4 right-4 bottom-[42%] justify-between">
               <Image
                 src="/images/home/testimonial-arrow.png"
                 alt="arrow"

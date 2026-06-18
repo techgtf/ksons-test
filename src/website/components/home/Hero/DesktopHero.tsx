@@ -13,10 +13,16 @@ type Props = {
   tagLine: string;
   logo?: string;
   files: FileType[];
+  thumbnails: string;
 };
 
 export let lenisInstance: Lenis | null = null;
-export default function ButtonBannerVideo({ tagLine, logo, files }: Props) {
+export default function ButtonBannerVideo({
+  tagLine,
+  logo,
+  files,
+  thumbnails,
+}: Props) {
   if (!files) return null;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const video1Ref = useRef<HTMLVideoElement | null>(null);
@@ -72,12 +78,10 @@ export default function ButtonBannerVideo({ tagLine, logo, files }: Props) {
           );
       }
 
-      // const getVideoSrc = (index: number) =>
-      //     `/images/home/banner/${index}.mp4`;
       const getVideoSrc = (index: number) => {
         const file = files[index - 1];
         if (!file) return "";
-        return `${file.desktop_file}${index}.mp4`;
+        return file.desktop_file;
       };
 
       const lockScroll = () => scrollLock.lock();
@@ -124,11 +128,11 @@ export default function ButtonBannerVideo({ tagLine, logo, files }: Props) {
 
           document.body.style.overflow = "";
 
-          requestAnimationFrame(() => {
-            scrollLock.scrollTo(window.innerHeight * 0.6, {
-              duration: 1.2,
-            });
-          });
+          // requestAnimationFrame(() => {
+          //   scrollLock.scrollTo(window.innerHeight * 0.6, {
+          //     duration: 1.2,
+          //   });
+          // });
 
           return;
         }
@@ -207,7 +211,9 @@ export default function ButtonBannerVideo({ tagLine, logo, files }: Props) {
           firstVideo.currentTime = 0;
           isPlaying = true;
 
-          firstVideo.play();
+          firstVideo.play().catch((err) => {
+            console.error("First video play failed", err);
+          });
 
           firstVideo.onended = () => {
             isPlaying = false;
@@ -282,7 +288,9 @@ export default function ButtonBannerVideo({ tagLine, logo, files }: Props) {
         };
 
         window.addEventListener("loaderDone", handleLoaderDone);
-        cleaner.push(() => window.removeEventListener("loaderDone", handleLoaderDone));
+        cleaner.push(() =>
+          window.removeEventListener("loaderDone", handleLoaderDone),
+        );
       } else {
         /* No loader active, start video and ensure scroll is unlocked immediately */
         startLoop();
@@ -327,7 +335,7 @@ export default function ButtonBannerVideo({ tagLine, logo, files }: Props) {
           <video
             key={i}
             ref={ref}
-            poster="/images/home/banner/1.webp"
+            poster={thumbnails || "/images/home/banner/1.webp"}
             muted
             playsInline
             preload="auto"

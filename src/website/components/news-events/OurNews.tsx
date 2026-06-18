@@ -1,12 +1,14 @@
 import { agency, blauerNue } from "@/src/app/fonts";
 import Image from "next/image";
 import NewsSection from "./NewsSection";
+import { fetchPageData } from "@/src/website/utils/api";
 
-const OurNews = () => {
-  const title = "Our News";
-  const description = "Our News: Latest Updates & Insights";
-  const long_description =
-    "K.sons Ventures is at the forefront of exploring new horizons, actively engaging in strategic partnerships that drive innovation growth across a wide range of sectors.";
+const OurNews = async () => {
+  const pageRes = await fetchPageData("website/page-section/news-events");
+  const pageData = pageRes?.data[0];
+  const title = pageData?.title?.main;
+  const description = pageData?.title?.sub;
+  const long_description = pageData?.title?.description;
   return (
     <div data-cursor="light" className="lg:pt-30 pt-10 pb-10">
       <div className="app-container">

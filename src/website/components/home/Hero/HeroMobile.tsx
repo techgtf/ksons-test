@@ -10,9 +10,15 @@ type Props = {
   tagLine: string;
   logo?: string;
   files: FileType[];
+  thumbnails: string;
 };
 
-export default function HeroMobile({ tagLine, logo, files }: Props) {
+export default function HeroMobile({
+  tagLine,
+  logo,
+  files,
+  thumbnails,
+}: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const video1Ref = useRef<HTMLVideoElement | null>(null);
   const video2Ref = useRef<HTMLVideoElement | null>(null);
@@ -39,7 +45,7 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
       const getVideoSrc = (index: number) => {
         const file = files[index - 1];
         if (!file) return "";
-        return `${file.mobile_file}${index}.mp4`;
+        return file.mobile_file;
       };
 
       /* CTA animation */
@@ -85,38 +91,41 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
           nextVideo.oncanplay = null;
           nextVideo.currentTime = 0;
 
-          nextVideo.play().then(() => {
-            gsap.set(nextVideo, { zIndex: 10, opacity: 0 });
-            gsap.set(currentVideo, { zIndex: 5 });
+          nextVideo
+            .play()
+            .then(() => {
+              gsap.set(nextVideo, { zIndex: 10, opacity: 0 });
+              gsap.set(currentVideo, { zIndex: 5 });
 
-            gsap.to(nextVideo, {
-              opacity: 1,
-              duration: 0.25,
-              onComplete: () => {
-                active = next;
-                gsap.set(currentVideo, { opacity: 0 });
-                const triggerNext = () => {
-                  nextVideo.ontimeupdate = null;
-                  nextVideo.onended = null;
-                  playVideoAt(targetIndex + 1);
-                };
+              gsap.to(nextVideo, {
+                opacity: 1,
+                duration: 0.25,
+                onComplete: () => {
+                  active = next;
+                  gsap.set(currentVideo, { opacity: 0 });
+                  const triggerNext = () => {
+                    nextVideo.ontimeupdate = null;
+                    nextVideo.onended = null;
+                    playVideoAt(targetIndex + 1);
+                  };
 
-                // Trigger next video 0.5s before current ends for seamless transition
-                nextVideo.ontimeupdate = () => {
-                  if (
-                    nextVideo.duration &&
-                    nextVideo.duration - nextVideo.currentTime < 0.5
-                  ) {
-                    triggerNext();
-                  }
-                };
+                  // Trigger next video 0.5s before current ends for seamless transition
+                  nextVideo.ontimeupdate = () => {
+                    if (
+                      nextVideo.duration &&
+                      nextVideo.duration - nextVideo.currentTime < 0.5
+                    ) {
+                      triggerNext();
+                    }
+                  };
 
-                nextVideo.onended = triggerNext;
-              },
+                  nextVideo.onended = triggerNext;
+                },
+              });
+            })
+            .catch((err) => {
+              console.log("Next video play failed", err);
             });
-          }).catch((err) => {
-            console.log("Next video play failed", err);
-          });
         };
 
         if (nextVideo.readyState >= 3) {
@@ -137,27 +146,30 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
 
         const playFirst = () => {
           firstVideo.currentTime = 0;
-          firstVideo.play().then(() => {
-            const triggerNext = () => {
-              firstVideo.ontimeupdate = null;
-              firstVideo.onended = null;
-              playVideoAt(2);
-            };
+          firstVideo
+            .play()
+            .then(() => {
+              const triggerNext = () => {
+                firstVideo.ontimeupdate = null;
+                firstVideo.onended = null;
+                playVideoAt(2);
+              };
 
-            // Trigger next video 0.5s before current ends for seamless transition
-            firstVideo.ontimeupdate = () => {
-              if (
-                firstVideo.duration &&
-                firstVideo.duration - firstVideo.currentTime < 0.5
-              ) {
-                triggerNext();
-              }
-            };
+              // Trigger next video 0.5s before current ends for seamless transition
+              firstVideo.ontimeupdate = () => {
+                if (
+                  firstVideo.duration &&
+                  firstVideo.duration - firstVideo.currentTime < 0.5
+                ) {
+                  triggerNext();
+                }
+              };
 
-            firstVideo.onended = triggerNext;
-          }).catch((err) => {
-            console.log("First video play failed", err);
-          });
+              firstVideo.onended = triggerNext;
+            })
+            .catch((err) => {
+              console.log("First video play failed", err);
+            });
         };
 
         if (firstVideo.readyState >= 3) {
@@ -202,7 +214,7 @@ export default function HeroMobile({ tagLine, logo, files }: Props) {
           playsInline
           preload="auto"
           disablePictureInPicture
-          poster="/images/home/banner/mobile/1.webp"
+          poster={thumbnails || "/images/home/banner/mobile/1.webp"}
           controlsList="nodownload nofullscreen noremoteplayback"
           className="absolute inset-0 h-full w-full object-cover"
           style={{

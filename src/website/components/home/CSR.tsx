@@ -6,7 +6,7 @@ import Image from "next/image";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
-import { gsap, ScrollTrigger, registerGSAP } from "../../utils/gsap";
+import { gsap, registerGSAP } from "../../utils/gsap";
 
 import "swiper/css";
 import "swiper/css/effect-fade";

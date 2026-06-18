@@ -9,95 +9,31 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import { gsap, ScrollTrigger } from "@/src/website/utils/gsap";
 import { agency, blauerNue } from "@/src/app/fonts";
-import {
-  LeftArrow,
-  RightArrow,
-} from "@/src/website/components/common/SVGIcons";
 import Image from "next/image";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface EventItem {
-  id: number;
+  id: string | number;
   title: string;
   year: number;
   description: string[];
   images: string[];
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-const EVENTS: EventItem[] = [
-  {
-    id: 1,
-    title: "Green Plantation & Sustainability Efforts",
-    year: 2026,
-    description: [
-      `Under the K.sons Foundation, large-scale
-plantation drives and environmental
-initiatives are undertaken across multiple
-regions. These efforts are focused on
-improving ecological balance, enhancing
-green cover and promoting environmental
-awareness among communities.`,
-    ],
-    images: [
-      "/images/csr/green-plantation/1.jpeg",
-      "/images/csr/green-plantation/2.jpeg",
-      "/images/csr/green-plantation/3.jpeg",
-      "/images/csr/green-plantation/4.jpeg",
-      "/images/csr/green-plantation/5.jpeg",
-    ],
-  },
-  {
-    id: 2,
-    title: "Braj Cleanliness & Heritage Preservation",
-    year: 2025,
-    description: [
-      `Through associated initiatives in the
-Braj Mandal region, K.sons supports
-cleanliness and heritage preservation
-efforts aimed at protecting and
-maintaining the spiritual and cultural
-landscape of Braj.`,
-    ],
-    images: ["/images/csr/cleanliness.png"],
-  },
-  {
-    id: 3,
-    title: "Education & Community Welfare",
-    year: 2025,
-    description: [
-      `Through the Shree Jee Baba Educational
-Society, K.sons supports initiatives that
-expand access to quality education and
-social care for underserved communities.
-The society runs institutions including
-Shree Jee Baba College of Law, Shree Jee
-Baba Institute, Shree Jee Baba Institute of
-Professional Studies, and Shree Jee Baba
-College of Pharmacy, while also supporting
-elderly care programs, pilgrim assistance
-and community welfare activities.`,
-    ],
-    images: ["/images/csr/education.png"],
-  },
-  {
-    id: 4,
-    title: "Eye Care for the Underprivileged",
-    year: 2024,
-    description: [
-      `In partnership with the NGO Kalyanam
-Karoti, K.sons supports accessible eye
-care and vision assistance initiatives for
-underserved communities, helping improve
-quality of life through essential healthcare
-support.`,
-    ],
-    images: ["/images/csr/eye-care.png"],
-  },
-];
+interface CSRGalleryProps {
+  title?: string;
+  description?: string;
+  long_description?: string;
+  events?: EventItem[];
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export default function CSRGallery() {
+export default function CSRGallery({
+  title,
+  description,
+  long_description,
+  events = [],
+}: CSRGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
@@ -136,7 +72,7 @@ export default function CSRGallery() {
       ctx.revert();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
-  }, []);
+  }, [events]);
 
   const scrollToPanel = (index: number) => {
     const panel = contentRefs.current[index];
@@ -144,11 +80,6 @@ export default function CSRGallery() {
       panel.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
-
-  const title: string = "CSR & Sustainbility";
-  const description: string = "CSR: Building Communities with Purpose";
-  const long_description: string =
-    "K.sons Ventures is at the forefront of exploring new horizons, actively engaging in strategic partnerships that drive innovation growth across a wide range of sectors.";
 
   return (
     <div data-cursor="light" className="pt-16 lg:pt-26">
@@ -192,7 +123,7 @@ export default function CSRGallery() {
                 className="hidden lg:flex flex-col justify-center w-1/3 h-screen"
               >
                 <nav className="space-y-6">
-                  {EVENTS.map((ev, i) => (
+                  {events.map((ev, i) => (
                     <button
                       key={ev.id}
                       onClick={() => scrollToPanel(i)}
@@ -212,7 +143,7 @@ export default function CSRGallery() {
 
               {/* ─────────────── RIGHT — Scrolling Content ─────────────── */}
               <div className="w-full lg:w-2/3">
-                {EVENTS.map((ev, i) => (
+                {events.map((ev, i) => (
                   <div
                     key={ev.id}
                     ref={(el) => {
@@ -288,7 +219,7 @@ export default function CSRGallery() {
 
                     <div className="flex items-end justify-between mb-4 lg:mb-8">
                       <h2
-                        className={`${agency.className} text-[#0F3C78] block md:hidden lg:text-[24px] text-[16px] tracking-[-0.5px] `}
+                        className={`${agency.className} text-[#0F3C78] block lg:hidden lg:text-[24px] text-[16px] tracking-[-0.5px] `}
                       >
                         {ev.title}
                       </h2>

@@ -1,69 +1,97 @@
-import Accordion, {
-  AccordionItem,
-} from "@/src/website/components/common/Accordion";
+import Accordion from "@/src/website/components/common/Accordion";
 import CommonBanner, {
   CommonBannerProps,
 } from "@/src/website/components/common/CommonBanner";
 import BannerSubDesc from "@/src/website/components/common/BannerSubDesc";
 import { Metadata } from "next";
+import { fetchPageData } from "@/src/website/utils/api";
+import { BASE_FRONTEND, SITE_LOGO } from "@/config";
 
-export const metadata: Metadata = {
-  title: "K.Sons Group NRI Corner – Property Guidance",
-  keywords: "K.Sons Group NRI, NRI property guidance Vrindavan, Mathura real estate for NRIs, investment tips NRI",
-  description: "Guidance for NRIs on investing in K.Sons Group residential and commercial projects in Vrindavan and Mathura.",
-  alternates: {
-    canonical: "https://ksonsgroup.com/nri-corner",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const pageRes = await fetchPageData("website/page/nri-corner");
+  const seo = pageRes?.data?.seoTags;
 
-export default function nri() {
+  return {
+    title: seo?.meta_title || "K.Sons Group NRI Corner – Property Guidance",
+    description:
+      seo?.meta_description ||
+      "Guidance for NRIs on investing in K.Sons Group residential and commercial projects in Vrindavan and Mathura.",
+    keywords:
+      seo?.meta_keywords ||
+      "K.Sons Group NRI, NRI property guidance Vrindavan, Mathura real estate for NRIs, investment tips NRI",
+    alternates: {
+      canonical:
+        `${BASE_FRONTEND}${pageRes?.data?.slug}` ||
+        "https://ksonsgroup.com/nri-corner",
+    },
+    openGraph: {
+      type: "website",
+      url: `${BASE_FRONTEND}${pageRes?.data?.slug}`,
+      siteName: "KSons Group",
+      title: seo?.meta_title || "K.Sons Group NRI Corner – Property Guidance",
+      description:
+        seo?.meta_description ||
+        "Guidance for NRIs on investing in K.Sons Group residential and commercial projects in Vrindavan and Mathura.",
+      images: [
+        {
+          url: `${BASE_FRONTEND}${SITE_LOGO}`,
+          width: 1200,
+          height: 630,
+          alt: "KSons Group Logo",
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      site: "@KSonsGroup",
+      creator: "@KSonsGroup",
+      title: seo?.meta_title || "K.Sons Group NRI Corner – Property Guidance",
+      description:
+        seo?.meta_description ||
+        "Guidance for NRIs on investing in K.Sons Group residential and commercial projects in Vrindavan and Mathura.",
+      images: [`${BASE_FRONTEND}${SITE_LOGO}`],
+    },
+  };
+}
+
+export default async function nri() {
+  const pageRes = await fetchPageData("website/page/nri-corner");
+  const pageData = pageRes?.data;
+
+  const sub_desc = pageData?.title?.description;
+
   const bannerData: CommonBannerProps = {
     tag: "NRI Corner",
-    heading:
-      "Your Bridge to a Legacy of Opportunities—Where Vision Meets Investment Beyond Borders.",
-    description:
-      "Empowering NRIs with Spaces that Speak to Their Legacy and Future.",
-    // bottomText:
-    //     "We were impressed by the thoughtful design and attention to detail in every corner of the project. The amenities, peaceful surroundings, and easy access to daily essentials make living here both comfortable and convenient.",
+    heading: pageData?.title?.heading,
+    description: pageData?.title?.sub_heading,
     files: {
-      desktop_file: "/images/nri/nri-banner.webp",
-      mobile_file: "/images/nri/nri-banner.webp",
+      desktop_file: pageData?.files?.desktop_file,
+      mobile_file: pageData?.files?.mobile_file,
     },
     headingArea: "lg:w-[650px] 2xl:w-[850px]",
   };
 
-  const sub_desc =
-    "At K.sons, we understand the dreams and aspirations that NRIs carry across borders. Our developments are more than just investments; they are an extension of your legacy, thoughtfully crafted to offer not just a home, but a lasting community. With a vision that transcends geographical boundaries, we create spaces that offer a timeless connection to home, no matter where you are.";
-
   const icon = "/images/about/about-page-banner-bottom.png";
 
-  const data: AccordionItem[] = [
-    {
-      question: "What makes K.sons a reliable choice for NRI investors?",
-      answer:
-        "K.sons is built on a foundation of credibility, foresight, and responsibility. Our projects are meticulously planned and executed, ensuring your investment is both secure and sustainable for generations to come.",
-    },
-    {
-      question: "How can NRIs invest in K.sons' properties?",
-      answer:
-        "Investing with K.sons is simple and transparent. Our team assists with the entire process, from selecting the perfect property to navigating legal and financial procedures, ensuring a seamless experience.",
-    },
-    {
-      question: "Are there any special offers for NRI investors?",
-      answer:
-        "K.sons offers tailored solutions for NRI investors, providing guidance and exclusive offers that align with your investment goals, ensuring your experience is as rewarding as it is seamless.",
-    },
-    {
-      question: "How does K.sons ensure the quality of its developments?",
-      answer:
-        "Every K.sons project is built with the utmost attention to detail, guided by our core values. We focus on long-term sustainability, ensuring that each development remains a valuable asset for years to come.",
-    },
-    {
-      question: "Can I purchase property in K.sons' townships as an NRI?",
-      answer:
-        "Yes, NRIs can purchase property in K.sons' well-planned townships. We offer a range of residential options, providing a perfect blend of luxury, comfort, and long-term investment value.",
-    },
-  ];
+  const faqRes = await fetchPageData("website/other-faq?faq_type=nri-corner");
+  const faqData = faqRes?.data || [];
+
+  type NRICornerType = {
+    question: string;
+    answer: string;
+    seq: number;
+    faq_type: string;
+  };
+
+  const data = faqData.map(
+    ({ question, answer, seq, faq_type }: NRICornerType) => ({
+      question,
+      answer,
+      seq,
+      faq_type,
+    }),
+  );
 
   return (
     <>

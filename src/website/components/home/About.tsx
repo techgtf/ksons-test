@@ -14,6 +14,7 @@ export type AboutProps = {
   description: string;
   buttonText: string;
   image: string;
+  smallText: string;
 };
 
 export default function About({

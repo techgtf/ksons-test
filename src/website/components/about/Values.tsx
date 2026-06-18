@@ -15,9 +15,16 @@ type ValuesItem = {
 export interface OurValues {
   data: ValuesItem[];
   bgImage: string;
+  title: string;
+  description: string;
 }
 
-export default function Values({ data, bgImage }: OurValues) {
+export default function Values({
+  data,
+  bgImage,
+  title,
+  description,
+}: OurValues) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const flexCardsRef = useRef<HTMLDivElement | null>(null);
   const imageScaleRef = useRef<HTMLImageElement | null>(null);
@@ -100,10 +107,6 @@ export default function Values({ data, bgImage }: OurValues) {
     };
   }, []);
 
-  const title = "Our Values";
-  const description =
-    "Built on Principles, Driven by Purpose—Values that Shape Every Step Forward.";
-
   if (!data) return null;
 
   return (
@@ -145,7 +148,7 @@ export default function Values({ data, bgImage }: OurValues) {
             className="w-[350px] 2xl:w-[400px] h-full object-cover"
           />
         </div>
-        <div className="lg:flex w-full justify-center space-y-8 lg:space-y-0 bottom-card gap-[10%] pt-20">
+        <div className="lg:flex w-full justify-center space-y-8 lg:space-y-0 bottom-card gap-[10%] pt-8 lg:pt-20">
           {data.slice(2, 4).map((item, index) => (
             <ContentCard
               key={item.id}

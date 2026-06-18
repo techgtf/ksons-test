@@ -12,7 +12,7 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import { LeftArrow, RightArrow } from "../../common/SVGIcons";
 import MicroHeader from "./MicroHeader";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useSlideY } from "@/src/website/hooks/useSlideY";
 import { useReveal } from "@/src/website/hooks/useReveal";
 import { useScrollScale } from "@/src/website/hooks/useScrollScale";
@@ -22,6 +22,62 @@ import { SlideImage } from "yet-another-react-lightbox";
 interface GalleryProps {
   data?: MicroGallery;
 }
+
+const isVideoUrl = (url: string) => {
+  if (!url) return false;
+  const videoExtensions = [".mp4", ".webm", ".ogg", ".mov", ".m4v"];
+  return videoExtensions.some((ext) => url.toLowerCase().endsWith(ext));
+};
+
+const VideoGalleryItem = ({ src }: { src: string }) => {
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  useScrollScale(cardRef, { fromScale: 0.8, start: "top 80%" });
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.play();
+    }
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      className="relative aspect-video w-full bg-black"
+    >
+      <video
+        ref={videoRef}
+        src={src}
+        className="w-full h-full object-cover"
+        controls={isPlaying}
+        muted
+        loop
+        playsInline
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
+      {!isPlaying && (
+        <div
+          onClick={handlePlay}
+          className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer z-10"
+        >
+          <div className="w-[60px] h-[60px] flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white drop-shadow-lg transition-transform duration-300 hover:scale-110">
+            <svg
+              className="w-8 h-8 fill-current translate-x-0.5"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Gallery = ({ data }: GalleryProps) => {
   if (!data) return null;
@@ -36,6 +92,8 @@ const Gallery = ({ data }: GalleryProps) => {
     alt: `${"Gallery"}`,
     thumbnail: item.desktop_file,
   }));
+
+  console.log(data, "data");
 
   return (
     <section
@@ -79,15 +137,23 @@ const Gallery = ({ data }: GalleryProps) => {
             }}
             className="rounded-2xl overflow-hidden"
           >
-            {gallery.map((item, index) => (
-              <SwiperSlide key={index}>
-                <ImgCard
-                  onClick={() => openLightbox(mapSlide, index)}
-                  item={item}
-                  index={index}
-                />
-              </SwiperSlide>
-            ))}
+            {gallery.map((item, index) => {
+              const fileUrl = item.desktop_file || item.mobile_file || "";
+              const isVideo = isVideoUrl(fileUrl);
+              return (
+                <SwiperSlide key={index}>
+                  {isVideo ? (
+                    <VideoGalleryItem src={fileUrl} />
+                  ) : (
+                    <ImgCard
+                      onClick={() => openLightbox(mapSlide, index)}
+                      item={item}
+                      index={index}
+                    />
+                  )}
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
           <div className="hidden lg:block absolute top-[20%] left-[-20%]">
             <Image

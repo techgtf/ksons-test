@@ -24,10 +24,7 @@ type Errors = {
   authorize?: string;
 };
 
-const EnquiryModal: React.FC<EnquiryModalProps> = ({
-  isOpen,
-  onClose,
-}) => {
+const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose }) => {
   const { submitEnquiry, loading } = useEnquiry();
   const lenis = lenisInstance;
 
@@ -121,9 +118,7 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
     }
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const isValid = validateForm();
@@ -143,7 +138,9 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
       setModal({
         open: true,
         type: "success",
-        message: response.message.trim(),
+        message:
+          response.message.trim().charAt(0).toUpperCase() +
+          response.message.trim().slice(1),
       });
 
       setFormData({
@@ -159,10 +156,7 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
       setModal({
         open: true,
         type: "error",
-        message:
-          err instanceof Error
-            ? err.message
-            : "Something went wrong",
+        message: err instanceof Error ? err.message : "Something went wrong",
       });
     }
   };
@@ -231,10 +225,9 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className={`w-full border-b ${errors.name
-                        ? "border-red-500"
-                        : "border-gray-200"
-                        } focus:border-[#0F3C78] outline-none 2xl:py-1.5 py-0.5 text-[#0F3C78] transition-colors ${blauerNue.className} text-lg`}
+                      className={`w-full border-b ${
+                        errors.name ? "border-red-500" : "border-gray-200"
+                      } focus:border-[#0F3C78] outline-none 2xl:py-1.5 py-0.5 text-[#0F3C78] transition-colors ${blauerNue.className} text-lg`}
                     />
 
                     {errors.name && (
@@ -259,10 +252,9 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className={`w-full border-b ${errors.email
-                        ? "border-red-500"
-                        : "border-gray-200"
-                        } focus:border-[#0F3C78] outline-none 2xl:py-2 py-0 text-[#0F3C78] transition-colors ${blauerNue.className} text-lg`}
+                      className={`w-full border-b ${
+                        errors.email ? "border-red-500" : "border-gray-200"
+                      } focus:border-[#0F3C78] outline-none 2xl:py-2 py-0 text-[#0F3C78] transition-colors ${blauerNue.className} text-lg`}
                     />
 
                     {errors.email && (
@@ -287,10 +279,9 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className={`w-full border-b ${errors.phone
-                        ? "border-red-500"
-                        : "border-gray-200"
-                        } focus:border-[#0F3C78] outline-none 2xl:py-1.5 py-0.5 text-[#0F3C78] transition-colors ${blauerNue.className} text-lg`}
+                      className={`w-full border-b ${
+                        errors.phone ? "border-red-500" : "border-gray-200"
+                      } focus:border-[#0F3C78] outline-none 2xl:py-1.5 py-0.5 text-[#0F3C78] transition-colors ${blauerNue.className} text-lg`}
                     />
 
                     {errors.phone && (
@@ -315,10 +306,9 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
                       value={formData.message}
                       onChange={handleChange}
                       rows={2}
-                      className={`w-full border-b ${errors.message
-                        ? "border-red-500"
-                        : "border-gray-200"
-                        } focus:border-[#0F3C78] outline-none 2xl:py-1.5 py-0.5 text-[#0F3C78] transition-colors resize-none ${blauerNue.className} text-lg`}
+                      className={`w-full border-b ${
+                        errors.message ? "border-red-500" : "border-gray-200"
+                      } focus:border-[#0F3C78] outline-none 2xl:py-1.5 py-0.5 text-[#0F3C78] transition-colors resize-none ${blauerNue.className} text-lg`}
                     />
 
                     {errors.message && (
@@ -347,9 +337,9 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
                       htmlFor="authorize"
                       className={`text-[13px] text-gray-600 leading-tight ${blauerNue.className}`}
                     >
-                      I authorize K.sons Developers and its
-                      representatives to contact me with updates and
-                      notifications via Email, SMS, Whatsapp and Call.
+                      I authorize K.sons Developers and its representatives to
+                      contact me with updates and notifications via Email, SMS,
+                      Whatsapp and Call.
                     </label>
                   </div>
                 </div>
@@ -379,9 +369,7 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
         }
         type={modal.type}
         title={
-          modal.type === "success"
-            ? "Enquiry Submitted"
-            : "Submission Failed"
+          modal.type === "success" ? "Enquiry Submitted" : "Submission Failed"
         }
         message={modal.message}
       />

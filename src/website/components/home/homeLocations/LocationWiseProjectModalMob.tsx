@@ -14,6 +14,7 @@ export interface ProjectProperty {
 export interface LocationData {
   id: number;
   name: string;
+  desc?: string;
   hero: {
     img: string;
     title: string;
@@ -213,9 +214,9 @@ export const LocationWiseProjectModalMob = ({
               <p
                 className={`${blauerNue.className} font-extralight tracking-[0.5px] pt-2`}
               >
-                {data.hero.desc.length > 90
-                  ? data.hero.desc.slice(0, 90) + "..."
-                  : data.hero.desc}
+                {(data.desc || data.hero.desc).length > 90
+                  ? (data.desc || data.hero.desc).slice(0, 90) + "..."
+                  : (data.desc || data.hero.desc)}
               </p>
             </div>
           </div>

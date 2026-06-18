@@ -1,14 +1,17 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
-import { registerGSAP, gsap } from "@/src/website/utils/gsap";
+import { registerGSAP, gsap, ScrollTrigger } from "@/src/website/utils/gsap";
 import { lenisInstance } from "@/src/website/components/SmoothScroller";
 import { LocationWiseProjectModal } from "./LocationWiseProjectModal";
-import { locationProjectsData } from "./locationData";
 import { ModalHandle } from "./LocationContainers";
 import { blauerNue } from "@/src/app/fonts";
 
-export default function LocationWiseProjects() {
+type Props = {
+  locations: any[];
+};
+
+export default function LocationWiseProjects({ locations }: Props) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const cloud1Ref = useRef<HTMLDivElement>(null);
@@ -26,7 +29,7 @@ export default function LocationWiseProjects() {
       if (window.innerWidth < 1024) return;
       if (!sectionRef.current || !mapRef.current) return;
 
-      const locations = locationProjectsData;
+      // const locations = locations;
       const total = locations.length;
 
       const PHASE1_UNITS = 1;
@@ -39,6 +42,7 @@ export default function LocationWiseProjects() {
         PHASE1_UNITS + (total - 1) * PER_LOC + DOT_UNITS + LAST_HOLD_UNITS;
       const scrollLength = `+=${90 * totalUnits}%`;
 
+      gsap.set(mapRef.current, { xPercent: -50, yPercent: -50 });
       gsap.set(pointsRef.current, { autoAlpha: 0, scale: 0.6, y: 30 });
 
       const tl = gsap.timeline({
@@ -71,12 +75,30 @@ export default function LocationWiseProjects() {
       // ST instance — tl.scrollTrigger se directly lo, no onInit needed
       stRef.current = tl.scrollTrigger as ScrollTrigger;
 
-      // Phase 1: clouds + map zoom
+      // Helper to calculate translation to center a point (left, top) under scale
+      const getClampedTranslation = (
+        leftPct: number,
+        topPct: number,
+        scale: number,
+      ) => {
+        const maxTranslateX = (scale - 1) * 50;
+        const maxTranslateY = (scale - 1) * 50;
+
+        const targetX = -scale * (leftPct - 50);
+        const targetY = -scale * (topPct - 50);
+
+        return {
+          xPercent: Math.max(-maxTranslateX, Math.min(maxTranslateX, targetX)),
+          yPercent: Math.max(-maxTranslateY, Math.min(maxTranslateY, targetY)),
+        };
+      };
+
+      // Phase 1: clouds remove slowly, map zooms slightly
       tl.to(
         cloud1Ref.current,
         {
-          xPercent: 50,
-          yPercent: -40,
+          xPercent: 100,
+          yPercent: -80,
           autoAlpha: 0,
           duration: PHASE1_UNITS,
           ease: "none",
@@ -86,8 +108,8 @@ export default function LocationWiseProjects() {
       tl.to(
         cloud2Ref.current,
         {
-          xPercent: -50,
-          yPercent: 40,
+          xPercent: -100,
+          yPercent: 80,
           autoAlpha: 0,
           duration: PHASE1_UNITS,
           ease: "none",
@@ -96,27 +118,44 @@ export default function LocationWiseProjects() {
       );
       tl.to(
         mapRef.current,
-        { scale: 1.4, duration: PHASE1_UNITS, ease: "none" },
+        {
+          scale: 1.1,
+          xPercent: -50,
+          yPercent: -50,
+          duration: PHASE1_UNITS,
+          ease: "none",
+        },
         0,
       );
 
-      // Phase 2: dots + modal
-      //
-      // Scroll DOWN: dot tween onComplete      → modal open/swap
-      // Scroll UP  : hold tween onReverseComplete → modal open/swap
-      //              (hold ends = user scrolled back into this location's window)
-      //              dot tween onReverseComplete → modal close (only for first loc)
-      //
+      // Phase 2: dots + map pan/zoom + modal
       locations.forEach((loc, i) => {
         const startPos = PHASE1_UNITS + i * PER_LOC;
         const holdDuration = i === total - 1 ? LAST_HOLD_UNITS : HOLD_UNITS;
 
-        // ── Dot tween ──────────────────────────────────────────────────────
+        const left = parseFloat(loc.position?.desktop.left || "50");
+        const top = parseFloat(loc.position?.desktop.top || "50");
+        const clamped = getClampedTranslation(left, top, 1.6);
+
+        // Map zoom & pan tween
+        tl.to(
+          mapRef.current,
+          {
+            scale: 1.6,
+            xPercent: -50 + clamped.xPercent,
+            yPercent: -50 + clamped.yPercent,
+            duration: DOT_UNITS,
+            ease: "power2.inOut",
+          },
+          startPos,
+        );
+
+        // Dot tween
         tl.to(
           pointsRef.current[i],
           {
             autoAlpha: 1,
-            scale: 1,
+            scale: 0.62, // counter-scale for map zoom (1 / 1.6 ≈ 0.62)
             y: 0,
             duration: DOT_UNITS,
             ease: "power2.out",
@@ -135,7 +174,6 @@ export default function LocationWiseProjects() {
             },
 
             // Scroll UP: dot animated back out → close only for first location
-            // (for others, hold tween's onReverseComplete handles swap)
             onReverseComplete() {
               if (i === 0) {
                 activeIdRef.current = null;
@@ -146,14 +184,13 @@ export default function LocationWiseProjects() {
           startPos,
         );
 
-        // ── Hold tween ─────────────────────────────────────────────────────
+        // Hold tween
         tl.to(
           {},
           {
             duration: holdDuration,
 
             // Scroll UP: user scrolled back into this location's hold window
-            // → show this location's modal (mirror of scroll-down onComplete)
             onReverseComplete() {
               if (panelHoveredRef.current) return;
               if (activeIdRef.current === loc.id) return;
@@ -174,14 +211,26 @@ export default function LocationWiseProjects() {
     return () => ctx.revert();
   }, []);
 
-  const handleClick = (loc: (typeof locationProjectsData)[0]) => {
-    if (activeIdRef.current === null) {
-      activeIdRef.current = loc.id;
-      modalRef.current?.open(loc);
-    } else {
-      activeIdRef.current = loc.id;
-      modalRef.current?.swap(loc);
-    }
+  const handleClick = (loc: any, index: number) => {
+    const st = stRef.current;
+    if (!st) return;
+
+    const PHASE1_UNITS = 1;
+    const DOT_UNITS = 0.5;
+    const HOLD_UNITS = 1.5;
+    const PER_LOC = DOT_UNITS + HOLD_UNITS;
+    const total = locations.length;
+    const LAST_HOLD_UNITS = 3;
+    const totalUnits =
+      PHASE1_UNITS + (total - 1) * PER_LOC + DOT_UNITS + LAST_HOLD_UNITS;
+
+    // Scroll to the middle of the active location's hold window
+    const targetPos =
+      PHASE1_UNITS + index * PER_LOC + DOT_UNITS + HOLD_UNITS / 2;
+    const progress = targetPos / totalUnits;
+    const targetScroll = st.start + progress * (st.end - st.start);
+
+    lenisInstance?.scrollTo(targetScroll);
   };
 
   // Skip — direction based on scroll position vs section midpoint
@@ -213,18 +262,22 @@ export default function LocationWiseProjects() {
         {/* MAP */}
         <div
           ref={mapRef}
-          className="relative h-full w-full origin-center will-change-transform"
+          style={{
+            width: "max(100vw, calc(100vh * 2568 / 1607))",
+            height: "max(100vh, calc(100vw * 1607 / 2568))",
+          }}
+          className="absolute left-1/2 top-1/2 origin-center will-change-transform"
         >
           <img
             src="/images/home/location-wise-pro/map.webp"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-fill select-none pointer-events-none"
             alt="Map"
           />
 
           {/* CLOUD 1 */}
           <div
             ref={cloud1Ref}
-            className="absolute -top-[25%] -right-[15%] z-10"
+            className="absolute -top-[25%] -right-[15%] z-10 pointer-events-none"
           >
             <img
               src="/images/home/location-wise-pro/cloud-1.png"
@@ -236,7 +289,7 @@ export default function LocationWiseProjects() {
           {/* CLOUD 2 */}
           <div
             ref={cloud2Ref}
-            className="absolute -bottom-[25%] -left-[20%] z-10"
+            className="absolute -bottom-[25%] -left-[20%] z-10 pointer-events-none"
           >
             <img
               src="/images/home/location-wise-pro/cloud-2.png"
@@ -244,31 +297,35 @@ export default function LocationWiseProjects() {
               alt=""
             />
           </div>
-        </div>
 
-        {/* DOTS */}
-        {locationProjectsData.map((loc, i) => (
-          <button
-            key={loc.id}
-            ref={(el) => {
-              pointsRef.current[i] = el;
-            }}
-            onClick={() => handleClick(loc)}
-            style={{
-              top: loc.responsive.desktop.top,
-              left: loc.responsive.desktop.left,
-            }}
-            className="absolute z-20 -translate-x-1/2 -translate-y-1/2 text-center flex flex-col items-center"
-          >
-            <div className="relative w-4.5 h-4.5">
-              <span className="absolute inset-0 rounded-full bg-[var(--blue)] animate-ping" />
-              <span className="absolute inset-0 rounded-full bg-[var(--blue)] border-4 border-white" />
-            </div>
-            <p className="mt-2 text-sm capitalize whitespace-nowrap bg-white rounded-2xl px-2 py-0.5 leading-normal font-semibold">
-              {loc.name}
-            </p>
-          </button>
-        ))}
+          {/* DOTS inside the map container so they zoom and translate with it */}
+          {locations.map((loc, i) => {
+            const position = loc.position;
+
+            return (
+              <button
+                key={loc.id}
+                ref={(el) => {
+                  pointsRef.current[i] = el;
+                }}
+                onClick={() => handleClick(loc, i)}
+                style={{
+                  top: position?.desktop.top,
+                  left: position?.desktop.left,
+                }}
+                className={`locItem locItem${i + 1} absolute z-20 -translate-x-1/2 -translate-y-1/2 text-center flex flex-col items-center`}
+              >
+                <div className="relative w-4.5 h-4.5">
+                  <span className="absolute inset-0 rounded-full bg-[var(--blue)] animate-ping" />
+                  <span className="absolute inset-0 rounded-full bg-[var(--blue)] border-4 border-white" />
+                </div>
+                <p className="mt-2 text-sm capitalize whitespace-nowrap bg-white rounded-2xl px-2 py-0.5 leading-normal font-semibold text-[var(--blue)]">
+                  {loc.name}
+                </p>
+              </button>
+            );
+          })}
+        </div>
 
         {/* SKIP BUTTON — always jumps to next section */}
         <button
@@ -304,210 +361,3 @@ export default function LocationWiseProjects() {
     </section>
   );
 }
-
-// "use client";
-
-// import React, { useLayoutEffect, useRef, useState } from "react";
-// import { gsap, registerGSAP } from "@/src/website/utils/gsap";
-// import { agency } from "@/src/app/fonts";
-// import { LocationWiseProjectModal } from "./LocationWiseProjectModal";
-
-// const locations = [
-//     { id: 1, top: "43%", left: "13%", name: "Delhi Ncr" },
-//     { id: 2, top: "58%", left: "22%", name: "Pune" },
-//     { id: 3, top: "62%", left: "84%", name: "Bengaluru" },
-//     { id: 4, top: "67%", left: "92%", name: "Ahmedabad" },
-//     { id: 5, top: "13%", left: "92%", name: "Bengaluru" },
-// ];
-
-// export default function LocationWiseProjects() {
-//     const sectionRef = useRef<HTMLDivElement>(null);
-//     const mapWrapRef = useRef<HTMLDivElement>(null);
-//     const mapRef = useRef<HTMLDivElement>(null);
-//     const cloud1Ref = useRef<HTMLDivElement>(null);
-//     const cloud2Ref = useRef<HTMLDivElement>(null);
-//     const pointsRef = useRef<(HTMLButtonElement | null)[]>([]);
-
-//     const [activeLocation, setActiveLocation] = useState<any>(null);
-
-//     useLayoutEffect(() => {
-//         registerGSAP();
-//         const ctx = gsap.context(() => {
-//             if (window.innerWidth < 1024) return;
-//             if (!sectionRef.current || !mapRef.current) return;
-
-//             gsap.set(pointsRef.current, {
-//                 autoAlpha: 0,
-//                 scale: 0.6,
-//                 y: 30,
-//             });
-
-//             const tl = gsap.timeline({
-//                 scrollTrigger: {
-//                     trigger: sectionRef.current,
-//                     start: "top top",
-//                     end: "+=220%",
-//                     scrub: 1.2,
-//                     pin: true,
-//                     invalidateOnRefresh: true,
-//                     anticipatePin: 1,
-//                 },
-//             });
-
-//             // clouds remove slowly
-//             tl.to(
-//                 cloud1Ref.current,
-//                 {
-//                     xPercent: 50,
-//                     yPercent: -40,
-//                     autoAlpha: 0,
-//                     duration: 1,
-//                     ease: "none",
-//                 },
-//                 0
-//             );
-
-//             tl.to(
-//                 cloud2Ref.current,
-//                 {
-//                     xPercent: -50,
-//                     yPercent: 40,
-//                     autoAlpha: 0,
-//                     duration: 1,
-//                     ease: "none",
-//                 },
-//                 0
-//             );
-
-//             // map zoom little
-//             tl.to(
-//                 mapRef.current,
-//                 {
-//                     scale: 1.2,
-//                     duration: 1,
-//                     ease: "none",
-//                 },
-//                 0
-//             );
-
-//             // show locations smoothly
-//             tl.to(
-//                 pointsRef.current,
-//                 {
-//                     autoAlpha: 1,
-//                     scale: 1,
-//                     y: 0,
-//                     stagger: 0.15,
-//                     duration: 0.8,
-//                     ease: "power2.out",
-//                 },
-//                 0.7
-//             );
-//         }, sectionRef);
-
-//         return () => ctx.revert();
-//     }, []);
-
-//     const handleClick = (loc: any, e: any) => {
-//         const map = mapRef.current;
-//         if (!map) return;
-
-//         // const rect = map.getBoundingClientRect();
-
-//         // const x = e.clientX - rect.left;
-//         // const y = e.clientY - rect.top;
-
-//         // const xPercent = (x / rect.width) * 100;
-//         // const yPercent = (y / rect.height) * 100;
-
-//         // gsap.to(map, {
-//         //     scale: 1.4,
-//         //     transformOrigin: `${xPercent}% ${yPercent}%`,
-//         //     duration: 0.8,
-//         //     ease: "power2.out",
-//         // });
-
-//         setActiveLocation(loc);
-//     };
-
-//     const closeModal = () => {
-//         // gsap.to(mapRef.current, {
-//         //     scale: 1.12,
-//         //     transformOrigin: "center center",
-//         //     duration: 0.8,
-//         //     ease: "power2.out",
-//         // });
-
-//         setActiveLocation(null);
-//     };
-
-//     return (
-//         <>
-//             <section
-//                 ref={sectionRef}
-//                 className="relative h-screen w-full overflow-hidden lg:block hidden"
-//             >
-//                 <div ref={mapWrapRef} className="relative h-full w-full">
-//                     {/* MAP */}
-//                     <div
-//                         ref={mapRef}
-//                         className="relative h-full w-full origin-center will-change-transform"
-//                     >
-//                         <img
-//                             src="/images/home/location-wise-pro/map.webp"
-//                             className="w-full h-full object-cover"
-//                         />
-
-//                         {/* CLOUD 1 */}
-//                         <div
-//                             ref={cloud1Ref}
-//                             className="absolute -top-[25%] -right-[15%] z-10"
-//                         >
-//                             <img
-//                                 src="/images/home/location-wise-pro/cloud-1.png"
-//                                 className="w-[80%] ml-auto object-contain"
-//                             />
-//                         </div>
-
-//                         {/* CLOUD 2 */}
-//                         <div
-//                             ref={cloud2Ref}
-//                             className="absolute -bottom-[25%] -left-[20%] z-10"
-//                         >
-//                             <img
-//                                 src="/images/home/location-wise-pro/cloud-2.png"
-//                                 className="w-[80%] object-contain"
-//                             />
-//                         </div>
-//                     </div>
-
-//                     {/* POINTS */}
-//                     {locations.map((loc, i) => (
-//                         <button
-//                             key={loc.id}
-//                             ref={(el) => {
-//                                 pointsRef.current[i] = el;
-//                             }}
-//                             onClick={(e) => handleClick(loc, e)}
-//                             style={{ top: loc.top, left: loc.left }}
-//                             className="absolute z-20 -translate-x-1/2 -translate-y-1/2 text-center flex flex-col items-center"
-//                         >
-//                             <div className="relative w-4.5 h-4.5">
-//                                 <span className="absolute inset-0 rounded-full bg-[var(--blue)] animate-ping"></span>
-//                                 <span className="absolute inset-0 rounded-full bg-[var(--blue)] border-4 border-white"></span>
-//                             </div>
-
-//                             <p className={`${agency.className} mt-2 text-sm capitalize  whitespace-nowrap text-white [text-shadow:0_0_4px_rgba(0,0,0,1)]`}>
-//                                 {loc.name}
-//                             </p>
-//                         </button>
-//                     ))}
-//                 </div>
-//             </section>
-
-//             {activeLocation && (
-//                 <LocationWiseProjectModal closeModal={closeModal} />
-//             )}
-//         </>
-//     );
-// }

@@ -18,6 +18,7 @@ interface ProjectsFiltersProps {
   setShowFilters: React.Dispatch<React.SetStateAction<boolean>>;
   setFilters: React.Dispatch<React.SetStateAction<ProjectFiltersState>>;
   title?: string;
+  showCities?: boolean;
 }
 
 export default function ProjectsFilters({
@@ -28,6 +29,7 @@ export default function ProjectsFilters({
   showFilters,
   setShowFilters,
   setFilters,
+  showCities = true,
   title = "Project Preferences",
 }: ProjectsFiltersProps) {
   const [openSections, setOpenSections] = useState<{
@@ -147,53 +149,55 @@ export default function ProjectsFilters({
         >
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3  pt-4 ">
             {/* City Filter */}
-            <div className="block gap-3 lg:rounded-2xl lg:border border-b border-[#E5ECF5] lg:bg-[#FAFCFF] lg:p-5">
-              <button
-                type="button"
-                onClick={() => toggleSection("city")}
-                className="flex w-full items-center justify-between lg:cursor-default"
-              >
-                <h3
-                  className={`${agency.className} mb-0 text-[16px] tracking-[1px] text-[#0F3C78]`}
+            {showCities && (
+              <div className="block gap-3 lg:rounded-2xl lg:border border-b border-[#E5ECF5] lg:bg-[#FAFCFF] lg:p-5">
+                <button
+                  type="button"
+                  onClick={() => toggleSection("city")}
+                  className="flex w-full items-center justify-between lg:cursor-default"
                 >
-                  City{" "}
-                  <span className="text-[#0F3C78]/50">({cities.length})</span>
-                </h3>
-
-                {/* Mobile Arrow */}
-                <span className="lg:hidden text-[#0F3C78]">
-                  {openSections.city ? "−" : "+"}
-                </span>
-              </button>
-
-              <div
-                className={`space-y-3 lg:block flex flex-wrap gap-x-3 items-center lg:pb-0 pb-4 overflow-hidden transition-all duration-300 ${
-                  openSections.city
-                    ? "max-h-[500px] opacity-100 mt-4"
-                    : "max-h-0 opacity-0 lg:max-h-[500px] lg:opacity-100 lg:mt-4"
-                }`}
-              >
-                {cities.map((city) => (
-                  <label
-                    key={city}
-                    className="flex cursor-pointer items-center w-fit gap-3 rounded-[5px] py-0.5 px-3 transition-all duration-200 hover:bg-[#EEF4FB]"
+                  <h3
+                    className={`${agency.className} mb-0 text-[16px] tracking-[1px] text-[#0F3C78]`}
                   >
-                    <input
-                      type="checkbox"
-                      checked={filters.cities.includes(city)}
-                      onChange={() => handleCityChange(city)}
-                      className="h-4 w-4 rounded border-gray-300 accent-[#0F3C78]"
-                    />
+                    City{" "}
+                    <span className="text-[#0F3C78]/50">({cities.length})</span>
+                  </h3>
 
-                    <span
-                      className={`${blauerNue.className} text-[15px] text-[#2B2B2B]`}
+                  {/* Mobile Arrow */}
+                  <span className="lg:hidden text-[#0F3C78]">
+                    {openSections.city ? "−" : "+"}
+                  </span>
+                </button>
+
+                <div
+                  className={`space-y-3 lg:block flex flex-wrap gap-x-3 items-center lg:pb-0 pb-4 overflow-hidden transition-all duration-300 ${
+                    openSections.city
+                      ? "max-h-[500px] opacity-100 mt-4"
+                      : "max-h-0 opacity-0 lg:max-h-[500px] lg:opacity-100 lg:mt-4"
+                  }`}
+                >
+                  {cities.map((city) => (
+                    <label
+                      key={city}
+                      className="flex cursor-pointer items-center w-fit gap-3 rounded-[5px] py-0.5 px-3 transition-all duration-200 hover:bg-[#EEF4FB]"
                     >
-                      {city}
-                    </span>
-                  </label>
-                ))}
+                      <input
+                        type="checkbox"
+                        checked={filters.cities.includes(city)}
+                        onChange={() => handleCityChange(city)}
+                        className="h-4 w-4 rounded border-gray-300 accent-[#0F3C78]"
+                      />
+
+                      <span
+                        className={`${blauerNue.className} text-[15px] text-[#2B2B2B]`}
+                      >
+                        {city}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Budget Filter */}
             <div className="block gap-3 lg:rounded-2xl lg:border border-b border-[#E5ECF5] lg:bg-[#FAFCFF] lg:p-5">

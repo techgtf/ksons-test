@@ -1,45 +1,68 @@
 "use client";
-
-import React from "react";
 import DektopHero from "./DesktopHero";
 import HeroMobile from "./HeroMobile";
 import { useWindowWidth } from "@/src/website/hooks/useWindowWidth";
 
 export type FileType = {
-  id: number;
+  id: string | number;
   desktop_file: string;
   mobile_file: string;
 };
 
-export interface HomeHeroProps {
+export interface HeroBasicProps {
+  alt: string;
   tagLine: string;
   logo?: string;
-  files: FileType[];
+  thumbnails: {
+    desktop_file: string;
+    mobile_file: string;
+  };
 }
 
-export default function HeroContainer() {
+export interface HomeHeroProps {
+  files: FileType[];
+  basicData: HeroBasicProps;
+}
+
+export default function HeroContainer({
+  basicData,
+  files,
+}: {
+  basicData: HeroBasicProps;
+  files?: FileType[];
+}) {
   const { isMobile, mounted } = useWindowWidth();
 
+  const fallbackFiles: FileType[] = [
+    {
+      id: 1,
+      desktop_file: "/images/home/banner/1.mp4",
+      mobile_file: "/images/home/banner/mobile/M1.mp4",
+    },
+    {
+      id: 2,
+      desktop_file: "/images/home/banner/2.mp4",
+      mobile_file: "/images/home/banner/mobile/M2.mp4",
+    },
+    {
+      id: 3,
+      desktop_file: "/images/home/banner/3.mp4",
+      mobile_file: "/images/home/banner/mobile/M3.mp4",
+    },
+  ];
+
   const data: HomeHeroProps = {
-    tagLine: "Where Vision Is Built to Last.",
-    logo: "/images/header/logo-no-line.svg",
-    files: [
-      {
-        id: 1,
-        desktop_file: "/images/home/banner/",
-        mobile_file: "/images/home/banner/mobile/M",
+    basicData: basicData || {
+      tagLine: "Where Vision Is Built to Last.",
+      logo: "/images/header/logo-no-line.svg",
+      alt: "",
+      thumbnails: {
+        desktop_file: "",
+        mobile_file: "",
       },
-      {
-        id: 2,
-        desktop_file: "/images/home/banner/",
-        mobile_file: "/images/home/banner/mobile/M",
-      },
-      {
-        id: 3,
-        desktop_file: "/images/home/banner/",
-        mobile_file: "/images/home/banner/mobile/M",
-      },
-    ],
+    },
+
+    files: files && files.length > 0 ? files : fallbackFiles,
   };
 
   if (!mounted) {
@@ -59,15 +82,17 @@ export default function HeroContainer() {
       {mounted ? (
         isMobile ? (
           <HeroMobile
-            tagLine={data.tagLine}
-            logo={data.logo}
+            tagLine={data.basicData.tagLine}
+            logo={data.basicData.logo}
             files={data.files}
+            thumbnails={data.basicData.thumbnails.mobile_file}
           />
         ) : (
           <DektopHero
-            tagLine={data.tagLine}
-            logo={data.logo}
+            tagLine={data.basicData.tagLine}
+            logo={data.basicData.logo}
             files={data.files}
+            thumbnails={data.basicData.thumbnails.desktop_file}
           />
         )
       ) : null}

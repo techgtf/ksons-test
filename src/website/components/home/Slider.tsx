@@ -4,7 +4,7 @@ import { agency, blauerNue } from "@/src/app/fonts";
 import NextImage from "next/image";
 import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import CommonBtn from "../common/CommonBtn";
-import { gsap, ScrollTrigger } from "../../utils/gsap";
+import { gsap, ScrollTrigger, registerGSAP } from "../../utils/gsap";
 
 export type SliderItem = {
   slug: string;
@@ -23,13 +23,14 @@ export type SliderProps = {
   buttonIcon?: string;
 };
 
-export default function Slider({
+export function Slider({
   slides,
   buttonText = "Explore",
   buttonIcon = "/images/home/arrow2.png",
 }: SliderProps) {
   const [active, setActive] = useState(0);
-  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<any>(null);
 
   useLayoutEffect(() => {
     slides.forEach((slide) => {
@@ -40,16 +41,50 @@ export default function Slider({
     });
   }, [slides]);
 
-  const handleHover = (i: number) => {
-    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+  useLayoutEffect(() => {
+    registerGSAP();
+    if (!sectionRef.current) return;
+    if (window.innerWidth < 768) return;
 
-    hoverTimeout.current = setTimeout(() => {
-      setActive(i);
-    }, 100);
+    const total = slides.length - 1;
+
+    const ctx = gsap.context(() => {
+      triggerRef.current = ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top top",
+        end: `+=${slides.length * window.innerHeight}`,
+        pin: true,
+        scrub: 0.8,
+        anticipatePin: 1,
+        fastScrollEnd: true,
+        onUpdate: (self) => {
+          const index = Math.round(self.progress * total);
+          setActive(index);
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [slides.length]);
+
+  const handlePanelClick = (i: number) => {
+    if (i === active) return;
+    if (!triggerRef.current) return;
+    const start = triggerRef.current.start;
+    const end = triggerRef.current.end;
+    const total = slides.length - 1;
+    const targetScroll = start + (i / total) * (end - start);
+    window.scrollTo({
+      top: targetScroll,
+      behavior: "smooth",
+    });
   };
 
   return (
-    <div className="relative h-screen md:block hidden w-full overflow-hidden">
+    <div
+      ref={sectionRef}
+      className="relative h-screen md:block hidden w-full overflow-hidden"
+    >
       {/* BACKGROUND */}
       <div className="absolute inset-0">
         {slides.map((slide, i) => (
@@ -58,12 +93,6 @@ export default function Slider({
             className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ${
               i === active ? "opacity-100" : "opacity-0"
             }`}
-            // style={{
-            //   backgroundImage: `
-            //     linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.1)),
-            //     url(${slide.files.featured_desktop_file})
-            //   `,
-            // }}
             style={{
               backgroundImage: `
                 url(${slide.files.featured_desktop_file})
@@ -73,9 +102,6 @@ export default function Slider({
         ))}
       </div>
 
-      {/* OVERLAY */}
-      {/* <div className="absolute inset-0 bg-black/10" /> */}
-
       {/* PANELS */}
       <div className="relative flex h-full">
         {slides.map((slide, i) => {
@@ -84,7 +110,7 @@ export default function Slider({
           return (
             <div
               key={i}
-              onMouseEnter={() => handleHover(i)}
+              onClick={() => handlePanelClick(i)}
               className="relative grow overflow-hidden cursor-pointer transition-all duration-700"
               style={{
                 flexGrow: isActive ? 7 : 1,
@@ -193,6 +219,7 @@ export function MobileSlider({
   const [active, setActive] = useState(0);
 
   useLayoutEffect(() => {
+    registerGSAP();
     if (!sectionRef.current) return;
     if (window.innerWidth >= 768) return;
 
@@ -311,210 +338,17 @@ export function MobileSlider({
   );
 }
 
-export const SliderContainer = ({ slides }: SliderProps) => {
+const SliderContainer = ({ slides, buttonText, buttonIcon }: SliderProps) => {
   return (
     <>
-      <Slider slides={slides} />
-      <MobileSlider slides={slides} />
+      <Slider slides={slides} buttonText={buttonText} buttonIcon={buttonIcon} />
+      <MobileSlider
+        slides={slides}
+        buttonText={buttonText}
+        buttonIcon={buttonIcon}
+      />
     </>
   );
 };
 
-// "use client";
-
-// import { blauerNue } from "@/src/app/fonts";
-// import NextImage from "next/image";
-// import { useState, useEffect, useRef, useLayoutEffect } from "react";
-// import { gsap, ScrollTrigger, registerGSAP } from "../../utils/gsap";
-// import CommonBtn from "../common/CommonBtn";
-
-// export type SliderItem = {
-//     title: string;
-//     label: string;
-//     description: string;
-//     image: string;
-// };
-
-// export type SliderProps = {
-//     slides: SliderItem[];
-//     buttonText?: string;
-//     buttonIcon?: string;
-// };
-
-// export default function Slider({
-//     slides,
-//     buttonText = "Explore",
-//     buttonIcon = "/images/home/arrow2.png",
-// }: SliderProps) {
-//     const [active, setActive] = useState(0);
-//     const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-//     const containerRef = useRef<HTMLDivElement | null>(null);
-
-//     const [isMobile, setIsMobile] = useState(false);
-
-//     useLayoutEffect(() => {
-//         const check = () => setIsMobile(window.innerWidth < 768);
-//         check();
-//         window.addEventListener("resize", check);
-//         setTimeout(() => ScrollTrigger.refresh(), 100);
-//         return () => window.removeEventListener("resize", check);
-//     }, []);
-
-//     useLayoutEffect(() => {
-//         registerGSAP();
-//         if (!isMobile || !containerRef.current) return;
-
-//         const total = slides.length;
-
-//         const trigger = ScrollTrigger.create({
-//             trigger: containerRef.current,
-//             start: "top top",
-//             end: `+=${total * 70}%`,
-//             pin: true,
-//             snap: {
-//                 snapTo: 1 / (total - 1),
-//                 duration: 0.3,
-//                 ease: "power1.inOut",
-//             },
-
-//             onUpdate: (self) => {
-//                 const index = Math.round(self.progress * (total - 1));
-//                 setActive(index);
-//             },
-//         });
-
-//         return () => trigger.kill();
-//     }, [isMobile, slides.length]);
-
-//     // PRELOAD IMAGES (dynamic now)
-//     useLayoutEffect(() => {
-//         slides.forEach((slide) => {
-//             const img = new Image();
-//             img.src = slide.image;
-//         });
-//     }, [slides]);
-
-//     // DEBOUNCED HOVER
-//     const handleHover = (i: number) => {
-//         if (hoverTimeout.current !== null) {
-//             clearTimeout(hoverTimeout.current);
-//         }
-
-//         hoverTimeout.current = setTimeout(() => {
-//             setActive(i);
-//         }, 100);
-//     };
-
-//     return (
-//         <div ref={containerRef} className="relative h-screen w-full overflow-hidden">
-//             {/* BACKGROUNDS */}
-//             <div className="absolute inset-0">
-//                 {slides.map((slide, i) => (
-//                     <div
-//                         key={i}
-//                         className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 will-change-opacity ${i === active ? "opacity-100" : "opacity-0"
-//                             }`}
-//                         style={{
-//                             backgroundImage: `
-//                 linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.1)),
-//                 url(${slide.image})
-//               `,
-//                         }}
-//                     />
-//                 ))}
-//             </div>
-
-//             {/* OVERLAY */}
-//             <div className="absolute inset-0 bg-black/20" />
-
-//             {/* PANELS */}
-//             <div className={`relative ${isMobile ? "flex flex-col h-full" : "flex h-full"}`}>
-//                 {slides.map((slide, i) => {
-//                     const isActive = i === active;
-
-//                     return (
-//                         <div
-//                             key={i}
-//                             onMouseEnter={() => !isMobile && handleHover(i)}
-//                             className={`relative overflow-hidden cursor-pointer transition-all duration-700 ${isMobile ? "transition-all duration-500" : "grow"}`}
-//                             style={{
-//                                 flexGrow: !isMobile ? (isActive ? 7 : 1) : undefined,
-//                                 height: isMobile
-//                                     ? isActive
-//                                         ? i === slides.length - 1
-//                                             ? "60%" // slightly smaller for last panel
-//                                             : "70%"
-//                                         : `${30 / (slides.length - 1)}%`
-//                                     : undefined,
-//                                 transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
-//                             }}
-//                         >
-//                             {/* BLUR */}
-//                             {!isActive && (
-//                                 <div className="absolute inset-0 backdrop-blur-xs bg-black/20" />
-//                             )}
-
-//                             {/* DIVIDER */}
-//                             {isMobile ? (
-//                                 <>
-//                                     {/* TOP BORDER (always) */}
-//                                     <div className="absolute top-0 left-0 w-full h-px bg-white/30" />
-
-//                                     {/* BOTTOM BORDER (NOT for last panel) */}
-//                                     {i !== slides.length - 1 && (
-//                                         <div className="absolute bottom-0 left-0 w-full h-px bg-white/30" />
-//                                     )}
-//                                 </>
-//                             ) : (
-//                                 <div className="absolute right-0 top-0 h-full w-px bg-white/30" />
-//                             )}
-
-//                             {/* ACTIVE CONTENT */}
-//                             <div
-//                                 className={`absolute z-2 inset-0 flex items-end py-24 px-16 text-white text-whitetransition-all duration-500 ${isActive
-//                                     ? "opacity-100 translate-x-0"
-//                                     : "opacity-0 translate-x-4 pointer-events-none"
-//                                     }`}>
-//                                 <div className={`max-w-md ${blauerNue.className}`}>
-//                                     <p className="font-normal">{slide.label}</p>
-
-//                                     <h1 className="text-4xl font-medium tracking-[0.5px] mt-6">
-//                                         {slide.title}
-//                                     </h1>
-
-//                                     <p className="mb-6 font-light mt-6">
-//                                         {slide.description}
-//                                     </p>
-
-//                                     {/* <button className="border px-10 py-3 rounded-full text-base flex items-center gap-4 mt-10">
-//                                         {buttonText}
-//                                         <NextImage
-//                                             src={buttonIcon}
-//                                             alt="button arrow"
-//                                             height={20}
-//                                             width={20}
-//                                         />
-//                                     </button> */}
-//                                     <CommonBtn
-//                                         variant="outline"
-//                                         href="#"
-//                                         rightIcon={<NextImage src={buttonIcon} alt="button arrow" height={20} width={20} />}
-//                                     >{buttonText}</CommonBtn>
-//                                 </div>
-//                             </div>
-
-//                             {/* COLLAPSED LABEL */}
-//                             <div
-//                                 className={`absolute inset-0 flex items-center md:items-end justify-center transition-opacity duration-300 ${isActive ? "opacity-0" : "opacity-100"}`}>
-//                                 <span className={`text-white tracking-wide text-2xl ${isMobile ? "" : "-rotate-90 text-4xl mb-30"}`}>
-//                                     {slide.label}
-//                                 </span>
-//                             </div>
-//                         </div>
-//                     );
-//                 })}
-//             </div>
-//         </div >
-//     );
-// }
+export default SliderContainer;

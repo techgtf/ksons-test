@@ -83,7 +83,7 @@ export default function Footer() {
         >
           <Link href={"/"}>
             <Image
-              src="/images/footer/footer-logo.png"
+              src="/images/footer/footer-logo.webp"
               alt="K.sons"
               width={160}
               height={50}
@@ -120,7 +120,10 @@ export default function Footer() {
           ref={builderRef}
           className={`${blauerNue.className} footer-desc max-w-xl text-base md:text-lg font-normal leading-6 md:leading-7 tracking-[0.5px] text-center md:text-left`}
         >
-          At K.sons, every development is a deliberate step toward enduring excellence. With foresight, discipline, and responsibility at our core, we craft spaces where heritage, progress, and community coexist in perfect harmony.
+          At K.sons, every development is a deliberate step toward enduring
+          excellence. With foresight, discipline, and responsibility at our
+          core, we craft spaces where heritage, progress, and community coexist
+          in perfect harmony.
         </div>
       </motion.div>
 
@@ -171,12 +174,12 @@ export default function Footer() {
           </h3>
 
           <ul className="space-y-3 text-sm md:text-base font-light">
-            {contact.phone.map((ph, i) => (
+            {/* {contact.phone.map((ph, i) => (
               <li key={i} className="flex items-center footer-link">
                 <FaPhoneAlt className="mr-2" />
                 <a href={`tel:${ph}`}>{ph}</a>
               </li>
-            ))}
+            ))} */}
             {contact.email.map((em, i) => (
               <li key={i} className="flex items-center footer-link">
                 <MdEmail className="mr-2" />

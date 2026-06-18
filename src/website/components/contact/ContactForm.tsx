@@ -8,6 +8,7 @@ import { useEnquiry } from "../../hooks/useEnquiry";
 import StatusModal from "../common/StatusModal";
 import { validateContactForm } from "../../hooks/formValidators";
 type Props = {
+  title?: string;
   heading: string;
 };
 
@@ -19,7 +20,7 @@ type Errors = {
   message?: string;
 };
 
-export default function ContactForm({ heading }: Props) {
+export default function ContactForm({ title, heading }: Props) {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [formData, setFormData] = useState({
     fname: "",
@@ -90,7 +91,9 @@ export default function ContactForm({ heading }: Props) {
       setModal({
         open: true,
         type: "success",
-        message: response.message.trim(),
+        message:
+          response.message.trim().charAt(0).toUpperCase() +
+          response.message.trim().slice(1),
       });
       setFormData({
         fname: "",
@@ -113,7 +116,7 @@ export default function ContactForm({ heading }: Props) {
   return (
     <div className="py-16 lg:pt-30">
       <div className="app-container">
-        <MicroHeader title="Enquire Now" description={heading} />
+        <MicroHeader title={title as string} description={heading} />
         <form
           ref={formRef}
           onSubmit={handleSubmit}

@@ -1,0 +1,8 @@
+node_modules
+.next
+.env
+.env.*
+*.log
+.git
+src-old
+public-old

@@ -47,7 +47,7 @@ export default function Amenities({ data }: Props) {
           {/* Left Navigation Panel */}
           {amenitiesToRender.length > 2 && (
             <div
-              className="hidden md:flex absolute left-0 top-[30%] w-16 md:w-24 lg:w-32 transition-colors items-center justify-center cursor-pointer z-20"
+              className="flex absolute -left-8 lg:left-0 top-[30%] w-16 md:w-24 lg:w-32 transition-colors items-center justify-center cursor-pointer z-20"
               onClick={() => swiperRef.current?.slidePrev()}
             >
               <LeftArrow />
@@ -57,7 +57,7 @@ export default function Amenities({ data }: Props) {
           {/* Right Navigation Panel */}
           {amenitiesToRender.length > 2 && (
             <div
-              className="hidden md:flex absolute right-0 top-[30%] w-16 md:w-24 lg:w-32 transition-colors items-center justify-center cursor-pointer z-20"
+              className="flex absolute -right-8 lg:right-0 top-[30%] w-16 md:w-24 lg:w-32 transition-colors items-center justify-center cursor-pointer z-20"
               onClick={() => swiperRef.current?.slideNext()}
             >
               <RightArrow />
@@ -141,6 +141,9 @@ const AmSlideCard = ({ amenity }: CardProp) => {
           fill
           className="object-cover transition-transform duration-700 hover:scale-110"
         />
+        <span className="absolute bottom-2 right-4 z-1 text-white text-sm">
+          Artistic Impression
+        </span>
       </div>
       <div
         ref={amNameRef}
