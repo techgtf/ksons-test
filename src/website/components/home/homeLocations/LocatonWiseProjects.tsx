@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { registerGSAP, gsap, ScrollTrigger } from "@/src/website/utils/gsap";
 import { lenisInstance } from "@/src/website/components/SmoothScroller";
 import { LocationWiseProjectModal } from "./LocationWiseProjectModal";
@@ -21,6 +21,7 @@ export default function LocationWiseProjects({ locations }: Props) {
   const activeIdRef = useRef<number | null>(null);
   const panelHoveredRef = useRef(false);
   const stRef = useRef<ScrollTrigger | null>(null);
+  const [activeId, setActiveId] = useState<any>(null);
 
   useLayoutEffect(() => {
     registerGSAP();
@@ -34,13 +35,13 @@ export default function LocationWiseProjects({ locations }: Props) {
 
       const PHASE1_UNITS = 1;
       const DOT_UNITS = 0.5;
-      const HOLD_UNITS = 1.5;
-      const LAST_HOLD_UNITS = 3;
+      const HOLD_UNITS = 0.8;
+      const LAST_HOLD_UNITS = 1.2;
       const PER_LOC = DOT_UNITS + HOLD_UNITS;
 
       const totalUnits =
         PHASE1_UNITS + (total - 1) * PER_LOC + DOT_UNITS + LAST_HOLD_UNITS;
-      const scrollLength = `+=${90 * totalUnits}%`;
+      const scrollLength = `+=${55 * totalUnits}%`;
 
       gsap.set(mapRef.current, { xPercent: -50, yPercent: -50 });
       gsap.set(pointsRef.current, { autoAlpha: 0, scale: 0.6, y: 30 });
@@ -50,7 +51,7 @@ export default function LocationWiseProjects({ locations }: Props) {
           trigger: sectionRef.current,
           start: "top top",
           end: scrollLength,
-          scrub: 1.2,
+          scrub: 2,
           pin: true,
           invalidateOnRefresh: true,
           anticipatePin: 1,
@@ -62,11 +63,13 @@ export default function LocationWiseProjects({ locations }: Props) {
           onLeave() {
             // scrolled past bottom → reset
             activeIdRef.current = null;
+            setActiveId(null);
             modalRef.current?.close();
           },
           onLeaveBack() {
             // scrolled past top → reset
             activeIdRef.current = null;
+            setActiveId(null);
             modalRef.current?.close();
           },
         },
@@ -166,9 +169,11 @@ export default function LocationWiseProjects({ locations }: Props) {
               if (activeIdRef.current === loc.id) return;
               if (activeIdRef.current === null) {
                 activeIdRef.current = loc.id;
+                setActiveId(loc.id);
                 modalRef.current?.open(loc);
               } else {
                 activeIdRef.current = loc.id;
+                setActiveId(loc.id);
                 modalRef.current?.swap(loc);
               }
             },
@@ -177,6 +182,7 @@ export default function LocationWiseProjects({ locations }: Props) {
             onReverseComplete() {
               if (i === 0) {
                 activeIdRef.current = null;
+                setActiveId(null);
                 modalRef.current?.close();
               }
             },
@@ -196,9 +202,11 @@ export default function LocationWiseProjects({ locations }: Props) {
               if (activeIdRef.current === loc.id) return;
               if (activeIdRef.current === null) {
                 activeIdRef.current = loc.id;
+                setActiveId(loc.id);
                 modalRef.current?.open(loc);
               } else {
                 activeIdRef.current = loc.id;
+                setActiveId(loc.id);
                 modalRef.current?.swap(loc);
               }
             },
@@ -216,11 +224,11 @@ export default function LocationWiseProjects({ locations }: Props) {
     if (!st) return;
 
     const PHASE1_UNITS = 1;
-    const DOT_UNITS = 0.5;
-    const HOLD_UNITS = 1.5;
+    const DOT_UNITS = 0.8;
+    const HOLD_UNITS = 1.8;
     const PER_LOC = DOT_UNITS + HOLD_UNITS;
     const total = locations.length;
-    const LAST_HOLD_UNITS = 3;
+    const LAST_HOLD_UNITS = 2.5;
     const totalUnits =
       PHASE1_UNITS + (total - 1) * PER_LOC + DOT_UNITS + LAST_HOLD_UNITS;
 
@@ -277,7 +285,7 @@ export default function LocationWiseProjects({ locations }: Props) {
           {/* CLOUD 1 */}
           <div
             ref={cloud1Ref}
-            className="absolute -top-[25%] -right-[15%] z-10 pointer-events-none"
+            className="absolute -top-[5%] -right-[15%] z-10 pointer-events-none"
           >
             <img
               src="/images/home/location-wise-pro/cloud-1.png"
@@ -289,7 +297,7 @@ export default function LocationWiseProjects({ locations }: Props) {
           {/* CLOUD 2 */}
           <div
             ref={cloud2Ref}
-            className="absolute -bottom-[25%] -left-[20%] z-10 pointer-events-none"
+            className="absolute -bottom-[5%] -left-[20%] z-10 pointer-events-none"
           >
             <img
               src="/images/home/location-wise-pro/cloud-2.png"
@@ -301,6 +309,7 @@ export default function LocationWiseProjects({ locations }: Props) {
           {/* DOTS inside the map container so they zoom and translate with it */}
           {locations.map((loc, i) => {
             const position = loc.position;
+            const isActive = activeId === loc.id;
 
             return (
               <button
@@ -313,15 +322,25 @@ export default function LocationWiseProjects({ locations }: Props) {
                   top: position?.desktop.top,
                   left: position?.desktop.left,
                 }}
-                className={`locItem locItem${i + 1} absolute z-20 -translate-x-1/2 -translate-y-1/2 text-center flex flex-col items-center`}
+                className={`locItem locItem${i + 1} absolute z-20 -translate-x-1/2 -translate-y-1/2 text-center`}
               >
-                <div className="relative w-4.5 h-4.5">
-                  <span className="absolute inset-0 rounded-full bg-[var(--blue)] animate-ping" />
-                  <span className="absolute inset-0 rounded-full bg-[var(--blue)] border-4 border-white" />
+                <div
+                  className={`flex flex-col items-center transition-all duration-500 ease-out ${
+                    activeId === null
+                      ? "opacity-100 scale-100"
+                      : isActive
+                        ? "opacity-100"
+                        : "opacity-70"
+                  }`}
+                >
+                  <div className="relative w-4.5 h-4.5">
+                    <span className="absolute inset-0 rounded-full bg-[var(--blue)] animate-ping" />
+                    <span className="absolute inset-0 rounded-full bg-[var(--blue)] border-4 border-white" />
+                  </div>
+                  <p className="mt-2 text-sm capitalize whitespace-nowrap bg-white rounded-2xl px-2 py-0.5 leading-normal font-semibold text-[var(--blue)] shadow-md">
+                    {loc.name}
+                  </p>
                 </div>
-                <p className="mt-2 text-sm capitalize whitespace-nowrap bg-white rounded-2xl px-2 py-0.5 leading-normal font-semibold text-[var(--blue)]">
-                  {loc.name}
-                </p>
               </button>
             );
           })}
@@ -356,6 +375,7 @@ export default function LocationWiseProjects({ locations }: Props) {
         panelHoveredRef={panelHoveredRef}
         onClosed={() => {
           activeIdRef.current = null;
+          setActiveId(null);
         }}
       />
     </section>

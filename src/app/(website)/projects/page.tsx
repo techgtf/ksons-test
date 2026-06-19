@@ -14,12 +14,10 @@ export default async function LocationPage({
   const pageRes = await fetchPageData("website/page/projects");
   const pageData = pageRes?.data;
 
-  // 1. Fetch cities, projects, and statuses from the API
+  // 1. Fetch cities, projects, and statuses from the API (fetching all projects to filter/paginate correctly on the server)
   const [cityRes, projectRes, projectStatusRes] = await Promise.all([
     fetchPageData("website/city"),
-    fetchPageData(
-      `website/project?status=true&limit=${limit}&page=${currentPage}`,
-    ),
+    fetchPageData(`website/project?status=true&limit=1000`),
     fetchPageData("website/projectstatus"),
   ]);
 
@@ -27,19 +25,16 @@ export default async function LocationPage({
   const projectsData = projectRes?.data || [];
   const statusData = projectStatusRes?.data || projectStatusRes || [];
 
-  const paginationData = projectRes?.pagination || {
-    total: projectsData.length,
-    page: currentPage,
-    limit: limit,
-    totalPages: Math.ceil(projectsData.length / limit),
-    hasNextPage: false,
-    hasPrevPage: false,
-  };
-
   // Extract unique active city names
-  const apiCities = citiesData
-    .filter((city: any) => city.projects && city.projects.length > 0)
-    .map((city: any) => city.name);
+  const apiCities = citiesData.map((city: any) => city.name);
+
+  const locList = location
+    ? location.split(",").map((l) => decodeURIComponent(l).trim().toLowerCase())
+    : [];
+
+  const selectedLocations = apiCities.filter((c: string) =>
+    locList.includes(c.toLowerCase()),
+  );
 
   // Map status names by status ID
   const statusMap: Record<string, string> = {};
@@ -49,9 +44,15 @@ export default async function LocationPage({
     });
   }
 
-  // Map API projects to the Project interface format expected by components
-  const projectsList = projectsData
+  // Filter and map all projects matching the status & location criteria
+  const matchingProjects = projectsData
     .filter((p: any) => p.status === true)
+    .filter((p: any) => {
+      if (locList.length === 0) return true;
+      const projectLoc = (p.location || "").toLowerCase();
+      const cityName = (p.city?.name || "").toLowerCase();
+      return locList.some((loc) => projectLoc.includes(loc) || cityName.includes(loc));
+    })
     .map((p: any) => {
       const typologyName = p.typology?.name || "";
       const subTypologies =
@@ -68,6 +69,7 @@ export default async function LocationPage({
         categorySlug: p.platter?.slug || "",
         description: p.shortDescription || "",
         location: p.location || p.city?.name || "",
+        cityName: p.city?.name || "",
         year: p.createdAt
           ? new Date(p.createdAt).getFullYear()
           : new Date().getFullYear(),
@@ -86,13 +88,25 @@ export default async function LocationPage({
       };
     });
 
-  const locList = location
-    ? location.split(",").map((l) => decodeURIComponent(l).trim().toLowerCase())
-    : [];
+  // Sort by sequence number
+  matchingProjects.sort((a: any, b: any) => a.seq - b.seq);
 
-  const selectedLocations = apiCities.filter((c: string) =>
-    locList.includes(c.toLowerCase()),
+  // Slice for current page pagination
+  const totalProjects = matchingProjects.length;
+  const totalPages = Math.ceil(totalProjects / limit);
+  const projectsList = matchingProjects.slice(
+    (currentPage - 1) * limit,
+    currentPage * limit,
   );
+
+  const paginationData = {
+    total: totalProjects,
+    page: currentPage,
+    limit: limit,
+    totalPages: totalPages || 1,
+    hasNextPage: currentPage < totalPages,
+    hasPrevPage: currentPage > 1,
+  };
 
   // Default header info if no specific location is provided
   const headerInfo = {

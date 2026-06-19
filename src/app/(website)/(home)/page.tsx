@@ -233,8 +233,6 @@ export default async function Home() {
 
   const blogsResData = blogsRes?.data;
 
-  console.log("blogsResData", blogsResData);
-
   const blogHeadingResData = blogHeadingRes?.data?.[0];
 
   const blogsMappedData = blogsResData?.map((item: any) => ({
@@ -276,8 +274,6 @@ export default async function Home() {
       image: item.files?.desktop_file || item.files?.mobile_file,
     };
   });
-
-  console.log("csrHeadingResData", csrHeadingResData);
 
   const csrData: CSRProps = {
     tag: csrHeadingResData?.title?.main,

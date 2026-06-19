@@ -149,6 +149,7 @@ export function useProjectFilters(
               categorySlug: p.platter?.slug || "",
               description: p.shortDescription || "",
               location: p.location || p.city?.name || "",
+              cityName: p.city?.name || "",
               year: p.createdAt ? new Date(p.createdAt).getFullYear() : 2026,
               price: p.price || 0,
               area: p.starting_size
@@ -194,7 +195,8 @@ export function useProjectFilters(
       const matchesCity =
         filters.cities.length === 0 ||
         filters.cities.some((city) =>
-          project.location.toLowerCase().includes(city.toLowerCase()),
+          project.location.toLowerCase().includes(city.toLowerCase()) ||
+          (project.cityName && project.cityName.toLowerCase().includes(city.toLowerCase()))
         );
 
       const matchesBudget =

@@ -87,6 +87,7 @@ export type Project = {
   title: string;
   description: string;
   location: string;
+  cityName?: string;
   year: number;
   price?: number;
   area: string;

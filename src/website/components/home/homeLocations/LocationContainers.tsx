@@ -134,8 +134,6 @@ export const LocationContainers = async () => {
     },
   ];
 
-  console.log("locations", locations);
-
   const mergedLocations = [...locations, ...ncrLocations, ...hatrasLocation];
 
   return (

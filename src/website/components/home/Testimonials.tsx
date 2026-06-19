@@ -93,7 +93,7 @@ export default function Testimonials({
       data-cursor="light"
       ref={wrapperRef}
       id="testimonials"
-      className="relative w-full pb-12 overflow-x-hidden"
+      className="relative w-full lg:pt-12 pb-12 overflow-x-hidden"
     >
       {/* Glow Background */}
       <div
