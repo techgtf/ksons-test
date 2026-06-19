@@ -141,7 +141,7 @@ export const LocationContainers = async () => {
   return (
     <>
       <LocationWiseProjects locations={mergedLocations} />
-      <LocationWiseProjectsMobile locations={locations} />
+      <LocationWiseProjectsMobile locations={mergedLocations} />
     </>
   );
 };
