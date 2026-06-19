@@ -1,7 +1,7 @@
 import React from "react";
 import LocationWiseProjects from "./LocatonWiseProjects";
 import LocationWiseProjectsMobile from "./LocationWiseProjectsMobile";
-import { ResponsivePosition } from "./locationData";
+import { getLocationCoords } from "./locationData";
 import { fetchPageData } from "@/src/website/utils/api";
 
 export type LocationData = {
@@ -19,6 +19,7 @@ export type LocationData = {
   }[];
 } & {
   desc?: string | undefined;
+  coords: { lat: number; lng: number };
 };
 
 export interface ModalHandle {
@@ -63,8 +64,8 @@ export const LocationContainers = async () => {
       ?.map((city: any, index: number) => ({
         id: city.id,
         name: city.name,
-        position: ResponsivePosition[index],
         desc: city.description,
+        coords: getLocationCoords(city.name),
 
         hero: {
           img:
@@ -92,8 +93,8 @@ export const LocationContainers = async () => {
     {
       id: "cmqu2mrr300022pnt9405s39b",
       name: "Noida",
-      position: ResponsivePosition[3],
       desc: "Noida is a rapidly developing city in the National Capital Region (NCR) of India, known for its modern infrastructure and growing real estate market.",
+      coords: getLocationCoords("Noida"),
 
       hero: {
         img: "/images/home/location-wise-pro/project.avif",
@@ -106,8 +107,8 @@ export const LocationContainers = async () => {
     {
       id: "cmqu2mrr300022pnt9405s39d",
       name: "Faridabad",
-      position: ResponsivePosition[4],
       desc: "Faridabad is a rapidly developing city in the National Capital Region (NCR) of India, known for its modern infrastructure and growing real estate market.",
+      coords: getLocationCoords("Faridabad"),
 
       hero: {
         img: "/images/home/location-wise-pro/project.avif",
@@ -122,8 +123,8 @@ export const LocationContainers = async () => {
     {
       id: "cmqu2mrr300022pttt9405s39b",
       name: "Hathras",
-      position: ResponsivePosition[5],
       desc: "Hathras is a rapidly developing city in the National Capital Region (NCR) of India, known for its modern infrastructure and growing real estate market.",
+      coords: getLocationCoords("Hathras"),
 
       hero: {
         img: "/images/home/location-wise-pro/project.avif",
