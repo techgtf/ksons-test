@@ -12,6 +12,7 @@ type Props = {
 export default function LocationWiseProjectsMobile({ locations }: Props) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const mapWrapRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
   const cloud1Ref = useRef<HTMLDivElement>(null);
   const cloud2Ref = useRef<HTMLDivElement>(null);
   const pointsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -32,25 +33,53 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
 
       const section = sectionRef.current;
       const mapWrap = mapWrapRef.current;
-      const mapImg = mapImgRef.current;
+      const map = mapRef.current;
       const cloud1 = cloud1Ref.current;
       const cloud2 = cloud2Ref.current;
       const hint = hintRef.current;
-      if (!section || !mapWrap) return;
+      if (!section || !mapWrap || !map) return;
 
       gsap.set(pointsRef.current, { autoAlpha: 0, scale: 0.6, y: 20 });
 
-      // Hide everything initially
-      gsap.set(mapImg, { scale: 1.0, transformOrigin: "center center" });
+      // Centered initial state
+      gsap.set(map, { scale: 1.0, xPercent: -50, yPercent: -50 });
+
+      // Helper to calculate translation to center a point (left, top) under scale
+      const getClampedTranslation = (
+        leftPct: number,
+        topPct: number,
+        scale: number,
+      ) => {
+        const maxTranslateX = (scale - 1) * 50;
+        const maxTranslateY = (scale - 1) * 50;
+
+        const targetX = -scale * (leftPct - 50);
+        const targetY = -scale * (topPct - 50);
+
+        return {
+          xPercent: Math.max(-maxTranslateX, Math.min(maxTranslateX, targetX)),
+          yPercent: Math.max(-maxTranslateY, Math.min(maxTranslateY, targetY)),
+        };
+      };
+
+      const total = locations.length;
+      const PHASE1_UNITS = 1.0;
+      const DOT_UNITS = 0.6;
+      const HOLD_UNITS = 1.0;
+      const LAST_HOLD_UNITS = 1.5;
+      const PER_LOC = DOT_UNITS + HOLD_UNITS;
+
+      const totalUnits =
+        PHASE1_UNITS + (total - 1) * PER_LOC + DOT_UNITS + LAST_HOLD_UNITS;
 
       const tl = gsap.timeline({ paused: true });
 
-      // ── Phase 1 (0% → 35%): clouds exit + image zooms in ──────────────
+      // ── Phase 1: clouds exit + map zooms slightly ──────────────
       tl.to(
         [cloud1, cloud2],
         {
           autoAlpha: 0,
-          duration: 0.35,
+          duration: PHASE1_UNITS,
           ease: "none",
         },
         0,
@@ -61,7 +90,7 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
         {
           xPercent: 50,
           yPercent: -40,
-          duration: 0.35,
+          duration: PHASE1_UNITS,
           ease: "none",
         },
         0,
@@ -72,55 +101,28 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
         {
           xPercent: -50,
           yPercent: 40,
-          duration: 0.35,
+          duration: PHASE1_UNITS,
           ease: "none",
         },
         0,
       );
 
       tl.to(
-        mapImg,
+        map,
         {
-          scale: 1.6,
-          duration: 0.35,
+          scale: 1.1,
+          xPercent: -50,
+          yPercent: -50,
+          duration: PHASE1_UNITS,
           ease: "none",
         },
         0,
       );
-
-      // ── Phase 3 (55% → 100%): map pans left ────────────────────────────
-      tl.to(
-        mapWrap,
-        {
-          xPercent: 0,
-          duration: 0.45,
-          ease: "none",
-        },
-        0.55,
-      );
-
-      // ── Phase 4: Points appear ──────────────────────
-      pointsRef.current.forEach((point, i) => {
-        if (!point) return;
-
-        tl.to(
-          point,
-          {
-            autoAlpha: 1,
-            scale: 1,
-            y: 0,
-            duration: 0.3,
-            ease: "power2.out",
-          },
-          0.4 + i * 0.25, // Spread out widely: 0.4, 0.65, 0.9
-        );
-      });
 
       // Initial state: ensure badge is hidden
       tl.set(locationBadgeRef.current, { autoAlpha: 0, y: 20 }, 0);
 
-      // ── Phase 5: Location badge entrance + text updates ──────────────
-
+      // ── Phase 2: Location badge entrance + text updates + zoom & pan ──────────────
       const updateBadge = (index: number, isManual: boolean = false) => {
         if (index === currentLocIndexRef.current && !isManual) return;
 
@@ -197,19 +199,61 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
       };
 
       // Store function in ref for access in onClick
-      (section as any)._updateBadge = (index: number) =>
+      (section as any)._updateBadge = (index: number) => {
         updateBadge(index, true);
+        const st = ScrollTrigger.getById("mobileMapTrigger");
+        if (!st) return;
+
+        const targetPos =
+          PHASE1_UNITS + index * PER_LOC + DOT_UNITS + HOLD_UNITS / 2;
+        const progress = targetPos / totalUnits;
+        const targetScroll = st.start + progress * (st.end - st.start);
+
+        window.scrollTo({
+          top: targetScroll,
+          behavior: "smooth",
+        });
+      };
 
       // Add a hide call at the very beginning of the exploration phase
       tl.call(() => updateBadge(-1), [], 0.1);
 
-      // Spread out the location updates more evenly
-      // Zoom is 0-0.35
-      // Pan is 0.55-1.0
-      // Let's put updates at 0.5, 0.75, 0.95
-      tl.call(() => updateBadge(0), [], 0.45);
-      tl.call(() => updateBadge(1), [], 0.7);
-      tl.call(() => updateBadge(2), [], 0.9);
+      // Loop to build the zoom/pan/badge animations for all locations
+      locations.forEach((loc, i) => {
+        const startPos = PHASE1_UNITS + i * PER_LOC;
+        const left = parseFloat(loc.position?.mobile?.left || "50");
+        const top = parseFloat(loc.position?.mobile?.top || "50");
+        const clamped = getClampedTranslation(left, top, 1.6);
+
+        // Map zoom & pan tween
+        tl.to(
+          map,
+          {
+            scale: 1.6,
+            xPercent: -50 + clamped.xPercent,
+            yPercent: -50 + clamped.yPercent,
+            duration: DOT_UNITS,
+            ease: "power2.inOut",
+          },
+          startPos,
+        );
+
+        // Dot tween
+        tl.to(
+          pointsRef.current[i],
+          {
+            autoAlpha: 1,
+            scale: 0.62, // counter-scale for map zoom (1 / 1.6 ≈ 0.62)
+            y: 0,
+            duration: DOT_UNITS,
+            ease: "power2.out",
+          },
+          startPos,
+        );
+
+        // Update badge as it scrolls to this location
+        tl.call(() => updateBadge(i), [], startPos + DOT_UNITS / 2);
+      });
 
       // Hide badge at the very end
       tl.to(
@@ -220,15 +264,16 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
           duration: 0.1,
           ease: "power2.in",
         },
-        0.98,
+        totalUnits - 0.1,
       );
 
       // ── ScrollTrigger drives the timeline ──────────────────────────────
       ScrollTrigger.create({
+        id: "mobileMapTrigger",
         trigger: section,
         start: "top top",
-        end: "+=300%", // Increased for slower scroll
-        scrub: 1.5, // Increased for smoother feel
+        end: `+=${50 * totalUnits}%`, // Scroll length proportional to number of locations
+        scrub: 1.5,
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
@@ -240,7 +285,7 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [locations]);
 
   return (
     <>
@@ -248,19 +293,60 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
         ref={sectionRef}
         className="relative h-screen w-full lg:hidden block overflow-x-hidden"
       >
-        {/* ── MAP (200% wide) ─────────────────────────── */}
+        {/* ── MAP ── */}
         <div
           ref={mapWrapRef}
-          className="relative h-full will-change-transform overflow-hidden"
-          style={{ width: "150%" }}
+          className="relative h-full overflow-hidden"
+          style={{ width: "100%" }}
         >
-          <img
-            ref={mapImgRef}
-            src="/images/home/location-wise-pro/map-mob.webp"
-            // src="/images/home/location-wise-pro/Map_6.png"
-            className="w-full h-full object-cover"
-            draggable={false}
-          />
+          <div
+            ref={mapRef}
+            style={{
+              width: "max(100vw, calc(100vh * 1288 / 2377))",
+              height: "max(100vh, calc(100vw * 2377 / 1288))",
+            }}
+            className="absolute left-1/2 top-1/2 origin-center will-change-transform"
+          >
+            <img
+              ref={mapImgRef}
+              src="/images/home/location-wise-pro/map-mob.webp"
+              className="w-full h-full object-fill select-none pointer-events-none"
+              draggable={false}
+            />
+
+            {/* POINTS inside the map container so they zoom and translate with it */}
+            {locations.map((loc, i) => {
+              const position = loc.position;
+              return (
+                <div
+                  key={loc.id}
+                  ref={(el) => {
+                    pointsRef.current[i] = el;
+                  }}
+                  onClick={() => {
+                    if (sectionRef.current) {
+                      (sectionRef.current as any)._updateBadge?.(i);
+                    }
+                  }}
+                  style={{
+                    top: position?.mobile?.top,
+                    left: position?.mobile?.left,
+                  }}
+                  className="absolute z-50 cursor-pointer flex flex-col items-center -translate-x-1/2 -translate-y-1/2"
+                >
+                  <div className="relative w-3.5 h-3.5">
+                    <span className="absolute inset-0 rounded-full bg-(--blue) animate-ping" />
+                    <span className="absolute inset-0 rounded-full bg-(--blue) border-[3px] border-white" />
+                  </div>
+                  <p
+                    className={`${agency.className} mt-2 text-[12px] capitalize whitespace-nowrap bg-white rounded-2xl px-2 py-0.5 leading-normal font-semibold text-(--blue) shadow-md`}
+                  >
+                    {loc.name}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
 
           {/* CLOUD 1 */}
           <div
@@ -289,39 +375,6 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
               className="w-[100%] object-contain"
             />
           </div>
-
-          {/* POINTS */}
-          {locations.map((loc, i) => {
-            const position = loc.position;
-            return (
-              <div
-                key={loc.id}
-                ref={(el) => {
-                  pointsRef.current[i] = el;
-                }}
-                onClick={() => {
-                  if (sectionRef.current) {
-                    (sectionRef.current as any)._updateBadge?.(i);
-                  }
-                }}
-                style={{
-                  top: position?.mobile?.top,
-                  left: position?.mobile?.left,
-                }}
-                className="absolute z-50 cursor-pointer flex flex-col items-center"
-              >
-                <div className="relative w-3.5 h-3.5">
-                  <span className="absolute inset-0 rounded-full bg-(--blue) animate-ping" />
-                  <span className="absolute inset-0 rounded-full bg-(--blue) border-[3px] border-white" />
-                </div>
-                <p
-                  className={`${agency.className} mt-2 text-[12px] capitalize whitespace-nowrap bg-white rounded-2xl px-2 py-0.5 leading-normal`}
-                >
-                  {loc.name}
-                </p>
-              </div>
-            );
-          })}
         </div>
 
         {/* ── FLOATING LOCATION INDICATOR ───────────────── */}
