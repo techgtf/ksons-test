@@ -203,9 +203,14 @@ export default function DynamicListPage() {
     [config],
   );
 
+  // Hide Add Button
+  const hideAddButton = slug !== "enquies" && slug !== "projectStatus";
+
+  // Hide Delete Button
   const hideDeleteFor = ["project", "cities"];
   const canDelete = !hideDeleteFor.includes(slug);
 
+  // Hide Header completely
   const hideHeader = slug !== "countries" && slug !== "states";
 
   return (
@@ -260,7 +265,7 @@ export default function DynamicListPage() {
               </div>
             ))}
 
-            {slug !== "projectStatus" && (
+            {hideAddButton && (
               <Link
                 href={`/admin/${slug}/add${searchParams.toString() ? `?${searchParams.toString()}` : ""}`}
                 className="inline-flex items-center gap-2 rounded-xl bg-[#0f3c78] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition-all hover:bg-[#0a2a54] active:scale-95"
@@ -285,7 +290,10 @@ export default function DynamicListPage() {
           pageSize={pagination.limit}
           emptyMessage={`No ${config.noun} found`}
           footerText={(count) => `Showing ${count} ${config.noun}`}
-          onEdit={(row) => router.push(`/admin/${slug}/${row.id}`)}
+          onEdit={(row) => {
+            const query = searchParams.toString();
+            router.push(`/admin/${slug}/${row.id}${query ? `?${query}` : ""}`);
+          }}
           onDelete={canDelete ? (row) => remove(String(row.id)) : undefined}
           onLimitChange={setLimit}
           showActions={

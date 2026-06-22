@@ -180,7 +180,7 @@ export default function PageSectionsPage() {
 
   const handleDelete = async (row: any) => {
     try {
-      await remove(String(row.id));
+      await remove(String(row.id), { showToast: false });
       toast.success("Section deleted successfully");
       fetchList();
     } catch (error: any) {
@@ -305,7 +305,7 @@ export default function PageSectionsPage() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             emptyMessage="No sections added yet"
-            rowKey={(row) => String(row.id || "")}
+            rowKey={(row, idx) => `${row.id || ""}-${idx}`}
             pagination={pagination}
             onPageChange={setPage}
             onLimitChange={setLimit}

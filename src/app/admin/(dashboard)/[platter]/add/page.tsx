@@ -3,7 +3,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { notFound, useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  notFound,
+  useParams,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import toast from "react-hot-toast";
 import { HiOutlineEmojiSad } from "react-icons/hi";
 import {
@@ -37,14 +42,13 @@ export default function DynamicAddPage() {
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      await create(formData);
-      toast.success(`${config.title} created successfully!`);
-      // When redirecting back, preserve query parameters if any (so we go back to filtered list)
       const query = searchParams.toString();
-      router.push(`/admin/${slug}${query ? `?${query}` : ""}`);
+      await create(formData, {
+        redirectTo: `/admin/${slug}${query ? `?${query}` : ""}`,
+      });
+      toast.success(`${config.title} created successfully!`);
     } catch (error: any) {
-      console.error(error);
-      toast.error(error[0]?.message || "Failed to create record");
+      toast.error(error.message || "Failed to create record................");
     }
   };
 

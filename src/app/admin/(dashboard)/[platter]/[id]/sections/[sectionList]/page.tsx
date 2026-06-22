@@ -323,7 +323,7 @@ export default function SectionSubCrudPage() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             emptyMessage={`No ${sectionNoun.toLowerCase()}s added yet`}
-            rowKey={(row) => row.id || row._id || Math.random().toString()}
+            rowKey={(row, idx) => `${row.id || row._id || ""}-${idx}`}
             pagination={pagination}
             onPageChange={(page) => FetchItems(page, pagination.limit)}
             onLimitChange={(limit) => FetchItems(1, limit)}

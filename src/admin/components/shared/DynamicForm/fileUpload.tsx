@@ -9,6 +9,7 @@ function FileUpload({
   file,
   type,
   onChange,
+  required,
 }: {
   label: string;
   name: string;
@@ -16,6 +17,7 @@ function FileUpload({
   file?: File | null;
   type: "image" | "video";
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
 }) {
   const preview = useMemo(() => {
     if (file) {
@@ -29,6 +31,7 @@ function FileUpload({
     <div className="w-full">
       <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-600">
         {label}
+        {required && <span className="ml-0.5 text-red-500">*</span>}
       </label>
 
       <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-3 transition-all hover:border-blue-400 hover:bg-blue-50/30">

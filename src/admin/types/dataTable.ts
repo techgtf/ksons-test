@@ -20,7 +20,7 @@ export interface DataTableProps<T> {
 
   footerText?: (count: number) => string;
 
-  rowKey: (row: T) => string;
+  rowKey: (row: T, index?: number) => string;
 
   animated?: boolean;
 }

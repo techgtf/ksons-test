@@ -82,7 +82,7 @@ export default function GenericFaqPage() {
 
   const handleDelete = async (row: any) => {
     try {
-      await remove(String(row.id));
+      await remove(String(row.id), { showToast: false });
       toast.success(`FAQ deleted successfully`);
       fetchList();
     } catch (error: any) {

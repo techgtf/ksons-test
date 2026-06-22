@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { notFound, useParams } from "next/navigation";
+import { notFound, useParams, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 import {
@@ -17,6 +17,7 @@ import AdminLoader from "@/src/admin/components/shared/AdminLoader";
 
 export default function DynamicEditPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
 
   const slug = params.platter as string;
   const id = params.id as string;
@@ -38,7 +39,10 @@ export default function DynamicEditPage() {
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      await update(id, formData);
+      const query = searchParams.toString();
+      await update(id, formData, {
+        redirectTo: `/admin/${slug}${query ? `?${query}` : ""}`,
+      });
       toast.success(`${config.title} updated successfully!`);
     } catch (error: any) {
       console.error(error);

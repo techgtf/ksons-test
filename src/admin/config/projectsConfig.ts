@@ -82,6 +82,7 @@ export interface ProjectSectionConfig {
   icon?: IconType;
   filters?: FilterConfig[];
   displaySearch?: boolean;
+  hideInSidebar?: boolean;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -167,7 +168,7 @@ export const PROJECT: ProjectSectionConfig = {
       placeholder: "Uttar Pradesh",
       section: "General Information",
       searchEndpoint: "website/location",
-      // required: true,
+      // required: true, // If we mark this true then we have to add city everytime like on edit
       excludeFromPayload: true,
     },
     {
@@ -199,7 +200,7 @@ export const PROJECT: ProjectSectionConfig = {
       type: "select",
       section: "Typlogies",
       dynamicSource: "typology",
-      // required: true,
+      required: true,
       colSpan: "w-[100%]",
     },
     {
@@ -209,6 +210,7 @@ export const PROJECT: ProjectSectionConfig = {
       section: "Typlogies",
       dynamicSource: "subtypology?limit=50",
       dependsOn: "typologyId",
+      required: true,
     },
     {
       name: "size_unit",
@@ -227,7 +229,7 @@ export const PROJECT: ProjectSectionConfig = {
     {
       name: "starting_size",
       label: "Project Size",
-      type: "text",
+      type: "number",
       placeholder: "27",
       section: "Project Area",
       colSpan: "w-[48%]",
@@ -396,6 +398,7 @@ export const DEFAULT_PROJECT_SECTION_FIELDS: ProjectSectionConfig = {
   icon: HiOutlineChartPie,
   endpoint: "/admin/project-sections",
   tableDataApi: "/admin/project-sections/{projectId}/sections",
+  hideInSidebar: true,
   listColumns: [
     { key: "name", title: "Name", dataKey: "title.main" },
     // { key: "type", title: "Type", dataKey: "section.name" },
