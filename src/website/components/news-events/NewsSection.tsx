@@ -41,7 +41,7 @@ const newsData: NewsItem[] = [
     // monthYear: "July / 25",
     title: "Hindustan",
     type: "offline",
-    image: "/images/offline-news/hindustan.jpeg",
+    image: "/images/offline-news/hindustan.webp",
   },
   {
     id: 3,
@@ -49,7 +49,7 @@ const newsData: NewsItem[] = [
     // monthYear: "July / 25",
     title: "Dainik Jagran",
     type: "offline",
-    image: "/images/offline-news/dainik-jagran.jpeg",
+    image: "/images/offline-news/dainik-jagran.webp",
   },
   {
     id: 4,
@@ -57,7 +57,7 @@ const newsData: NewsItem[] = [
     // monthYear: "July / 25",
     title: "Amar Ujala",
     type: "offline",
-    image: "/images/offline-news/amar-ujala.jpeg",
+    image: "/images/offline-news/amar-ujala.webp",
   },
 ];
 

@@ -151,11 +151,11 @@ export const categories: Category[] = [
       description: "Homes That Live, Breathe, and Endure.",
       files: {
         featured_desktop_file:
-          "/images/projects/residential/indraprastha-enclave/hero.webp",
+          "/images/projects/residential/radha-florence/hero.webp",
         featured_mobile_file:
-          "/images/projects/residential/indraprastha-enclave/hero.webp",
+          "/images/projects/residential/radha-florence/mob-platter.webp",
         desktop_file: "/images/projects/residential/hero.webp",
-        mobile_file: "/images/projects/residential/hero.webp",
+        mobile_file: "/images/projects/residential/heromb.webp",
       },
       headingArea: "lg:w-[850px]",
     },
@@ -456,7 +456,7 @@ export const categories: Category[] = [
           desktop_file: "",
           mobile_file: "",
           iframe:
-            '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3536.5846588935146!2d77.6273487!3d27.5753979!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3973713fea79469b%3A0x1a3eb0534fea4496!2sSUNBEAM%20REAL%20ESTATE%20%7C%20Vrindavan!5e0!3m2!1sen!2sin!4v1780393501051!5m2!1sen!2sin" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+            '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3536.9710476689193!2d77.66271189999999!3d27.563409000000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39736f0016532bdd%3A0x5fc2e0e7c38ed6fe!2sOmaxe%20Mall%20Courtyard!5e0!3m2!1sen!2sin!4v1781426763239!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
           location_data: {
             heading: "Location Advantages",
             description:
@@ -1086,24 +1086,29 @@ export const categories: Category[] = [
           // no information available
           list: [
             {
-              icons: "/images/projects/highlights/approved.svg",
-              name: "RERA Registered Residential Plot Community",
+              icons: "/images/amenities/icons/road.svg",
+              name: "Wide Internal Roads (45M & 30M)",
             },
             {
-              icons: "/images/projects/highlights/plots.svg",
-              name: "Wide Range of Plot Sizes ",
+              icons: "/images/amenities/icons/park.svg",
+              name: "Green Zones & Parks ",
             },
             {
-              icons: "/images/projects/highlights/location.svg",
-              name: "Prime Location Of Vrindavan",
+              icons: "/images/amenities/icons/shop.svg",
+
+              name: "Commercial Zone",
             },
             {
-              icons: "/images/projects/highlights/water.svg",
-              name: "24×7 Water Supply & Electrification",
+              icons: "/images/projects/highlights/temple.svg",
+              name: "Vrindavan Lifestyle",
             },
             {
-              icons: "/images/projects/highlights/infrastructure.svg",
-              name: "Sewage Treatment & Modern Infrastructure Elements",
+              icons: "/images/amenities/icons/bar-chart.png",
+              name: "Investment Growth",
+            },
+            {
+              icons: "/images/amenities/icons/booking.png",
+              name: "Easy Booking Process",
             },
           ],
         },
@@ -1180,13 +1185,13 @@ export const categories: Category[] = [
           // no information available
           list: [
             {
-              title: "Temple",
+              title: "Temple Complex",
               icon: "/images/amenities/icons/temple.svg",
               desktop_image: "/images/amenities/images/temple.jpg",
               mobile_image: "/images/amenities/images/temple.jpg",
             },
             {
-              title: "Parks",
+              title: "Green Parks & Gardens",
               icon: "/images/amenities/icons/park.svg",
               desktop_image: "/images/amenities/images/park-with-trees.jpg",
               mobile_image: "/images/amenities/images/park-with-trees.jpg",
@@ -1210,22 +1215,46 @@ export const categories: Category[] = [
               mobile_image: "/images/amenities/images/clubhouse.jpg",
             },
             {
-              title: "24M & 30M Wide Internal Roads",
+              title: "Wide Internal Roads",
               icon: "/images/amenities/icons/road.svg",
               desktop_image: "/images/amenities/images/road.jpg",
               mobile_image: "/images/amenities/images/road.jpg",
             },
             {
-              title: "Hospital",
-              icon: "/images/amenities/icons/hospital.svg",
-              desktop_image: "/images/amenities/images/hospital.jpg",
-              mobile_image: "/images/amenities/images/hospital.jpg",
-            },
-            {
-              title: "Shops",
+              title: "Commercial Zone",
               icon: "/images/amenities/icons/shop.svg",
               desktop_image: "/images/amenities/images/shop.jpg",
               mobile_image: "/images/amenities/images/shop.jpg",
+            },
+            {
+              title: "Gated Entry & Security",
+              icon: "/images/amenities/icons/gate.png",
+              desktop_image: "/images/amenities/images/gated-entrance.webp",
+              mobile_image: "/images/amenities/images/gated-entrance.webp",
+            },
+            {
+              title: "Water Supply",
+              icon: "/images/amenities/icons/water-supply.svg",
+              desktop_image: "/images/amenities/images/water-supply.jpg",
+              mobile_image: "/images/amenities/images/water-supply.jpg",
+            },
+            {
+              title: "Power Backup",
+              icon: "/images/amenities/icons/power-backup.svg",
+              desktop_image: "/images/amenities/images/power-bakup.webp",
+              mobile_image: "/images/amenities/images/power-bakup.webp",
+            },
+            {
+              title: "Ample Parking",
+              icon: "/images/amenities/icons/parking.svg",
+              desktop_image: "/images/amenities/images/parking.jpg",
+              mobile_image: "/images/amenities/images/parking.jpg",
+            },
+            {
+              title: "Modern Infrastructure",
+              icon: "/images/amenities/icons/modern-infra.png",
+              desktop_image: "/images/amenities/images/modern-infra.webp",
+              mobile_image: "/images/amenities/images/modern-infra.webp",
             },
           ],
         },
@@ -1243,7 +1272,12 @@ export const categories: Category[] = [
               id: "floor-plan",
             },
           ],
-          masterPlan: {},
+          masterPlan: {
+            image:
+              "/images/projects/township/eternity-2/eternity-masterplan.webp",
+            thumbnail:
+              "/images/projects/township/eternity-2/eternity-masterplan.webp",
+          },
           floorPlans: [],
         },
         microLocation: {
@@ -1253,7 +1287,7 @@ export const categories: Category[] = [
           desktop_file: "",
           mobile_file: "",
           iframe:
-            '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3537.235019441665!2d77.57898809999999!3d27.555215699999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39736d00270b0eb7%3A0x46a3759ada8b15ce!2sOmaxe%20Ral%20Radha%20kund%20Rd%20Vrindavan%20new%20project!5e0!3m2!1sen!2sin!4v1780393629664!5m2!1sen!2sin" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+            '<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3536.663322795625!2d77.6516761!3d27.5729575!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39736f6f31bde6d1%3A0x5e9d978d9749fff7!2sOmaxe%20Eternity%20Vrindavan!5e0!3m2!1sen!2sin!4v1781500666044!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
           location_data: {
             heading: "Location Advantages",
             description:
@@ -1261,71 +1295,40 @@ export const categories: Category[] = [
             list: [
               {
                 icons: "/images/projects/temple.svg",
-                name: "4 Dham",
-                time: "5 Mins",
+                name: "Banke Bihari Temple",
+                time: "15–20 Mins",
+                type: "drive",
+              },
+              {
+                icons: "/images/projects/temple.svg",
+                name: "ISKCON Vrindavan",
+                time: "10–15 Mins",
                 type: "drive",
               },
               {
                 icons: "/images/projects/temple.svg",
                 name: "Prem Mandir",
-                time: "15 Mins",
+                time: "15–20 Mins",
                 type: "drive",
               },
               {
                 icons: "/images/projects/temple.svg",
-                name: "Iskcon",
-                time: "17 Mins",
+                name: "Radha Raman Temple",
+                time: "15–20 Mins",
                 type: "drive",
               },
               {
-                icons: "/images/projects/kund.svg",
-                name: "Radhakund",
-                time: "20 Mins",
+                icons: "/images/projects/nature.png",
+                name: "Nidhivan",
+                time: "15–20 Mins",
                 type: "drive",
               },
               {
-                icons: "/images/projects/mountain.svg",
-                name: "Govardhan Parikrama",
-                time: "25 Mins",
+                icons: "/images/projects/temple.svg",
+                name: "Shri Krishna Janmabhoomi",
+                time: "25–30 Mins",
                 type: "drive",
               },
-              {
-                icons: "/images/projects/road.svg",
-                name: "Yamuna Expressway",
-                time: "35 Mins",
-                type: "drive",
-              },
-              {
-                icons: "/images/projects/road.svg",
-                name: "Bareilly Highway",
-                time: "35 Mins",
-                type: "drive",
-              },
-              // walk
-              // {
-              //   icons: "/images/projects/hospital.svg",
-              //   name: "Nayati Hospital",
-              //   time: "20 Mins",
-              //   type: "walk",
-              // },
-              // {
-              //   icons: "/images/projects/hospital.svg",
-              //   name: "Nayati Hospital",
-              //   time: "20 Mins",
-              //   type: "walk",
-              // },
-              // {
-              //   icons: "/images/projects/hospital.svg",
-              //   name: "Nayati Hospital",
-              //   time: "20 Mins",
-              //   type: "walk",
-              // },
-              // {
-              //   icons: "/images/projects/hospital.svg",
-              //   name: "Nayati Hospital",
-              //   time: "20 Mins",
-              //   type: "walk",
-              // },
             ],
           },
         },
@@ -1337,11 +1340,32 @@ export const categories: Category[] = [
             "Step into our world through a visual journey—each image unveils a narrative of elegance, precision, and purpose.",
           gallery: [
             {
-              title: "Gallery 1",
+              title: "entrance",
               desktop_file:
-                "/images/projects/township/eternity-2/featured-img.webp",
+                "/images/projects/township/eternity-2/gallery/g.webp",
               mobile_file:
-                "/images/projects/township/eternity-2/featured-img.webp",
+                "/images/projects/township/eternity-2/gallery/g.webp",
+            },
+            {
+              title: "wide road",
+              desktop_file:
+                "/images/projects/township/eternity-2/gallery/g1.webp",
+              mobile_file:
+                "/images/projects/township/eternity-2/gallery/g1.webp",
+            },
+            {
+              title: "temple",
+              desktop_file:
+                "/images/projects/township/eternity-2/gallery/g2.webp",
+              mobile_file:
+                "/images/projects/township/eternity-2/gallery/g2.webp",
+            },
+            {
+              title: "temple",
+              desktop_file:
+                "/images/projects/township/eternity-2/gallery/g3.webp",
+              mobile_file:
+                "/images/projects/township/eternity-2/gallery/g3.webp",
             },
           ],
         },

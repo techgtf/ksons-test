@@ -87,12 +87,12 @@ const page = () => {
   return (
     <>
       <CommonBanner {...bannerData} />
-      <div className="app-container">
+      {/* <div className="app-container">
         <div data-cursor="light" className="lg:pt-20 pt-10">
           <MicroHeader {...gallery.work} />
         </div>
       </div>
-      <Gallery galleryItems={galleryItems} />
+      <Gallery galleryItems={galleryItems} /> */}
       <div data-cursor="light" className="app-container">
         <div className="border-t border-[#0f3c78]/8 lg:pb-20 pb-10" />
         <MicroHeader {...gallery.projectGallery} dataCursor="light" />

@@ -3,7 +3,6 @@
 @theme {
   --breakpoint-2xl: 90rem;
 }
-
 :root {
   --blue: #0f3c78;
   --gradient: linear-gradient(to right, #33d3ee 0%, #0f3c78 100%);

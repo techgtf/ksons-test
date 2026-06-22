@@ -114,7 +114,7 @@ export default function Services({
       data-cursor="dark"
       className="relative pattern-1 py-[50px] md:py-[100px] h-screen md:flex items-center justify-center px-[3%]"
     >
-      <div className="relative md:w-full h-[90vh] lg:h-[88vh] 2xl:h-[80vh]">
+      <div className="relative md:w-full h-[70vh] lg:h-[88vh] 2xl:h-[80vh] mt-[5vh]">
         {slides.map((item: ServiceSlide, index) => (
           <div
             key={index}

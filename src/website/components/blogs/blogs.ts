@@ -18,7 +18,7 @@ export const blogs: BlogType[] = [
       "Investing in real estate is about more than buying land or a home, it’s about embracing a lifestyle, securing long-term value, and being part of a thFoughtfully planned community.",
     keywords:
       "Vrindavan real estate, property investment in Vrindavan, K Sons Vrindavan, luxury township Vrindavan, residential plots Vrindavan, villas in Vrindavan, real estate investment India, premium properties Vrindavan, township projects Vrindavan, property appreciation Vrindavan",
-    date: "22/May/26",
+    date: "15/Jan/26",
     slug: "why-investing-in-vrindavan-real-estate-with-k-sons-is-a-smart-move",
     blog: `
     <p>Investing in real estate is about more than buying land or a home, it’s about embracing a lifestyle, securing long-term value, and being part of a thoughtfully planned community. K.sons, with its decades of expertise, creates developments that blend luxury, functionality, and culture, offering residents and investors alike a space that grows in value and prestige over time.</p>
@@ -73,7 +73,7 @@ export const blogs: BlogType[] = [
       "A luxury township is not just about plots or villas, it’s about creating a complete lifestyle that balances comfort, community, and convenience.",
     keywords:
       "luxury township Mathura, premium township features, residential township Mathura, gated community Mathura, luxury villas Mathura, plots in Mathura, modern township amenities, real estate Mathura, integrated township Mathura, premium living Mathura",
-    date: "22/May/26",
+    date: "18/Jan/26",
     slug: "top-features-to-look-for-in-a-luxury-township-in-mathura",
     blog: `
     <p>A luxury township is not just about plots or villas, it’s about creating a complete lifestyle that balances comfort, community, and convenience. K.sons has set the benchmark in Mathura by delivering thoughtfully planned townships that integrate modern amenities, sustainable infrastructure, and wellness-focused design, ensuring long-term value and a premium living experience.</p>
@@ -121,7 +121,7 @@ export const blogs: BlogType[] = [
       "Sustainable living is no longer an option, it is a necessity. K.sons has embraced this philosophy across its residential developments in Vrindavan and Mathura, designing homes and townships that are not only luxurious but also environmentally responsible.",
     keywords:
       "sustainable living, eco friendly homes, green township India, sustainable real estate, K Sons projects, energy efficient homes, eco friendly residential projects, green infrastructure, sustainable communities, luxury sustainable living",
-    date: "22/May/26",
+    date: "22/Feb/26",
     slug: "how-k-sons-is-redefining-sustainable-living-in-residential-projects",
     blog: `
     <p>Sustainable living is no longer an option, it is a necessity. K.sons has embraced this philosophy across its residential developments in Vrindavan and Mathura, designing homes and townships that are not only luxurious but also environmentally responsible. Each project reflects a commitment to eco-friendly practices, resource efficiency, and holistic wellness, ensuring residents enjoy modern comforts without compromising the planet.</p>
@@ -164,7 +164,7 @@ export const blogs: BlogType[] = [
       "Integrated townships are the future of real estate, offering a seamless blend of residential, commercial, and lifestyle spaces. K.sons has consistently pioneered this approach in Vrindavan and Mathura, crafting communities that are not only luxurious but also functional, sustainable, and socially vibrant.",
     keywords:
       "integrated township, future of real estate, mixed use development, smart township India, luxury township projects, residential and commercial township, K Sons township, modern community living, integrated living spaces, township development",
-    date: "22/May/26",
+    date: "25/Feb/26",
     slug: "the-future-of-integrated-townships-a-look-at-k-sons-projects",
     blog: `
     <p>Integrated townships are the future of real estate, offering a seamless blend of residential, commercial, and lifestyle spaces. K.sons has consistently pioneered this approach in Vrindavan and Mathura, crafting communities that are not only luxurious but also functional, sustainable, and socially vibrant. Every development is designed to provide residents with convenience, connectivity, and a modern lifestyle under one roof.</p>
@@ -201,7 +201,7 @@ export const blogs: BlogType[] = [
       "Luxury living is defined by the experiences a home enables, not just the structure itself. K.sons has carefully curated every township in Vrindavan and Mathura to offer a blend of modern comforts, wellness, and community engagement.",
     keywords:
       "township amenities, luxury amenities, clubhouse facilities, gated community amenities, wellness amenities, smart township features, luxury living amenities, K Sons township, modern residential amenities, community lifestyle",
-    date: "22/May/26",
+    date: "10/Mar/26",
     slug: "top-5-amenities-that-make-k-sons-townships-unique",
     blog: `
     <p>Luxury living is defined by the experiences a home enables, not just the structure itself. K.sons has carefully curated every township in Vrindavan and Mathura to offer a blend of modern comforts, wellness, and community engagement. The standout amenities in these developments enhance lifestyle, promote convenience, and create a strong sense of belonging for residents.</p>
@@ -252,7 +252,7 @@ export const blogs: BlogType[] = [
       "Investing in real estate can be daunting without the assurance of legal protection and project transparency. K.sons’ RERA-approved projects in Mathura and Vrindavan provide investors and homeowners with confidence.",
     keywords:
       "RERA approved properties, RERA approved projects Mathura, RERA approved projects Vrindavan, safe property investment, legal property purchase, real estate transparency, RERA benefits, K Sons properties, property investment security, residential projects Mathura",
-    date: "22/May/26",
+    date: "18/Mar/26",
     slug: "understanding-the-value-of-rera-approved-properties-in-mathura-and-vrindavan",
     blog: `
     <p>Investing in real estate can be daunting without the assurance of legal protection and project transparency. K.sons’ RERA-approved projects in Mathura and Vrindavan provide investors and homeowners with confidence, ensuring that every property adheres to regulatory standards, timely delivery, and ethical practices. Buying a RERA-approved home is not just a purchase—it’s a commitment to security, trust, and long-term value.</p>
@@ -288,7 +288,7 @@ export const blogs: BlogType[] = [
       "The success of a real estate investment often hinges on location. K.sons carefully selects prime sites in Vrindavan and Mathura that offer not only connectivity and convenience but also long-term growth potential.",
     keywords:
       "Vrindavan property location, strategic real estate planning, prime location Vrindavan, property investment location, real estate appreciation, residential projects Vrindavan, K Sons Vrindavan, township location benefits, connectivity in Vrindavan, premium properties Vrindavan",
-    date: "22/May/26",
+    date: "05/Apr/26",
     slug: "why-location-matters-k-sons-strategic-planning-in-vrindavan",
     blog: `
     <p>The success of a real estate investment often hinges on location. K.sons carefully selects prime sites in Vrindavan and Mathura that offer not only connectivity and convenience but also long-term growth potential. Strategic site selection ensures that every township or residential development provides residents with accessibility, lifestyle benefits, and future value appreciation.</p>
@@ -320,7 +320,7 @@ export const blogs: BlogType[] = [
       "K.sons offers a spectrum of residential solutions designed to cater to varied lifestyles and budgets. From premium plots to elegantly designed villas, group housing, and studio residences, every property type reflects K.sons’ commitment.",
     keywords:
       "residential plots Vrindavan, luxury villas Mathura, residential properties, plots and villas, premium housing options, group housing projects, studio apartments Vrindavan, K Sons properties, real estate options, luxury homes India",
-    date: "22/May/26",
+    date: "22/Apr/26",
     slug: "from-plots-to-villas-exploring-k-sons-diverse-residential-options",
     blog: `
     <p>K.sons offers a spectrum of residential solutions designed to cater to varied lifestyles and budgets. From premium plots to elegantly designed villas, group housing, and studio residences, every property type reflects K.sons’ commitment to luxury, sustainability, and thoughtful planning. Residents not only acquire a home but embrace a lifestyle that balances modernity, convenience, and community living.</p>
@@ -359,7 +359,7 @@ export const blogs: BlogType[] = [
       "Modern real estate is no longer just about building homes, it’s about creating connected, convenient, and sustainable communities. K.sons integrates smart infrastructure across its developments in Vrindavan and Mathura.",
     keywords:
       "smart infrastructure, smart township India, modern real estate, smart homes, sustainable infrastructure, township development, connected communities, smart utilities, K Sons projects, future ready homes",
-    date: "22/May/26",
+    date: "29/May/26",
     slug: "the-role-of-smart-infrastructure-in-modern-real-estate-by-k-sons",
     blog: `
     <p>Modern real estate is no longer just about building homes, it’s about creating connected, convenient, and sustainable communities. K.sons integrates smart infrastructure across its developments in Vrindavan and Mathura, ensuring residents benefit from advanced utilities, secure environments, and seamless connectivity. Every township and residential project is designed to enhance lifestyle while future-proofing investments.</p>
@@ -405,7 +405,7 @@ export const blogs: BlogType[] = [
       "K.sons recognizes that Vrindavan is a city steeped in spiritual heritage and cultural significance. Every development in the region is designed to honor its rich traditions while delivering contemporary, luxury living.",
     keywords:
       "Vrindavan heritage homes, modern living Vrindavan, heritage and modern architecture, luxury homes Vrindavan, culturally inspired design, spiritual living Vrindavan, K Sons projects, premium residential projects, traditional and modern homes, Vrindavan real estate",
-    date: "22/May/26",
+    date: "14/Jun/26",
     slug: "how-k-sons-balances-heritage-and-modernity-in-vrindavan-projects",
     blog: `
     <p>K.sons recognizes that Vrindavan is a city steeped in spiritual heritage and cultural significance. Every development in the region is designed to honor its rich traditions while delivering contemporary, luxury living. By blending modern architecture with culturally resonant design elements, K.sons ensures residents enjoy the best of both worlds, timeless aesthetics and modern comforts.</p>

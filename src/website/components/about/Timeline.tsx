@@ -1,12 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { agency, blauerNue } from "@/src/app/fonts";
 import { gsap, ScrollTrigger } from "../../utils/gsap";
-import { lenisInstance } from "../SmoothScroller";
 import { useReveal } from "../../hooks/useReveal";
-import { useSlideY } from "../../hooks/useSlideY";
 
 /* ================= TYPES ================= */
 
@@ -40,36 +38,6 @@ export default function Timeline({ ranges, markerImage }: TimelineProps) {
   const horizontalRef = useRef<HTMLDivElement>(null);
 
   const [activeIndex, setActiveIndex] = useState(0);
-
-  useLayoutEffect(() => {
-    const handleTouchStart = (e: Event) => {
-      const target = e.target;
-
-      if (target instanceof Element && target.closest(".normal-scroll")) {
-        lenisInstance?.stop();
-      }
-    };
-
-    const handleTouchEnd = (e: Event) => {
-      const target = e.target;
-
-      if (target instanceof Element && target.closest(".normal-scroll")) {
-        lenisInstance?.start();
-      }
-    };
-
-    document.addEventListener("touchstart", handleTouchStart, {
-      passive: true,
-    });
-    document.addEventListener("touchend", handleTouchEnd, { passive: true });
-    document.addEventListener("touchcancel", handleTouchEnd, { passive: true });
-
-    return () => {
-      document.removeEventListener("touchstart", handleTouchStart);
-      document.removeEventListener("touchend", handleTouchEnd);
-      document.removeEventListener("touchcancel", handleTouchEnd);
-    };
-  }, []);
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth < 768) return;
@@ -164,7 +132,7 @@ export default function Timeline({ ranges, markerImage }: TimelineProps) {
         <div
           ref={horizontalRef}
           className="overflow-x-auto pb-6 border-b border-white/20 -mx-6 px-6 touch-pan-x normal-scroll"
-          data-scroll-ignore
+          data-lenis-prevent
           onWheelCapture={(e) => e.stopPropagation()}
           onTouchMoveCapture={(e) => e.stopPropagation()}
           style={{

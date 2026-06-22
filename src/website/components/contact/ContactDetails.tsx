@@ -19,7 +19,7 @@ export default function ContactDetails() {
     >
       <div
         ref={contentWrapper}
-        className="flex flex-wrap justify-center items-start lg:items-center lg:gap-y-0 gap-y-6 text-white"
+        className="lg:flex justify-center items-start lg:items-center lg:space-y-0 space-y-6 text-white"
       >
         <div className="phone px-4 lg:px-10 flex-1">
           {contact.phone.map((ph, i) => (

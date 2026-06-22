@@ -165,12 +165,13 @@ export default function FloorAndMasterPlan({ data }: Props) {
 
                         {/* Center Main Image */}
                         <div className="lg:col-span-6 relative group">
-                          <div className="relative aspect-square rounded-xl overflow-hidden">
+                          <div className="relative rounded-xl overflow-hidden">
                             <Image
                               src={plan.image ?? ""}
                               alt={plan.title ?? ""}
-                              fill
-                              className="object-contain p-4"
+                              width={500}
+                              height={500}
+                              className="object-contain p-4 mx-auto"
                             />
                             {/* View Fullscreen Overlay */}
                             <div

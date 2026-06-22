@@ -25,4 +25,5 @@ export const HEADER_MENU_ITEMS = [
   { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
   { label: "Blogs", href: "/blogs" },
+  { label: "CSR", href: "/csr" },
 ];

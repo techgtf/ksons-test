@@ -43,11 +43,11 @@ export default function Highlights({ data }: HighlightsProps) {
               }}
             >
               <div className="relative w-[25%] h-[70px] lg:h-[122px] flex justify-center items-center">
-                <Image
+                <img
                   src={item.icons}
                   alt={item.name}
-                  height={32}
-                  width={32}
+                  // height={32}
+                  // width={32}
                   className="w-[32px] h-[32px]"
                 />
                 <div className="absolute -z-1 -top-2 lg:top-5 bottom-0 left-0 right-0">

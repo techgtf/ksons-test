@@ -202,14 +202,17 @@ export function MobileSlider({
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top top",
-        end: `+=${slides.length * window.innerHeight}`,
+        end: `+=${slides.length * 200}`,
         pin: true,
-        scrub: 0.8, // smoother scroll sync
+        scrub: true,
         anticipatePin: 1,
         fastScrollEnd: true,
 
         onUpdate: (self) => {
-          const index = Math.round(self.progress * total);
+          const index = Math.min(
+            Math.floor(self.progress * slides.length),
+            total,
+          );
           setActive(index);
         },
       });
@@ -221,7 +224,7 @@ export function MobileSlider({
   return (
     <section
       ref={sectionRef}
-      className="md:hidden block h-screen relative overflow-hidden bg-black"
+      className="md:hidden block h-[95vh] relative overflow-hidden bg-black"
     >
       {/* Background Images */}
       {slides.map((item, i) => (

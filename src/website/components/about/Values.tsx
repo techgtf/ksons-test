@@ -112,7 +112,7 @@ export default function Values({ data, bgImage }: OurValues) {
       ref={sectionRef}
       className="values-section pt-18 lg:pt-25 overflow-x-hidden"
     >
-      <div className="relative pb-0 lg:pb-30">
+      <div className="relative pb-0 lg:pb-30 px-5 lg:px-0 ">
         {/* <SectionHeader
                     tag="Our Values"
                     heading="Our Values: Guiding Principles We Stand By"
@@ -145,7 +145,7 @@ export default function Values({ data, bgImage }: OurValues) {
             className="w-[350px] 2xl:w-[400px] h-full object-cover"
           />
         </div>
-        <div className="lg:flex w-full justify-center space-y-8 lg:space-y-0 bottom-card gap-[10%] pt-20">
+        <div className="lg:flex w-full justify-center space-y-8 lg:space-y-0 bottom-card gap-[10%] pt-8 lg:pt-20">
           {data.slice(2, 4).map((item, index) => (
             <ContentCard
               key={item.id}

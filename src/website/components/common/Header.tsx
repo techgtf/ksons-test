@@ -75,7 +75,7 @@ const MenuItem = ({ item, onClick }: any) => {
       >
         <div className="overflow-hidden">
           <div
-            className={`lg:space-y-3 flex flex-wrap gap-5 text-[#A7C3DA] uppercase lg:leading-[45px] text-base tracking-[0.16px] ${blauerNue.className}`}
+            className={`lg:space-y-0 flex flex-wrap gap-5 text-[#A7C3DA] uppercase lg:leading-[35px] text-base tracking-[0.16px] ${blauerNue.className}`}
           >
             {item.projects?.map((project: any, i: number) => (
               <Link
@@ -389,7 +389,7 @@ export default function Header() {
           style={{ WebkitOverflowScrolling: "touch" }}
         >
           <div
-            className={`flex flex-col gap-8 lg:gap-10 text-white lg:pt-0 pt-14 ${agency.className}`}
+            className={`flex flex-col gap-5 lg:gap-10 text-white lg:pt-0 pt-14 ${agency.className}`}
           >
             {MENU_ITEMS.map((item, i) => (
               <MenuItem

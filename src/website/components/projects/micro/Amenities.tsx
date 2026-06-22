@@ -141,6 +141,7 @@ const AmSlideCard = ({ amenity }: CardProp) => {
           fill
           className="object-cover transition-transform duration-700 hover:scale-110"
         />
+        <span className="absolute bottom-2 right-4 z-1 text-white text-sm">Artistic Impression</span>
       </div>
       <div
         ref={amNameRef}

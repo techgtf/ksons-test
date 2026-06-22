@@ -40,7 +40,7 @@ export default function LocationWiseProjectsMobile() {
       gsap.set(pointsRef.current, { autoAlpha: 0, scale: 0.6, y: 20 });
 
       // Hide everything initially
-      gsap.set(mapImg, { scale: 1.4, transformOrigin: "center center" });
+      gsap.set(mapImg, { scale: 1.0, transformOrigin: "center center" });
 
       const tl = gsap.timeline({ paused: true });
 
@@ -80,7 +80,7 @@ export default function LocationWiseProjectsMobile() {
       tl.to(
         mapImg,
         {
-          scale: 2.5,
+          scale: 1.6,
           duration: 0.35,
           ease: "none",
         },
@@ -245,7 +245,7 @@ export default function LocationWiseProjectsMobile() {
     <>
       <section
         ref={sectionRef}
-        className="relative h-screen w-full lg:hidden block overflow-x-hidden"
+        className="relative h-[95vh] w-full lg:hidden block overflow-x-hidden"
       >
         {/* ── MAP (200% wide) ─────────────────────────── */}
         <div
@@ -257,7 +257,7 @@ export default function LocationWiseProjectsMobile() {
             ref={mapImgRef}
             src="/images/home/location-wise-pro/map-mob.webp"
             // src="/images/home/location-wise-pro/Map_6.png"
-            className="w-full h-full object-cover"
+            className="w-full mx-auto h-full object-cover will-change-transform [backface-visibility:hidden] [transform-style:preserve-3d]"
             draggable={false}
           />
 
@@ -328,28 +328,28 @@ export default function LocationWiseProjectsMobile() {
           className="absolute top-15 left-1/2 -translate-x-1/2 z-50 pointer-events-none invisible opacity-0 translate-y-2 flex flex-col items-center cursor-pointer"
         >
           <div className="bg-white p-3 w-[200px] badge-inner will-change-transform">
-            <div className="w-full h-25  overflow-hidden border border-white/20 shrink-0 bg-white/5">
-              <img
-                ref={locationImageRef}
-                src="/images/home/location-wise-pro/map-mob.webp"
-                className="w-full h-full object-cover"
-                alt="Location"
-              />
-            </div>
-            <div className="flex flex-col pt-2 text-center">
-              <span
-                ref={locationTextRef}
-                className={`${agency.className} text-black text-[12px] uppercase tracking-[0.2em] whitespace-nowrap leading-tight`}
-              >
-                Our Locations
-              </span>
-              <Link
-                href={`/projects?loc=${selectedLocation}`}
-                className="text-black text-[8px] uppercase tracking-[0.3em]"
-              >
-                View Projects
-              </Link>
-            </div>
+            <Link
+              href={`/projects?loc=${selectedLocation}`}
+              className="text-black text-[8px] uppercase tracking-[0.3em]"
+            >
+              <div className="w-full h-25  overflow-hidden border border-white/20 shrink-0 bg-white/5">
+                <img
+                  ref={locationImageRef}
+                  src="/images/"
+                  className="w-full h-full object-cover"
+                  alt="Location"
+                />
+              </div>
+              <div className="flex flex-col pt-2 text-center">
+                <span
+                  ref={locationTextRef}
+                  className={`${agency.className} text-black text-[12px] uppercase tracking-[0.2em] whitespace-nowrap leading-tight`}
+                >
+                  Our Locations
+                </span>
+                <span>View Projects</span>
+              </div>
+            </Link>
           </div>
         </div>
 
@@ -361,206 +361,3 @@ export default function LocationWiseProjectsMobile() {
     </>
   );
 }
-// "use client";
-
-// import React, { useLayoutEffect, useRef, useState } from "react";
-// import { gsap, ScrollTrigger, registerGSAP } from "@/src/website/utils/gsap";
-// import { agency } from "@/src/app/fonts";
-// import { LocationWiseProjectModal } from "./LocationWiseProjectModal";
-
-// const locations = [
-//     { id: 1, top: "46.5%", left: "36%", name: "Delhi Ncr", side: "left" },
-//     { id: 2, top: "54%", left: "52%", name: "Pune", side: "left" },
-//     { id: 3, top: "55%", left: "164%", name: "Bengaluru", side: "right" },
-//     { id: 4, top: "57%", left: "179%", name: "Ahmedabad", side: "right" },
-//     { id: 5, top: "34%", left: "176%", name: "Bengaluru", side: "right" },
-// ];
-
-// export default function LocationWiseProjectsMobile() {
-//     const sectionRef = useRef<HTMLDivElement>(null);
-//     const mapWrapRef = useRef<HTMLDivElement>(null);
-//     const cloud1Ref = useRef<HTMLDivElement>(null);
-//     const cloud2Ref = useRef<HTMLDivElement>(null);
-//     const pointsRef = useRef<(HTMLDivElement | null)[]>([]);
-//     const hintRef = useRef<HTMLDivElement>(null);
-//     const mapImgRef = useRef<HTMLImageElement>(null);
-//     const [activeLocation, setActiveLocation] = useState<any>(null);
-
-//     useLayoutEffect(() => {
-//         registerGSAP();
-//         const ctx = gsap.context(() => {
-//             if (window.innerWidth >= 1024) return;
-
-//             const section = sectionRef.current;
-//             const mapWrap = mapWrapRef.current;
-//             const mapImg = mapImgRef.current;
-//             const cloud1 = cloud1Ref.current;
-//             const cloud2 = cloud2Ref.current;
-//             const hint = hintRef.current;
-//             if (!section || !mapWrap) return;
-
-//             const leftPoints = pointsRef.current.filter((_, i) => locations[i].side === "left");
-//             const rightPoints = pointsRef.current.filter((_, i) => locations[i].side === "right");
-
-//             // Hide everything initially
-//             gsap.set([...leftPoints, ...rightPoints], { autoAlpha: 0, y: 20 });
-//             gsap.set(mapImg, { scale: 1, transformOrigin: "center center" });
-
-//             const tl = gsap.timeline({ paused: true });
-
-//             // ── Phase 1 (0% → 35%): clouds exit + image zooms in ──────────────
-//             tl.to([cloud1, cloud2], {
-//                 autoAlpha: 0,
-//                 duration: 0.35,
-//                 ease: "none",
-//             }, 0);
-
-//             tl.to(cloud1, {
-//                 xPercent: 50,
-//                 yPercent: -40,
-//                 duration: 0.35,
-//                 ease: "none",
-//             }, 0);
-
-//             tl.to(cloud2, {
-//                 xPercent: -50,
-//                 yPercent: 40,
-//                 duration: 0.35,
-//                 ease: "none",
-//             }, 0);
-
-//             tl.to(mapImg, {
-//                 scale: 1.2,
-//                 duration: 0.35,
-//                 ease: "none",
-//             }, 0);
-
-//             // ── Phase 2 (35% → 55%): left points appear ────────────────────────
-//             tl.to(leftPoints, {
-//                 autoAlpha: 1,
-//                 y: 0,
-//                 stagger: 0.08,
-//                 duration: 0.15,
-//                 ease: "power2.out",
-//             }, 0.35);
-
-//             // ── Phase 3 (55% → 100%): map pans left ────────────────────────────
-//             tl.to(mapWrap, {
-//                 xPercent: -50,
-//                 duration: 0.45,
-//                 ease: "none",
-//             }, 0.55);
-
-//             // ── Phase 4 (80% → 100%): right points appear ──────────────────────
-//             tl.to(rightPoints, {
-//                 autoAlpha: 1,
-//                 y: 0,
-//                 stagger: 0.06,
-//                 duration: 0.15,
-//                 ease: "power2.out",
-//             }, 0.85);
-
-//             // ── ScrollTrigger drives the timeline ──────────────────────────────
-//             ScrollTrigger.create({
-//                 trigger: section,
-//                 start: "top top",
-//                 end: "+=200%",
-//                 scrub: 1,
-//                 pin: true,
-//                 anticipatePin: 1,
-//                 invalidateOnRefresh: true,
-//                 animation: tl,
-//                 onUpdate: (self) => {
-//                     if (hint) gsap.set(hint, { autoAlpha: self.progress > 0.05 ? 0 : 1 });
-//                 },
-//             });
-
-//         }, sectionRef);
-
-//         return () => ctx.revert();
-//     }, []);
-
-//     return (
-//         <>
-//             <section
-//                 ref={sectionRef}
-//                 className="relative h-screen w-full lg:hidden block overflow-x-hidden"
-//             >
-//                 {/* ── MAP (200% wide) ─────────────────────────── */}
-//                 <div
-//                     ref={mapWrapRef}
-//                     className="relative h-full will-change-transform overflow-hidden"
-//                     style={{ width: "200%" }}
-//                 >
-//                     <img
-//                         ref={mapImgRef}
-//                         src="/images/home/location-wise-pro/map-mob.webp"
-//                         // src="/images/home/location-wise-pro/Map_6.png"
-//                         className="w-full h-full object-cover"
-//                         draggable={false}
-//                     />
-
-//                     {/* CLOUD 1 */}
-//                     <div
-//                         ref={cloud1Ref}
-//                         className="absolute -top-[12%] -left-55 z-10 pointer-events-none"
-//                     >
-//                         <img
-//                            src="/images/home/location-wise-pro/cloud-2.png"
-//                             className="w-[1y0%] object-contain"
-//                         />
-//                     </div>
-
-//                     {/* CLOUD 2 */}
-//                     <div
-//                         ref={cloud2Ref}
-//                         className="absolute -bottom-[10%] -left-[55%] z-10 pointer-events-none"
-//                     >
-//                         <img
-//                             src="/images/home/location-wise-pro/cloud-2.png"
-//                             className="w-[100%] object-contain"
-//                         />
-//                     </div>
-
-//                     {/* POINTS */}
-//                     {locations.map((loc, i) => {
-//                         const remappedLeft = `${parseFloat(loc.left) / 2}%`;
-//                         return (
-//                             <div
-//                                 key={loc.id}
-//                                 ref={(el) => { pointsRef.current[i] = el; }}
-//                                 onClick={() => setActiveLocation(loc)}
-//                                 style={{ top: loc.top, left: remappedLeft }}
-//                                 className="absolute z-20 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center cursor-pointer"
-//                             >
-//                                 <div className="relative w-3.5 h-3.5">
-//                                     <span className="absolute inset-0 rounded-full bg-[var(--blue)] animate-ping" />
-//                                     <span className="absolute inset-0 rounded-full bg-[var(--blue)] border-[3px] border-white" />
-//                                 </div>
-//                                 <p className={`${agency.className} mt-1.5 text-[12px] capitalize whitespace-nowrap text-white [text-shadow:0_0_6px_rgba(0,0,0,1)]`}>
-//                                     {loc.name}
-//                                 </p>
-//                             </div>
-//                         );
-//                     })}
-//                 </div>
-
-//                 {/* ── SCROLL HINT ──────────────────────────────── */}
-//                 <div
-//                     ref={hintRef}
-//                     className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 pointer-events-none"
-//                 >
-//                     <div className="w-5 h-7 border-2 border-white/40 rounded-full flex justify-center pt-1">
-//                         <span className="w-1 h-2 bg-white rounded-full animate-bounce" />
-//                     </div>
-//                     <p className="text-white/60 text-[9px] tracking-widest uppercase">Scroll to explore</p>
-//                 </div>
-
-//             </section>
-
-//             {activeLocation && (
-//                 <LocationWiseProjectModal closeModal={() => setActiveLocation(null)} />
-//             )}
-//         </>
-//     );
-// }

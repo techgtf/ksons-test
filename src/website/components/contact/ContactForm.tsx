@@ -90,7 +90,10 @@ export default function ContactForm({ heading }: Props) {
       setModal({
         open: true,
         type: "success",
-        message: response.message.trim(),
+        // make first latter upperCase
+        message:
+          response.message.trim().charAt(0).toUpperCase() +
+          response.message.trim().slice(1),
       });
       setFormData({
         fname: "",

@@ -142,7 +142,7 @@ const Location = ({ data }: LocationProps) => {
               className="mb-5 md:mb-10 border-b border-[#d9d9d9]/95 pb-2"
             >
               <div className="flex items-center justify-between w-full">
-                <div className="flex items-center justify-between w-full gap-3">
+                <div className="flex  items-center justify-betwee w-full gap-3">
                   {activeType === "drive" ? (
                     <Image
                       src="/images/projects/car.svg"
@@ -152,7 +152,7 @@ const Location = ({ data }: LocationProps) => {
                       className="w-7 h-7 object-contain"
                     />
                   ) : (
-                    <MdDirectionsWalk className="text-[#0F3C78] w-7 h-7" />
+                    <MdDirectionsWalk className="text-[#0F3C78] w-7 h-7 rotate-[180deg]" />
                   )}
                   <p
                     className={`${agency.className} text-[#0F3C78] text-base capitalize`}
