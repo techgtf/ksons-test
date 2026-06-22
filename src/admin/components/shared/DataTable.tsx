@@ -338,7 +338,7 @@ export default function DataTable<T extends { id?: string }>({
 
                     return (
                       <motion.tr
-                        key={rowKey(row)}
+                        key={rowKey(row, rowIndex)}
                         initial={animated ? { opacity: 0, y: 8 } : false}
                         animate={animated ? { opacity: 1, y: 0 } : false}
                         transition={{

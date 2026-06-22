@@ -11,7 +11,6 @@ import SearchInput from "@/src/admin/components/shared/SearchInput";
 import AdminLoader from "@/src/admin/components/shared/AdminLoader";
 import { GetNestedValue } from "@/src/admin/components/cells/GetNestedValue";
 
-
 export default function PagesListPage() {
   const router = useRouter();
   const slug = "pages";

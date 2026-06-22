@@ -23,6 +23,7 @@ import { getSectionConfig } from "@/src/admin/config/adminConfig";
 import type { FilterState, Row } from "@/src/admin/redux/features/crudSlice";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import api from "@/src/admin/lib/axios";
+import toast from "react-hot-toast";
 
 export function useCrud(
   sectionKey: string,
@@ -194,7 +195,11 @@ export function useCrud(
   // ── delete ────────────────────────────────────────────────────────────────
 
   const remove = useCallback(
-    async (id: string, opts?: { onSuccess?: () => void }) => {
+    async (
+      id: string,
+      opts?: { onSuccess?: (msg?: string) => void; showToast?: boolean },
+    ) => {
+      const showToast = opts?.showToast ?? true;
       const result = await dispatch(
         thunks.deleteRecord({
           endpoint: replacePlaceholders(config.endpoint),
@@ -202,10 +207,19 @@ export function useCrud(
         }),
       );
       if (thunks.deleteRecord.fulfilled.match(result)) {
-        opts?.onSuccess?.();
+        const payload = result.payload as any;
+        const msg = payload?.message || `${config.title} deleted successfully!`;
+        if (showToast) {
+          toast.success(msg);
+        }
+        opts?.onSuccess?.(msg);
         return;
       }
-      throw new Error(result.payload as string);
+      const errorMsg = (result.payload as string) || "Failed to delete";
+      if (showToast) {
+        toast.error(errorMsg);
+      }
+      throw new Error(errorMsg);
     },
     [dispatch, thunks, config.endpoint, replacePlaceholders],
   );

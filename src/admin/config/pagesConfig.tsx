@@ -285,6 +285,7 @@ export const DEFAULT_PAGE_SECTION_FIELDS: AdminSectionConfig = {
   noun: "sections",
   icon: HiOutlineFolder,
   endpoint: "/admin/page-sections",
+  hideInSidebar: true,
   // tableDataApi: "/admin/page-sections",
   listColumns: [
     { key: "name", title: "Section Name", dataKey: "type" },

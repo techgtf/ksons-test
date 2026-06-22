@@ -226,9 +226,17 @@ export default function DynamicForm({
     visibleFields.forEach((field) => {
       if (!field.required) return;
       const isFile = FILE_TYPES.includes(field.type ?? "text");
-      const missing = isFile
-        ? !files[field.name] && !form[field.name]
-        : !form[field.name] && form[field.name] !== 0;
+      let missing = false;
+      if (isFile) {
+        missing = !files[field.name] && !form[field.name];
+      } else {
+        const val = form[field.name];
+        if (val === undefined || val === null || val === "") {
+          missing = true;
+        } else if (typeof val === "string" && val.trim() === "") {
+          missing = true;
+        }
+      }
       if (missing) {
         newErrors[field.name] = `${field.label} is required`;
       }
@@ -258,7 +266,10 @@ export default function DynamicForm({
           return;
         }
 
-        const val = form[f.name];
+        let val = form[f.name];
+        if (typeof val === "string") {
+          val = val.trim();
+        }
         payload[f.name] = val !== undefined && val !== null ? val : "";
       });
       // Include all selected files
@@ -290,7 +301,10 @@ export default function DynamicForm({
           }
         } else {
           // For scalar fields: Send everything (as requested)
-          const val = form[f.name];
+          let val = form[f.name];
+          if (typeof val === "string") {
+            val = val.trim();
+          }
           payload[f.name] = val !== undefined && val !== null ? val : "";
         }
       });
@@ -443,6 +457,7 @@ export default function DynamicForm({
             value={form[field.name]}
             file={files[field.name]}
             onChange={handleFile}
+            required={field.required}
           />
           {field.hint && <FieldHint hint={field.hint} />}
           {errors[field.name] && (

@@ -128,12 +128,21 @@ export function createCrudThunks(sectionName: string) {
         const payload = res.data?.data;
 
         // Extract pagination from either res.data.pagination or res.data.meta, or payload.pagination
-        const extractedMeta = res.data?.pagination ?? res.data?.meta ?? payload?.meta ?? payload?.pagination;
+        const extractedMeta =
+          res.data?.pagination ??
+          res.data?.meta ??
+          payload?.meta ??
+          payload?.pagination;
 
         if (Array.isArray(payload)) {
           return {
             rows: payload,
-            meta: extractedMeta ?? { page, limit, total: payload.length, totalPages: 1 },
+            meta: extractedMeta ?? {
+              page,
+              limit,
+              total: payload.length,
+              totalPages: 1,
+            },
           };
         }
         return {
@@ -174,10 +183,19 @@ export function createCrudThunks(sectionName: string) {
         });
         return res.data?.data ?? res.data;
       } catch (err: any) {
+        const errorData = err?.response?.data;
+
         return rejectWithValue(
-          err?.response?.data?.message ?? "Failed to create",
+          errorData?.message ||
+            errorData?.errors[0]?.message ||
+            "Failed to create",
         );
       }
+      // catch (err: any) {
+      //   return rejectWithValue(
+      //     err?.response?.data?.message ?? "Failed to create",
+      //   );
+      // }
     },
   );
 
@@ -204,8 +222,11 @@ export function createCrudThunks(sectionName: string) {
     `${sectionName}/deleteRecord`,
     async ({ endpoint, id }: DeleteArgs, { rejectWithValue }) => {
       try {
-        await api.delete(`${endpoint}/${id}`);
-        return id; // return id so the slice can remove it from rows
+        const res = await api.delete(`${endpoint}/${id}`);
+        return {
+          id,
+          message: res.data?.message || "Record deleted successfully",
+        };
       } catch (err: any) {
         return rejectWithValue(
           err?.response?.data?.message ?? "Failed to delete",
@@ -359,7 +380,8 @@ export function createCrudSlice(sectionName: string) {
         .addCase(deleteRecord.fulfilled, (state, action) => {
           state.loading.delete = false;
           // Remove the deleted row
-          state.rows = state.rows.filter((row) => row.id !== action.payload);
+          const deletedId = typeof action.payload === "object" ? action.payload.id : action.payload;
+          state.rows = state.rows.filter((row) => row.id !== deletedId);
           state.pagination.total = Math.max(0, state.pagination.total - 1);
         })
         .addCase(deleteRecord.rejected, (state, action) => {

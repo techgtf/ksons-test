@@ -552,14 +552,14 @@ const TESTIMONIAL: AdminSectionConfig = {
     },
     {
       type: "select",
-      label: "Page Type",
-      name: "pageType",
+      label: "Type",
+      name: "type",
       section: "Images",
       options: [
-        { value: "Image", label: "Image" },
-        { value: "Video", label: "Video" },
+        { value: "image", label: "image" },
+        { value: "video", label: "video" },
       ],
-      defaultValue: "Image",
+      defaultValue: "image",
       colSpan: "w-full",
     },
     {
@@ -567,7 +567,7 @@ const TESTIMONIAL: AdminSectionConfig = {
       label: "Image",
       type: "image",
       section: "Images",
-      showIf: (formValues: any) => formValues.pageType === "Image",
+      showIf: (formValues: any) => formValues.type === "image",
       hint: "Recommended: 1440x778 (16:9). Format: WebP. Max: 800KB",
     },
     {
@@ -575,7 +575,7 @@ const TESTIMONIAL: AdminSectionConfig = {
       label: "Video Url",
       type: "text",
       section: "Images",
-      showIf: (formValues: any) => formValues.pageType === "Video",
+      showIf: (formValues: any) => formValues.type === "video",
     },
     // {
     //   name: "video_url",
@@ -665,6 +665,7 @@ export const FAQ: AdminSectionConfig = {
   noun: "FAQ",
   icon: HiOutlineCollection,
   endpoint: "/admin/faqs",
+  hideInSidebar: true,
   fields: [
     {
       name: "status",

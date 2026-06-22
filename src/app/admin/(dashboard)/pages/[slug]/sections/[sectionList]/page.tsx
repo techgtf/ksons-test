@@ -306,7 +306,7 @@ export default function PageSectionSubCrudPage() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             emptyMessage={`No items added yet`}
-            rowKey={(row) => row.id || Math.random().toString()}
+            rowKey={(row, idx) => `${row.id || ""}-${idx}`}
             pagination={pagination}
             onPageChange={(page) => FetchItems(page, pagination.limit)}
             onLimitChange={(limit) => FetchItems(1, limit)}
