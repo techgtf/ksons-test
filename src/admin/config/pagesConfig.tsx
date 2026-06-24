@@ -89,14 +89,12 @@ export const PAGE_BASIC_DETAILS: AdminSectionConfig = {
       label: "Main Heading",
       type: "text",
       section: "Basic Information",
-      allowSpecialChars: true,
     },
     {
       name: "title.sub_heading",
       label: "Sub Heading",
       type: "text",
       section: "Basic Information",
-      allowSpecialChars: true,
     },
     {
       name: "title.description",
@@ -110,14 +108,12 @@ export const PAGE_BASIC_DETAILS: AdminSectionConfig = {
       label: "Alt Text",
       type: "text",
       section: "SEO Settings",
-      allowSpecialChars: true,
     },
     {
       name: "seoTags.meta_title",
       label: "Meta Title",
       type: "text",
       section: "SEO Settings",
-      allowSpecialChars: true,
     },
     {
       name: "seoTags.meta_keywords",

@@ -17,9 +17,7 @@ export default async function LocationPage({
   // 1. Fetch cities, projects, and statuses from the API
   const [cityRes, projectRes, projectStatusRes] = await Promise.all([
     fetchPageData("website/city"),
-    fetchPageData(
-      `website/project?status=true&limit=${limit}&page=${currentPage}`,
-    ),
+    fetchPageData(`website/project?status=true&limit=50`),
     fetchPageData("website/projectstatus"),
   ]);
 
@@ -27,13 +25,20 @@ export default async function LocationPage({
   const projectsData = projectRes?.data || [];
   const statusData = projectStatusRes?.data || projectStatusRes || [];
 
-  const paginationData = projectRes?.pagination || {
+  {
+    /*
+    The backend API /website/project does not support filtering by city/location. Because of this, requesting a limited page (like limit=10) from the server returns projects from all cities, which are then filtered client-side, causing the pagination bugs. Which approach would you like to take?
+
+    (Recommended) Fetch all projects (up to 50 or 100) and paginate client-side. Since the total projects in the database is only 11 (approx. 15KB of data), this is extremely lightweight and will work perfectly.
+    */
+  }
+  const paginationData = {
     total: projectsData.length,
     page: currentPage,
     limit: limit,
     totalPages: Math.ceil(projectsData.length / limit),
-    hasNextPage: false,
-    hasPrevPage: false,
+    hasNextPage: currentPage * limit < projectsData.length,
+    hasPrevPage: currentPage > 1,
   };
 
   // Extract unique active city names
@@ -68,6 +73,7 @@ export default async function LocationPage({
         categorySlug: p.platter?.slug || "",
         description: p.shortDescription || "",
         location: p.location || p.city?.name || "",
+        cityName: p.city?.name || "",
         year: p.createdAt
           ? new Date(p.createdAt).getFullYear()
           : new Date().getFullYear(),

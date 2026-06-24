@@ -61,7 +61,7 @@ type Field = {
   isFlatArray?: boolean;
   disabled?: boolean;
   disabledInEdit?: boolean;
-  allowSpecialChars?: boolean;
+  noSpecialChar?: boolean;
 };
 
 type Props = {
@@ -263,20 +263,7 @@ export default function DynamicForm({
         }
 
         const isTextLike = !field.type || (field.type as string) === "text" || (field.type as string) === "textarea";
-        const skipSpecialChar =
-          field.allowSpecialChars ||
-          (field.type as string) === "email" ||
-          (field.type as string) === "url" ||
-          (field.type as string) === "color" ||
-          (field.type as string) === "date" ||
-          (field.type as string) === "textEditor" ||
-          (field.type as string) === "hidden" ||
-          (field.type as string) === "phone" ||
-          (field.type as string) === "repeater" ||
-          (field.type as string) === "multiselect" ||
-          (field.type as string) === "textarea";
-
-        if (isTextLike && !skipSpecialChar) {
+        if (isTextLike && field.noSpecialChar) {
           strSchema = strSchema.regex(
             /^[a-zA-Z0-9\s\n\r\t]*$/,
             `${field.label} cannot contain special characters`
@@ -425,6 +412,7 @@ export default function DynamicForm({
             value={form[field.name]}
             onChange={handleScalarChange}
             onSelect={handleBulkChange}
+            mode={mode}
           />
           {errors[field.name] && (
             <p className="mt-1 text-xs text-red-500">{errors[field.name]}</p>
@@ -441,6 +429,7 @@ export default function DynamicForm({
           value={form[field.name]}
           onChange={handleChange}
           error={errors[field.name]}
+          mode={mode}
         />
       );
     }
@@ -546,6 +535,7 @@ export default function DynamicForm({
             field={field}
             value={form[field.name]}
             onChange={handleChange}
+            mode={mode}
           />
         </div>
       );
@@ -558,6 +548,7 @@ export default function DynamicForm({
             field={field}
             value={form[field.name]}
             onChange={handleScalarChange}
+            mode={mode}
           />
           {errors[field.name] && (
             <p className="mt-1 text-xs text-red-500">{errors[field.name]}</p>
@@ -590,6 +581,7 @@ export default function DynamicForm({
           field={field}
           value={form[field.name]}
           onChange={handleChange}
+          mode={mode}
         />
         {errors[field.name] && (
           <p className="mt-1 text-xs text-red-500">{errors[field.name]}</p>
@@ -1151,16 +1143,20 @@ function InputField({
   field,
   value,
   onChange,
+  mode,
 }: {
   field: Field;
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
+  mode?: "create" | "edit";
 }) {
   // For date inputs, convert ISO strings (e.g. "2026-05-22T00:00:00.000Z") to YYYY-MM-DD
   let displayValue = value || "";
   if (field.type === "date" && displayValue) {
     displayValue = displayValue.split("T")[0];
   }
+
+  const isDisabled = field.disabled || (mode === "edit" && field.disabledInEdit);
 
   return (
     <>
@@ -1181,7 +1177,7 @@ function InputField({
             : field.placeholder
         }
         required={field.required}
-        disabled={field.disabled}
+        disabled={isDisabled}
       />
       {field.hint && <FieldHint hint={field.hint} />}
     </>
@@ -1197,12 +1193,16 @@ function TextareaField({
   value,
   onChange,
   error,
+  mode,
 }: {
   field: Field;
   value: string;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
   error?: string;
+  mode?: "create" | "edit";
 }) {
+  const isDisabled = field.disabled || (mode === "edit" && field.disabledInEdit);
+
   return (
     <div className={`${field.colSpan ? field.colSpan : "w-full"}`}>
       <Textarea
@@ -1222,6 +1222,7 @@ function TextareaField({
             : field.placeholder
         }
         required={field.required}
+        disabled={isDisabled}
       />
       {field.hint && <FieldHint hint={field.hint} />}
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
@@ -1271,11 +1272,13 @@ function LocationSearchField({
   value,
   onChange,
   onSelect,
+  mode,
 }: {
   field: Field;
   value: string;
   onChange: (name: string, value: string) => void;
   onSelect: (values: Record<string, any>) => void;
+  mode?: "create" | "edit";
 }) {
   const [query, setQuery] = useState(value || "");
   const [results, setResults] = useState<any[]>([]);
@@ -1378,8 +1381,9 @@ function LocationSearchField({
               ? field.placeholder[0]
               : field.placeholder) || "Search location..."
           }
-          className="w-full rounded-xl border border-gray-200 bg-gray-50 pl-10 px-3.5 py-2.5 text-sm text-gray-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
+          className="w-full rounded-xl border border-gray-200 bg-gray-50 pl-10 px-3.5 py-2.5 text-sm text-gray-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 disabled:bg-gray-100 disabled:text-gray-400"
           autoComplete="off"
+          disabled={field.disabled || (mode === "edit" && field.disabledInEdit)}
         />
         <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
           {isLoading ? (
@@ -1610,10 +1614,12 @@ function PhoneField({
   field,
   value,
   onChange,
+  mode,
 }: {
   field: Field;
   value: string;
   onChange: (name: string, value: string) => void;
+  mode?: "create" | "edit";
 }) {
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Allow only digits and limit to 10
@@ -1636,8 +1642,9 @@ function PhoneField({
         maxLength={10}
         inputMode="numeric"
         pattern="[0-9]{10}"
-        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100 disabled:text-gray-400"
         placeholder="Enter 10 digit phone number"
+        disabled={field.disabled || (mode === "edit" && field.disabledInEdit)}
       />
 
       {field.hint && <FieldHint hint={field.hint} />}

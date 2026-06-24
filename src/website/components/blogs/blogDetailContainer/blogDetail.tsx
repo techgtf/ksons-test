@@ -7,6 +7,8 @@ import PopularBlogs from "../PopularBlogs";
 import { useSlideY } from "@/src/website/hooks/useSlideY";
 import { useReveal } from "@/src/website/hooks/useReveal";
 import { formatDate } from "@/src/website/utils/dateFormat";
+import { getDisplayLabel } from "@/src/website/utils/getDisplayLabel";
+import WaterMark from "../../common/WaterMark";
 
 export default function BlogDetail({ blog }: any) {
   const htmlPrinterRef = useRef<HTMLDivElement | null>(null);
@@ -44,6 +46,11 @@ export default function BlogDetail({ blog }: any) {
                 fill
                 className="object-cover"
               />
+            )}
+            {blog?.files?.mainLabel && (
+              <div className="absolute bottom-2 right-2">
+                <WaterMark label={getDisplayLabel(blog?.files?.mainLabel)} />
+              </div>
             )}
           </div>
 

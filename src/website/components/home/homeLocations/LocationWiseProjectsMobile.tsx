@@ -409,7 +409,12 @@ export default function LocationWiseProjectsMobile({
             ) : (
               <div className="text-black pointer-events-none flex flex-col items-center">
                 <div className="w-full h-25 flex items-center justify-center border border-[#0F3C78]/10 shrink-0 bg-[#0F3C78]/5 relative">
-                  <TriangleImg size="w-[50px] lg:w-[50px]" />
+                  <img
+                    src="/images/header/ksons-logo.png"
+                    alt="logo"
+                    width={120}
+                    height={0}
+                  />
                 </div>
                 <div className="flex flex-col pt-2 text-center w-full">
                   <span

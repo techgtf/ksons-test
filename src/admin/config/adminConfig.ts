@@ -69,7 +69,7 @@ export interface FormField {
   minItems?: number;
   disabled?: boolean;
   disabledInEdit?: boolean;
-  allowSpecialChars?: boolean;
+  noSpecialChar?: boolean;
 }
 
 export interface ListColumn {
@@ -167,7 +167,6 @@ const PLATTER: AdminSectionConfig = {
       label: "Meta Title",
       type: "text",
       section: "SEO Settings",
-      allowSpecialChars: true,
     },
 
     {
@@ -340,8 +339,8 @@ const CITIES: AdminSectionConfig = {
       type: "text",
       placeholder: "Mumbai",
       required: true,
-      colSpan: "w-[32%]",
-      disabled: true,
+      colSpan: "w-[48%]",
+      disabledInEdit: true,
     },
     {
       name: "stateId",
@@ -350,16 +349,9 @@ const CITIES: AdminSectionConfig = {
       dynamicSource: "states",
       required: true,
       disabled: true,
-      colSpan: "w-[32%]",
+      colSpan: "w-[48%]",
     },
-    {
-      name: "seq",
-      label: "Sequence",
-      type: "number",
-      placeholder: "1",
-      required: true,
-      colSpan: "w-[32%]",
-    },
+
     {
       name: "description",
       label: "Description",
@@ -424,6 +416,7 @@ const AMENITIES: AdminSectionConfig = {
       type: "image",
       section: "Media",
       hint: "Format: PNG or WEBP. Max: 50KB",
+      required: true,
     },
   ],
   // filters: [
@@ -463,7 +456,6 @@ const TYPOLOGY: AdminSectionConfig = {
       placeholder: "2 BHK",
       section: "Basic Information",
       required: true,
-      allowSpecialChars: true,
     },
   ],
   displaySearch: true,
@@ -486,7 +478,6 @@ const SUBTYPOLOGY: AdminSectionConfig = {
       placeholder: "2 BHK",
       section: "Basic Information",
       required: true,
-      allowSpecialChars: true,
     },
   ],
   displaySearch: true,
@@ -508,6 +499,7 @@ const WEBSITEICONS: AdminSectionConfig = {
       placeholder: "market, temple, school, etc",
       section: "Basic Information",
       required: true,
+      noSpecialChar: true,
     },
     {
       name: "search_text",
@@ -516,7 +508,6 @@ const WEBSITEICONS: AdminSectionConfig = {
       placeholder: "market, temple, school, etc",
       section: "Basic Information",
       hint: "Separate multiple search texts with comma",
-      allowSpecialChars: true,
     },
     {
       name: "image",
@@ -577,7 +568,6 @@ const SOCIALLINKS: AdminSectionConfig = {
       section: "Basic Information",
       required: true,
       colSpan: "w-[54%]",
-      allowSpecialChars: true,
     },
   ],
   displaySearch: true,
@@ -652,7 +642,6 @@ const TESTIMONIAL: AdminSectionConfig = {
       type: "text",
       section: "Images",
       showIf: (formValues: any) => formValues.type === "video",
-      allowSpecialChars: true,
     },
     // {
     //   name: "video_url",
@@ -758,7 +747,6 @@ export const FAQ: AdminSectionConfig = {
       placeholder: "Enter Question",
       required: true,
       colSpan: "w-full",
-      allowSpecialChars: true,
     },
     {
       name: "answer",

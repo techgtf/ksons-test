@@ -61,7 +61,7 @@ export interface FormField {
   maxItems?: number;
   minItems?: number;
   isFlatArray?: boolean;
-  allowSpecialChars?: boolean;
+  noSpecialChar?: boolean;
 }
 
 export interface FilterConfig {

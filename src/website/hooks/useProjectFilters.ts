@@ -61,17 +61,21 @@ export function useProjectFilters(
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
-  const limit = 20;
+
+  const isCategoryPage = !!platterId;
+  const limit = isCategoryPage ? 20 : (initialPagination?.limit || 10);
 
   const [filters, setFilters] = useState<ProjectFiltersState>({
     ...DEFAULT_FILTERS,
     ...initialFilters,
   });
   const [showFilters, setShowFilters] = useState(false);
-  const [apiProjects, setApiProjects] = useState<Project[]>(projectsList);
   const [statusOptions, setStatusOptions] =
     useState<ProjectStatusOption[]>(initialStatusOptions);
-  const [pagination, setPagination] = useState<any>(initialPagination);
+
+  // States only needed for Category Page dynamic/server pagination
+  const [apiProjects, setApiProjects] = useState<Project[]>(projectsList);
+  const [categoryPagination, setCategoryPagination] = useState<any>(initialPagination);
 
   useEffect(() => {
     if (initialStatusOptions && initialStatusOptions.length > 0) {
@@ -79,29 +83,46 @@ export function useProjectFilters(
     }
   }, [initialStatusOptions]);
 
-  // Sync initial projects list when page loads/changes
+  // CATEGORY PAGE: Sync initial projects list when page loads/changes
   useEffect(() => {
-    setApiProjects(projectsList);
-  }, [projectsList]);
-
-  // Keep pagination in sync with server initialPagination when no search/status filters are active
-  useEffect(() => {
-    if (!filters.search && filters.statuses.length === 0) {
-      setPagination(initialPagination);
+    if (isCategoryPage) {
+      setApiProjects(projectsList);
     }
-  }, [initialPagination, filters.search, filters.statuses]);
+  }, [projectsList, isCategoryPage]);
 
-  // Reset page parameter in URL when search or status filters change
+  // CATEGORY PAGE: Keep pagination in sync with server initialPagination when no search/status filters are active
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.has("page")) {
-      params.delete("page");
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    if (isCategoryPage && !filters.search && filters.statuses.length === 0) {
+      setCategoryPagination(initialPagination);
     }
-  }, [filters.search, filters.statuses, pathname, router]);
+  }, [initialPagination, filters.search, filters.statuses, isCategoryPage]);
 
-  // Fetch projects from website/project when search, status filter, or page changes
+  // CATEGORY PAGE: Reset page parameter in URL when search or status filters change
   useEffect(() => {
+    if (isCategoryPage) {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("page")) {
+        params.delete("page");
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      }
+    }
+  }, [filters.search, filters.statuses, pathname, router, isCategoryPage]);
+
+  // LOCATION PAGE: Reset page parameter in URL when any filters change
+  useEffect(() => {
+    if (!isCategoryPage) {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("page")) {
+        params.delete("page");
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      }
+    }
+  }, [filters.search, filters.cities, filters.budgets, filters.statuses, pathname, router, isCategoryPage]);
+
+  // CATEGORY PAGE: Fetch projects from website/project when search, status filter, or page changes
+  useEffect(() => {
+    if (!isCategoryPage) return;
+
     async function fetchFilteredProjects() {
       try {
         let url = `${BASE_WEBSITE}website/project?status=true&limit=${limit}&page=${currentPage}`;
@@ -126,7 +147,7 @@ export function useProjectFilters(
         if (res.ok) {
           const json = await res.json();
           const data = json.data || json || [];
-          setPagination(json.pagination || null);
+          setCategoryPagination(json.pagination || null);
 
           const mapped = data.map((p: any) => {
             const typologyName = p.typology?.name || "";
@@ -149,6 +170,7 @@ export function useProjectFilters(
               categorySlug: p.platter?.slug || "",
               description: p.shortDescription || "",
               location: p.location || p.city?.name || "",
+              cityName: p.city?.name || "",
               year: p.createdAt ? new Date(p.createdAt).getFullYear() : 2026,
               price: p.price || 0,
               area: p.starting_size
@@ -183,10 +205,13 @@ export function useProjectFilters(
     platterId,
     projectsList,
     currentPage,
+    isCategoryPage,
+    limit,
   ]);
 
-  const filteredProjects = useMemo(() => {
-    return apiProjects.filter((project) => {
+  const filteredAllProjects = useMemo(() => {
+    const listToFilter = isCategoryPage ? apiProjects : projectsList;
+    return listToFilter.filter((project) => {
       const matchesSearch =
         !filters.search ||
         project.title.toLowerCase().includes(filters.search.toLowerCase());
@@ -194,6 +219,7 @@ export function useProjectFilters(
       const matchesCity =
         filters.cities.length === 0 ||
         filters.cities.some((city) =>
+          project.cityName?.toLowerCase() === city.toLowerCase() ||
           project.location.toLowerCase().includes(city.toLowerCase()),
         );
 
@@ -217,7 +243,32 @@ export function useProjectFilters(
 
       return matchesSearch && matchesCity && matchesBudget && matchesStatus;
     });
-  }, [apiProjects, filters]);
+  }, [projectsList, apiProjects, filters, isCategoryPage]);
+
+  const pagination = useMemo(() => {
+    if (isCategoryPage) {
+      return categoryPagination;
+    }
+
+    const total = filteredAllProjects.length;
+    const totalPages = Math.ceil(total / limit);
+    return {
+      total,
+      page: currentPage,
+      limit,
+      totalPages,
+      hasNextPage: currentPage < totalPages,
+      hasPrevPage: currentPage > 1,
+    };
+  }, [filteredAllProjects, currentPage, limit, isCategoryPage, categoryPagination]);
+
+  const filteredProjects = useMemo(() => {
+    if (isCategoryPage) {
+      return filteredAllProjects;
+    }
+    const startIndex = (currentPage - 1) * limit;
+    return filteredAllProjects.slice(startIndex, startIndex + limit);
+  }, [filteredAllProjects, currentPage, limit, isCategoryPage]);
 
   const isFiltering = useMemo(() => {
     return (

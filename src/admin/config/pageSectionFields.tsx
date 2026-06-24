@@ -93,7 +93,7 @@ export const HOME_SECTIONS: Record<string, SectionDefinition> = {
         name: "description",
         label: "Description",
         placeholder: "NBFC description",
-        type: "text",
+        type: "textarea",
         section: "Basic Information",
         required: true,
         colSpan: "w-full",

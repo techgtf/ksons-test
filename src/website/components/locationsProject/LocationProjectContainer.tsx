@@ -106,7 +106,8 @@ export default function LocationProjectContainer({
                   <h2
                     className={`${agency.className} text-2xl  text-[#0F3C78] capitalize font-medium`}
                   >
-                    We found {filteredProjects.length} projects in{" "}
+                    We found {pagination?.total ?? filteredProjects.length}{" "}
+                    projects in{" "}
                     <span className="capitalize">
                       {filters.cities.join(", ")}
                     </span>

@@ -50,11 +50,11 @@ export default function CommonBanner({
   const headingRef = useRef<HTMLHeadingElement | null>(null);
   const descRef = useRef<HTMLHeadingElement | null>(null);
 
-  useSlideY({ target: wrapperRef, direction: "down" });
+  useSlideY({ target: wrapperRef, direction: "down", animateOnMount: true });
   // useSlideY({ target: titleRef, direction: "down" })
   // useSlideY({ target: headingRef, direction: "down" })
   // useSlideY({ target: descRef, direction: "up" })
-  useReveal(imgRef, { direction: "bottom" });
+  useReveal(imgRef, { direction: "bottom", animateOnMount: true });
 
   return (
     <div

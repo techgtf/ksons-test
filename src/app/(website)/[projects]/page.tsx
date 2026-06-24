@@ -180,6 +180,7 @@ export default async function page({
         title: p.projectName,
         description: p.shortDescription || "",
         location: p.location || p.city?.name || "",
+        cityName: p.city?.name || "",
         year: p.createdAt
           ? new Date(p.createdAt).getFullYear()
           : new Date().getFullYear(),

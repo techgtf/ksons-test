@@ -12,6 +12,7 @@ interface UseSlideYProps {
     stagger?: number
     ease?: string
     start?: string
+    animateOnMount?: boolean
 }
 
 export function useSlideY({
@@ -22,6 +23,7 @@ export function useSlideY({
     stagger = 0.15,
     ease = "power3.out",
     start = "top 85%",
+    animateOnMount = false,
 }: UseSlideYProps) {
     useLayoutEffect(() => {
         registerGSAP();
@@ -42,7 +44,7 @@ export function useSlideY({
                     duration,
                     ease,
                     stagger,
-                    scrollTrigger: {
+                    scrollTrigger: animateOnMount ? undefined : {
                         trigger: el,
                         start,
                         toggleActions: "play none none reverse"
@@ -52,5 +54,6 @@ export function useSlideY({
         }, el)
 
         return () => ctx.revert()
-    }, [target])
+    }, [target, direction, distance, duration, ease, stagger, start, animateOnMount])
 }
+

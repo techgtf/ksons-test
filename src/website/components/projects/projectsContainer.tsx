@@ -85,7 +85,7 @@ export default function ProjectsContainer({
                   <h4
                     className={`${agency.className} text-(--blue) text-2xl tracking-[0.5px] pb-14`}
                   >
-                    We found {filteredProjects.length} {category.label} Projects
+                    We found {pagination?.total ?? filteredProjects.length} {category.label} Projects
                   </h4>
                 )}
                 <div className="grid gap-8 lg:gap-16">

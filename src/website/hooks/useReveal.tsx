@@ -12,6 +12,7 @@ interface UseRevealOptions {
     delay?: number
     once?: boolean
     direction?: RevealDirection
+    animateOnMount?: boolean
 }
 
 const clipMap: Record<RevealDirection, { from: string; to: string }> = {
@@ -43,6 +44,7 @@ export function useReveal<T extends HTMLElement = HTMLElement>(
         delay = 0,
         once = false,
         direction = 'top',
+        animateOnMount = false,
     }: UseRevealOptions = {}
 ) {
     useLayoutEffect(() => {
@@ -61,7 +63,7 @@ export function useReveal<T extends HTMLElement = HTMLElement>(
                     duration,
                     ease,
                     delay,
-                    scrollTrigger: {
+                    scrollTrigger: animateOnMount ? undefined : {
                         trigger: el,
                         start,
                         toggleActions: "play none none reverse",
@@ -71,5 +73,5 @@ export function useReveal<T extends HTMLElement = HTMLElement>(
         }, el)
 
         return () => ctx.revert()
-    }, [ref, start, duration, ease, delay, once, direction])
+    }, [ref, start, duration, ease, delay, once, direction, animateOnMount])
 }
