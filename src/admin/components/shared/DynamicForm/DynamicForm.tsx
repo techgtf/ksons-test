@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { z } from "zod";
 import {
   HiOutlineSave,
   HiOutlineArrowLeft,
@@ -49,6 +50,8 @@ type Field = {
       }
     | ((formValues: any) => boolean);
   excludeExisting?: boolean;
+  labelField?: string;
+  valueField?: string;
   defaultValue?: any;
   colSpan?: string;
   repeaterFields?: Field[]; // Fields to repeat in a 'repeater' type
@@ -58,6 +61,7 @@ type Field = {
   isFlatArray?: boolean;
   disabled?: boolean;
   disabledInEdit?: boolean;
+  allowSpecialChars?: boolean;
 };
 
 type Props = {
@@ -222,27 +226,94 @@ export default function DynamicForm({
   /* ── validation ── */
 
   const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
+    const schemaFields: Record<string, z.ZodTypeAny> = {};
+
     visibleFields.forEach((field) => {
-      if (!field.required) return;
       const isFile = FILE_TYPES.includes(field.type ?? "text");
-      let missing = false;
+
       if (isFile) {
-        missing = !files[field.name] && !form[field.name];
-      } else {
-        const val = form[field.name];
-        if (val === undefined || val === null || val === "") {
-          missing = true;
-        } else if (typeof val === "string" && val.trim() === "") {
-          missing = true;
+        if (field.required) {
+          schemaFields[field.name] = z.any().refine((val) => {
+            const hasFile = !!files[field.name];
+            const hasFormValue = !!form[field.name];
+            return hasFile || hasFormValue;
+          }, `${field.label} is required`);
+        } else {
+          schemaFields[field.name] = z.any().optional();
         }
-      }
-      if (missing) {
-        newErrors[field.name] = `${field.label} is required`;
+      } else if ((field.type as string) === "multiselect") {
+        if (field.required) {
+          schemaFields[field.name] = z
+            .array(z.string())
+            .min(1, `${field.label} is required`);
+        } else {
+          schemaFields[field.name] = z.array(z.string()).optional();
+        }
+      } else if ((field.type as string) === "toggle") {
+        schemaFields[field.name] = z.boolean().optional();
+      } else if ((field.type as string) === "repeater") {
+        schemaFields[field.name] = z.any().optional();
+      } else {
+        let strSchema = z.string();
+
+        if (field.required) {
+          strSchema = strSchema.trim().min(1, `${field.label} is required`);
+        } else {
+          strSchema = strSchema.trim();
+        }
+
+        const isTextLike = !field.type || (field.type as string) === "text" || (field.type as string) === "textarea";
+        const skipSpecialChar =
+          field.allowSpecialChars ||
+          (field.type as string) === "email" ||
+          (field.type as string) === "url" ||
+          (field.type as string) === "color" ||
+          (field.type as string) === "date" ||
+          (field.type as string) === "textEditor" ||
+          (field.type as string) === "hidden" ||
+          (field.type as string) === "phone" ||
+          (field.type as string) === "repeater" ||
+          (field.type as string) === "multiselect" ||
+          (field.type as string) === "textarea";
+
+        if (isTextLike && !skipSpecialChar) {
+          strSchema = strSchema.regex(
+            /^[a-zA-Z0-9\s\n\r\t]*$/,
+            `${field.label} cannot contain special characters`
+          );
+        }
+
+        schemaFields[field.name] = field.required
+          ? strSchema
+          : strSchema.optional().or(z.literal(""));
       }
     });
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    const validationSchema = z.object(schemaFields);
+
+    const dataToValidate: Record<string, any> = {};
+    visibleFields.forEach((field) => {
+      const isFile = FILE_TYPES.includes(field.type ?? "text");
+      if (isFile) {
+        dataToValidate[field.name] = files[field.name] || form[field.name] || null;
+      } else {
+        dataToValidate[field.name] = form[field.name];
+      }
+    });
+
+    const result = validationSchema.safeParse(dataToValidate);
+    if (!result.success) {
+      const newErrors: Record<string, string> = {};
+      result.error.issues.forEach((issue) => {
+        const fieldName = String(issue.path[0]);
+        newErrors[fieldName] = issue.message;
+      });
+      setErrors(newErrors);
+      return false;
+    }
+
+    setErrors({});
+    return true;
   };
 
   /* ── submit ── */
@@ -369,6 +440,7 @@ export default function DynamicForm({
           field={field}
           value={form[field.name]}
           onChange={handleChange}
+          error={errors[field.name]}
         />
       );
     }
@@ -380,6 +452,7 @@ export default function DynamicForm({
           field={field}
           value={form[field.name]}
           onChange={handleScalarChange}
+          error={errors[field.name]}
         />
       );
     }
@@ -685,8 +758,8 @@ function SelectField({
 
   const { options: dynamicOptions, isLoading } = useDropdownOptions(
     field.dependsOn && !dependencyValue ? undefined : field.dynamicSource,
-    undefined,
-    "id",
+    field.labelField,
+    field.valueField || "id",
     customEndpoint,
   );
   const options = useMemo(() => {
@@ -937,8 +1010,8 @@ function MultiSelectField({
 
   const { options: dynamicOptions, isLoading } = useDropdownOptions(
     field.dependsOn && !dependencyValue ? undefined : field.dynamicSource,
-    undefined,
-    "id",
+    field.labelField,
+    field.valueField || "id",
     customEndpoint,
   );
   const options = field.dynamicSource ? dynamicOptions : field.options;
@@ -1123,10 +1196,12 @@ function TextareaField({
   field,
   value,
   onChange,
+  error,
 }: {
   field: Field;
   value: string;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
+  error?: string;
 }) {
   return (
     <div className={`${field.colSpan ? field.colSpan : "w-full"}`}>
@@ -1149,6 +1224,7 @@ function TextareaField({
         required={field.required}
       />
       {field.hint && <FieldHint hint={field.hint} />}
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>
   );
 }
@@ -1157,10 +1233,12 @@ function EditorField({
   field,
   value,
   onChange,
+  error,
 }: {
   field: Field;
   value: string;
   onChange: (name: string, value: string) => void;
+  error?: string;
 }) {
   return (
     <div className={`${field.colSpan ? field.colSpan : "w-full"}`}>
@@ -1179,6 +1257,7 @@ function EditorField({
         }
       />
       {field.hint && <FieldHint hint={field.hint} />}
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>
   );
 }

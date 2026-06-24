@@ -104,7 +104,7 @@ const CustomCursor = () => {
             className="custom-cursor-container"
             style={{ pointerEvents: "none", zIndex: 10000 }}
           >
-            {/* Main Outer Circle */}
+            {/* Main Outer Triangle */}
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               animate={{
@@ -116,18 +116,14 @@ const CustomCursor = () => {
                       ? 1.1
                       : 1,
                 opacity: 1,
-                borderColor: cursorColor,
-                borderWidth: isInteractive ? "2px" : "1.5px",
               }}
               exit={{ scale: 0, opacity: 0 }}
               style={{
                 position: "fixed",
                 left: 0,
                 top: 0,
-                width: 32, // Slightly smaller since default cursor is present
+                width: 32, // Match size of original outer circle
                 height: 32,
-                borderStyle: "solid",
-                borderRadius: "50%",
                 translateX: cursorX,
                 translateY: cursorY,
                 zIndex: 10000,
@@ -141,24 +137,42 @@ const CustomCursor = () => {
                 damping: 25,
                 stiffness: 250,
               }}
-            />
+            >
+              <svg
+                width="100%"
+                height="100%"
+                viewBox="0 0 32 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ overflow: "visible" }}
+              >
+                <polygon
+                  points="16,5 4,26 28,26"
+                  stroke={cursorColor}
+                  strokeWidth={isInteractive ? 2 : 1.5}
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  style={{
+                    transition: "stroke 0.2s ease, stroke-width 0.2s ease",
+                  }}
+                />
+              </svg>
+            </motion.div>
 
-            {/* Center Dot (Smaller and perfectly centered on hotspot) */}
+            {/* Center Triangle (Smaller and perfectly centered on hotspot) */}
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               animate={{
                 scale: isInteractive ? 0 : isClicked ? 1.5 : 1,
                 opacity: 0.8, // Slightly more subtle
-                backgroundColor: cursorColor,
               }}
               exit={{ scale: 0, opacity: 0 }}
               style={{
                 position: "fixed",
                 left: 0,
                 top: 0,
-                width: 4,
-                height: 4,
-                borderRadius: "50%",
+                width: 8,
+                height: 8,
                 translateX: mouseX,
                 translateY: mouseY,
                 zIndex: 10001,
@@ -167,7 +181,26 @@ const CustomCursor = () => {
                 pointerEvents: "none",
                 willChange: "transform",
               }}
-            />
+            >
+              <svg
+                width="100%"
+                height="100%"
+                viewBox="0 0 8 8"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <polygon
+                  points="4,1 1,6 7,6"
+                  fill={cursorColor}
+                  stroke={cursorColor}
+                  strokeWidth={0.5}
+                  strokeLinejoin="round"
+                  style={{
+                    transition: "fill 0.2s ease, stroke 0.2s ease",
+                  }}
+                />
+              </svg>
+            </motion.div>
           </div>
         </>
       )}

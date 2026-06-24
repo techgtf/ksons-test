@@ -12,6 +12,8 @@ import "swiper/css";
 import "swiper/css/effect-fade";
 import MicroHeader from "../projects/micro/MicroHeader";
 import Link from "next/link";
+import WaterMark from "../common/WaterMark";
+import { getDisplayLabel } from "../../utils/getDisplayLabel";
 
 /* ================= TYPES ================= */
 
@@ -19,6 +21,7 @@ export type CSRItem = {
   image: string;
   year: string;
   title: string;
+  mainLabel?: string;
 };
 
 export type CSRProps = {
@@ -211,6 +214,13 @@ export default function CSR({
                     fill
                     className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
                   />
+                  <div className="absolute  right-5  bottom-5">
+                    <WaterMark
+                      textColor="text-white"
+                      opacity="opacity-100"
+                      label={getDisplayLabel(slide?.mainLabel)}
+                    />
+                  </div>
                 </div>
 
                 <div className="py-5 lg:hidden flex items-center border-b border-[#0F3C78]/20">

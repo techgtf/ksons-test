@@ -7,17 +7,21 @@ import { agency, blauerNue } from "@/src/app/fonts";
 import { useSlideY } from "../../hooks/useSlideY";
 import { fetchPageData } from "../../utils/api";
 import { formatDate } from "../../utils/dateFormat";
+import WaterMark from "../common/WaterMark";
+import { getDisplayLabel } from "../../utils/getDisplayLabel";
 
 const PopularBlogItem = ({
   image,
   date,
   title,
   slug,
+  mainLabel,
 }: {
   image: string;
   date: string;
   title: string;
   slug: string;
+  mainLabel?: string;
 }) => {
   const cardRef = useRef<HTMLAnchorElement | null>(null);
 
@@ -35,6 +39,15 @@ const PopularBlogItem = ({
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-110 ease-in-out"
         />
+        {mainLabel && (
+          <div className="absolute right-4 bottom-4 z-10">
+            <WaterMark
+              textColor="text-white"
+              opacity="opacity-60"
+              label={getDisplayLabel(mainLabel)}
+            />
+          </div>
+        )}
       </div>
       <span
         className={`${blauerNue.className} text-[#0f3c78]/75 font-light text-base tracking-[0.5px] leading-[24px] inline-block mb-4`}
@@ -63,6 +76,7 @@ const PopularBlogs = () => {
         const formatted = blogsData.map((blog: any) => ({
           image:
             blog?.files?.desktop_image || "/images/blogs/blog-fallback.jpg",
+          mainLabel: blog?.files?.mainLabel,
           title: blog?.title,
           date: formatDate(blog?.dateAt),
           slug: blog?.slug,

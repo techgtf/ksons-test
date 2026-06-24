@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useRef, useLayoutEffect } from "react";
 import { gsap, ScrollTrigger, registerGSAP } from "../../utils/gsap";
 import { useScrollScale } from "../../hooks/useScrollScale";
+import WaterMark from "../common/WaterMark";
+import { getDisplayLabel } from "../../utils/getDisplayLabel";
 
 /* ================= TYPES ================= */
 
@@ -13,6 +15,7 @@ export type InvestorDescProps = {
   description: string;
   icon: string;
   image?: string;
+  mainLabel?: string;
 };
 
 /* ================= COMPONENT ================= */
@@ -22,6 +25,7 @@ export default function InvestorDesc({
   description,
   icon,
   image,
+  mainLabel,
 }: InvestorDescProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -107,14 +111,23 @@ export default function InvestorDesc({
             <Image src={icon} alt="icon" height={25} width={25} />
           </div>
           {image && (
-            <Image
-              ref={imgRef}
-              src={image}
-              alt="investor-description"
-              width={702}
-              height={326}
-              className="block mx-auto rounded-[15px] pb-10 lg:pb-30"
-            />
+            <div className="relative">
+              <Image
+                ref={imgRef}
+                src={image}
+                alt="investor-description"
+                width={702}
+                height={326}
+                className="block mx-auto rounded-[15px] pb-10 lg:pb-30"
+              />
+              <div className="absolute right-5  lg:top-[65%]">
+                <WaterMark
+                  textColor="text-white"
+                  opacity="opacity-100"
+                  label={getDisplayLabel(mainLabel)}
+                />
+              </div>
+            </div>
           )}
         </div>
       </div>

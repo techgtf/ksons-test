@@ -5,6 +5,7 @@ export type Column<T> = {
   title: string;
   width?: string;
   className?: string;
+  isLink?: boolean;
 
   render?: (row: T, index: number) => React.ReactNode;
 };

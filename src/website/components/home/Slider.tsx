@@ -5,6 +5,8 @@ import NextImage from "next/image";
 import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import CommonBtn from "../common/CommonBtn";
 import { gsap, ScrollTrigger, registerGSAP } from "../../utils/gsap";
+import WaterMark from "../common/WaterMark";
+import { getDisplayLabel } from "../../utils/getDisplayLabel";
 
 export type SliderItem = {
   slug: string;
@@ -14,6 +16,8 @@ export type SliderItem = {
   files: {
     featured_desktop_file: string;
     featured_mobile_file: string;
+    mainLabel?: string;
+    featuredLabel?: string;
   };
 };
 
@@ -202,6 +206,15 @@ export function Slider({
                   {slide.label}
                 </span>
               </div>
+              {isActive && slide?.files?.featuredLabel && (
+                <div className="absolute bottom-5 right-10 z-2">
+                  <WaterMark
+                    textColor="text-white"
+                    opacity="opacity-70"
+                    label={getDisplayLabel(slide?.files?.featuredLabel)}
+                  />
+                </div>
+              )}
             </div>
           );
         })}
@@ -282,7 +295,7 @@ export function MobileSlider({
 
         {/* Active Expanded Card */}
         <div
-          className={`${blauerNue.className} flex-1 flex items-center justify-center px-6`}
+          className={`${blauerNue.className} relative flex-1 flex items-center justify-center px-6`}
         >
           <div>
             <div className="flex items-center gap-3">
@@ -322,6 +335,15 @@ export function MobileSlider({
               {buttonText}
             </CommonBtn>
           </div>
+          {slides[active]?.files?.featuredLabel && (
+            <div className="absolute bottom-5 left-5">
+              <WaterMark
+                textColor="text-white"
+                opacity="opacity-40"
+                label={getDisplayLabel(slides[active]?.files?.featuredLabel)}
+              />
+            </div>
+          )}
         </div>
 
         {/* Bottom Remaining Queue */}

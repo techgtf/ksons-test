@@ -10,6 +10,8 @@ import { agency, blauerNue } from "@/src/app/fonts";
 import CommonBtn from "../common/CommonBtn";
 import { TriangleImg } from "@/src/website/components/common/VectorImages";
 import Link from "next/link";
+import WaterMark from "../common/WaterMark";
+import { getDisplayLabel } from "../../utils/getDisplayLabel";
 
 export default function ProjectCard({
   project,
@@ -84,6 +86,13 @@ export default function ProjectCard({
           }}
           className="project-card__img w-full lg:h-full h-[250px] object-cover"
         />
+        <div className="absolute right-5 bottom-5">
+          <WaterMark
+            textColor="text-black"
+            opacity="opacity-100"
+            label={getDisplayLabel(project.featuredLabel || "")}
+          />
+        </div>
       </motion.div>
 
       {/* Content Side */}

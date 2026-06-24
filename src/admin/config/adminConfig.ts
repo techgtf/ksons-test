@@ -8,6 +8,7 @@ import {
   HiOutlineFolder,
   HiOutlineChartPie,
   HiOutlineCollection,
+  HiOutlineShare,
 } from "react-icons/hi";
 
 import { PROJECT, DEFAULT_PROJECT_SECTION_FIELDS } from "./projectsConfig";
@@ -58,6 +59,8 @@ export interface FormField {
       }
     | ((formValues: any) => boolean);
   excludeExisting?: boolean; // If true, filter out options that already exist in the database (requires dynamicSource)
+  labelField?: string; // Field to use as label for dynamic select
+  valueField?: string; // Field to use as value for dynamic select
   defaultValue?: any;
   colSpan?: string;
   repeaterFields?: FormField[];
@@ -66,6 +69,7 @@ export interface FormField {
   minItems?: number;
   disabled?: boolean;
   disabledInEdit?: boolean;
+  allowSpecialChars?: boolean;
 }
 
 export interface ListColumn {
@@ -79,6 +83,7 @@ export interface ListColumn {
   linkTemplate?: string; // Template for action URL, e.g. "/admin/project/{id}"
   showIcon?: boolean; // Whether to show a plus icon (for action buttons)
   type?: string; // Optional type for specialized rendering
+  isLink?: boolean; // If true, render cell content as a clickable link
   render?: (row: any, index?: number) => React.ReactNode;
 }
 
@@ -162,6 +167,7 @@ const PLATTER: AdminSectionConfig = {
       label: "Meta Title",
       type: "text",
       section: "SEO Settings",
+      allowSpecialChars: true,
     },
 
     {
@@ -189,6 +195,20 @@ const PLATTER: AdminSectionConfig = {
       name: "seoTags.bodyData",
       label: "Body Data",
       section: "SEO Section",
+    },
+    {
+      name: "mainLabel",
+      label: "Desktop Image Label",
+      type: "text",
+      placeholder: "Residential",
+      section: "Images",
+    },
+    {
+      name: "featuredLabel",
+      label: "Featured Image Label",
+      type: "text",
+      placeholder: "Featured",
+      section: "Images",
     },
     // ---------------- FILES ----------------
     {
@@ -443,14 +463,8 @@ const TYPOLOGY: AdminSectionConfig = {
       placeholder: "2 BHK",
       section: "Basic Information",
       required: true,
+      allowSpecialChars: true,
     },
-    // {
-    //   name: "sequence",
-    //   label: "Sequence",
-    //   type: "number",
-    //   placeholder: "1",
-    //   section: "Basic Information",
-    // },
   ],
   displaySearch: true,
 };
@@ -472,6 +486,7 @@ const SUBTYPOLOGY: AdminSectionConfig = {
       placeholder: "2 BHK",
       section: "Basic Information",
       required: true,
+      allowSpecialChars: true,
     },
   ],
   displaySearch: true,
@@ -501,6 +516,7 @@ const WEBSITEICONS: AdminSectionConfig = {
       placeholder: "market, temple, school, etc",
       section: "Basic Information",
       hint: "Separate multiple search texts with comma",
+      allowSpecialChars: true,
     },
     {
       name: "image",
@@ -509,6 +525,59 @@ const WEBSITEICONS: AdminSectionConfig = {
       section: "Media",
       required: true,
       hint: "Format: PNG, WEBP Max: 50KB",
+    },
+  ],
+  displaySearch: true,
+};
+
+const SOCIALLINKS: AdminSectionConfig = {
+  title: "Social Links",
+  noun: "social-links",
+  icon: HiOutlineShare,
+  endpoint: "/admin/social-links",
+  listColumns: [
+    { key: "key", title: "Name", dataKey: "key" },
+    { key: "seq", title: "Seq", dataKey: "seq" },
+    { key: "status", title: "Status", dataKey: "status" },
+    { key: "url", title: "Url", dataKey: "url", isLink: true },
+  ],
+  fields: [
+    {
+      name: "status",
+      label: "Status",
+      type: "hidden",
+      section: "Basic Information",
+      defaultValue: true,
+    },
+    {
+      name: "key",
+      label: "Name",
+      type: "select",
+      dynamicSource: "socialLinks",
+      excludeExisting: true,
+      labelField: "key",
+      valueField: "key",
+      section: "Basic Information",
+      options: [
+        { label: "Facebook", value: "facebook" },
+        { label: "Instagram", value: "instagram" },
+        { label: "X (Twitter)", value: "x" },
+        { label: "YouTube", value: "youtube" },
+        { label: "LinkedIn", value: "linkedin" },
+      ],
+      colSpan: "w-[40%]",
+      required: true,
+      disabledInEdit: true,
+    },
+    {
+      name: "url",
+      label: "URL",
+      type: "text",
+      placeholder: "https://www.google.com",
+      section: "Basic Information",
+      required: true,
+      colSpan: "w-[54%]",
+      allowSpecialChars: true,
     },
   ],
   displaySearch: true,
@@ -551,6 +620,13 @@ const TESTIMONIAL: AdminSectionConfig = {
       section: "Basic Information",
     },
     {
+      name: "mainLabel",
+      label: "Image Watermark",
+      type: "text",
+      section: "Watermark",
+      colSpan: "w-full",
+    },
+    {
       type: "select",
       label: "Type",
       name: "type",
@@ -576,6 +652,7 @@ const TESTIMONIAL: AdminSectionConfig = {
       type: "text",
       section: "Images",
       showIf: (formValues: any) => formValues.type === "video",
+      allowSpecialChars: true,
     },
     // {
     //   name: "video_url",
@@ -681,6 +758,7 @@ export const FAQ: AdminSectionConfig = {
       placeholder: "Enter Question",
       required: true,
       colSpan: "w-full",
+      allowSpecialChars: true,
     },
     {
       name: "answer",
@@ -719,6 +797,7 @@ export const ADMIN_SECTION_REGISTRY: Record<string, AdminSectionConfig> = {
   projectSections: DEFAULT_PROJECT_SECTION_FIELDS,
   pageSections: DEFAULT_PAGE_SECTION_FIELDS,
   faq: FAQ,
+  socialLinks: SOCIALLINKS,
 };
 
 export function getSectionConfig(slug: string): AdminSectionConfig {

@@ -4,6 +4,13 @@ import LocationWiseProjectsMobile from "./LocationWiseProjectsMobile";
 import { ResponsivePosition } from "./locationData";
 import { fetchPageData } from "@/src/website/utils/api";
 
+export interface PageCitiesBasicData {
+  title: { main: string; sub: string };
+  files: {
+    desktop_image: string;
+    mobile_image: string;
+  };
+}
 export type LocationData = {
   id: number;
   name: string;
@@ -39,13 +46,12 @@ async function giveProjects() {
     };
   }
 
-  const filteredCities = cityRes.data
-    .map((city: any) => ({
-      ...city,
-      projects:
-        city.projects?.filter((project: any) => project.status === true) || [],
-    }))
-    .filter((city: any) => city.projects.length > 0);
+  const filteredCities = cityRes.data.map((city: any) => ({
+    ...city,
+    projects:
+      city.projects?.filter((project: any) => project.status === true) || [],
+  }));
+  // .filter((city: any) => city.projects.length > 0);
 
   return {
     ...cityRes,
@@ -53,7 +59,11 @@ async function giveProjects() {
   };
 }
 
-export const LocationContainers = async () => {
+export const LocationContainers = async ({
+  pageCitiesBasicData,
+}: {
+  pageCitiesBasicData: PageCitiesBasicData;
+}) => {
   const cityRes = await giveProjects();
 
   const locations =
@@ -86,60 +96,18 @@ export const LocationContainers = async () => {
           })) || [],
       })) || [];
 
-  // console.log(locations, "locations");
-
-  const ncrLocations = [
-    {
-      id: "cmqu2mrr300022pnt9405s39b",
-      name: "Noida",
-      position: ResponsivePosition[3],
-      desc: "Noida is a rapidly developing city in the National Capital Region (NCR) of India, known for its modern infrastructure and growing real estate market.",
-
-      hero: {
-        img: "/images/home/location-wise-pro/project.avif",
-        title: "Noida",
-        desc: "",
-      },
-      properties: [],
-    },
-
-    {
-      id: "cmqu2mrr300022pnt9405s39d",
-      name: "Faridabad",
-      position: ResponsivePosition[4],
-      desc: "Faridabad is a rapidly developing city in the National Capital Region (NCR) of India, known for its modern infrastructure and growing real estate market.",
-
-      hero: {
-        img: "/images/home/location-wise-pro/project.avif",
-        title: "Faridabad",
-        desc: "",
-      },
-
-      properties: [],
-    },
-  ];
-  const hatrasLocation = [
-    {
-      id: "cmqu2mrr300022pttt9405s39b",
-      name: "Hathras",
-      position: ResponsivePosition[5],
-      desc: "Hathras is a rapidly developing city in the National Capital Region (NCR) of India, known for its modern infrastructure and growing real estate market.",
-
-      hero: {
-        img: "/images/home/location-wise-pro/project.avif",
-        title: "Hathras",
-        desc: "",
-      },
-      properties: [],
-    },
-  ];
-
-  const mergedLocations = [...locations, ...ncrLocations, ...hatrasLocation];
+  const mergedLocations = [...locations];
 
   return (
     <>
-      <LocationWiseProjects locations={mergedLocations} />
-      <LocationWiseProjectsMobile locations={mergedLocations} />
+      <LocationWiseProjects
+        desktop_file={pageCitiesBasicData.files.desktop_image}
+        locations={mergedLocations}
+      />
+      <LocationWiseProjectsMobile
+        mobile_file={pageCitiesBasicData.files.mobile_image}
+        locations={mergedLocations}
+      />
     </>
   );
 };

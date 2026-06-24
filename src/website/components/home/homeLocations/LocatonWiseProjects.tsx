@@ -9,9 +9,13 @@ import { blauerNue } from "@/src/app/fonts";
 
 type Props = {
   locations: any[];
+  desktop_file: string;
 };
 
-export default function LocationWiseProjects({ locations }: Props) {
+export default function LocationWiseProjects({
+  locations,
+  desktop_file,
+}: Props) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const cloud1Ref = useRef<HTMLDivElement>(null);
@@ -277,7 +281,7 @@ export default function LocationWiseProjects({ locations }: Props) {
           className="absolute left-1/2 top-1/2 origin-center will-change-transform"
         >
           <img
-            src="/images/home/location-wise-pro/map.webp"
+            src={desktop_file || "/images/home/location-wise-pro/map.webp"}
             className="w-full h-full object-fill select-none pointer-events-none"
             alt="Map"
           />

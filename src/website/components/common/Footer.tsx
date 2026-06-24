@@ -6,7 +6,7 @@ import { blauerNue } from "@/src/app/fonts";
 import { FaPhoneAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { FaLocationDot } from "react-icons/fa6";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap, registerGSAP, ScrollTrigger } from "../../utils/gsap";
 import { useContact } from "../../hooks/useContact";
 
@@ -14,7 +14,9 @@ import { motion } from "framer-motion";
 import { fadeUp, staggerContainer } from "@/src/website/utils/motion";
 import { usePathname } from "next/navigation";
 import { OtherPagesLinks, ProjectsLinks } from "../../utils/givePages";
-import { SocialMediaLinks } from "../../utils/giveSocialLinks";
+import { useSocialLinks } from "../../utils/giveSocialLinks";
+
+import { fetchPageData } from "@/src/website/utils/api";
 
 gsap.registerPlugin(ScrollTrigger);
 type FooterLinkerProps = {
@@ -23,7 +25,6 @@ type FooterLinkerProps = {
 };
 /* ================= DATA (EDIT HERE ONLY) ================= */
 
-const socialLinks = SocialMediaLinks;
 const projectPages = ProjectsLinks;
 const ourProjects = {
   title: "quick links",
@@ -47,7 +48,13 @@ const FooterLinker = ({ href, label }: FooterLinkerProps) => {
   );
 };
 
+const giveBuilerContent = async () => {
+  const data = await fetchPageData("website/page-section/footer_description");
+  return data?.data;
+};
+
 export default function Footer() {
+  const socialLinks = useSocialLinks();
   const footerRef = useRef<HTMLElement | null>(null);
   const footerLogoSide = useRef<HTMLDivElement | null>(null);
   const footerSocSide = useRef<HTMLDivElement | null>(null);
@@ -58,8 +65,17 @@ export default function Footer() {
 
   const { contact } = useContact();
   const pathname = usePathname();
+  const [footerDescription, setFooterDescription] = useState("");
 
-  // useSlideX({ target: footerRef })
+  useEffect(() => {
+    const loadData = async () => {
+      const sections = await giveBuilerContent();
+      if (sections?.length) {
+        setFooterDescription(sections[0]?.title?.description);
+      }
+    };
+    loadData();
+  }, []);
 
   return (
     <motion.footer
@@ -120,10 +136,16 @@ export default function Footer() {
           ref={builderRef}
           className={`${blauerNue.className} footer-desc max-w-xl text-base md:text-lg font-normal leading-6 md:leading-7 tracking-[0.5px] text-center md:text-left`}
         >
-          At K.sons, every development is a deliberate step toward enduring
-          excellence. With foresight, discipline, and responsibility at our
-          core, we craft spaces where heritage, progress, and community coexist
-          in perfect harmony.
+          {footerDescription ? (
+            footerDescription
+          ) : (
+            <>
+              At K.sons, every development is a deliberate step towards enduring
+              excellence. With foresight, discipline, and responsibility at our
+              core, we craft spaces where heritage, progress, and community
+              coexist in perfect harmony.
+            </>
+          )}
         </div>
       </motion.div>
 

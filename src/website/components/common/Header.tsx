@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "../../utils/gsap";
 import Link from "next/link";
 import { HEADER_MENU_ITEMS, ProjectsLinks } from "../../utils/givePages";
-import { SocialMediaLinks } from "../../utils/giveSocialLinks";
+import { useSocialLinks } from "../../utils/giveSocialLinks";
 
 /* =========================
    CONFIG (EDIT HERE ONLY)
@@ -18,7 +18,7 @@ const NAV_ITEMS = ProjectsLinks;
 
 const MENU_ITEMS = HEADER_MENU_ITEMS;
 
-const socialLinks = SocialMediaLinks;
+
 
 /* =========================
    REUSABLE COMPONENTS
@@ -97,8 +97,8 @@ const MenuItem = ({ item, onClick }: any) => {
   );
 };
 
-const SocialIcons = () => {
-  return socialLinks.map((item, i) => (
+const SocialIcons = ({ links }: { links: any[] }) => {
+  return links.map((item, i) => (
     <Link
       key={i}
       href={item.link}
@@ -120,6 +120,7 @@ const SocialIcons = () => {
 ========================= */
 
 export default function Header() {
+  const socialLinks = useSocialLinks();
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const [mounted, setMounted] = useState(false);
@@ -342,7 +343,7 @@ export default function Header() {
           />
         </Link>
         <div className="flex gap-4 z-10">
-          <SocialIcons />
+          <SocialIcons links={socialLinks} />
         </div>
 
         <Image
@@ -401,7 +402,7 @@ export default function Header() {
           </div>
           {/* mob icons */}
           <div className="md:hidden flex gap-5 py-10 ">
-            <SocialIcons />
+            <SocialIcons links={socialLinks} />
           </div>
 
           {/* bottom spacing + design */}

@@ -78,15 +78,6 @@ export const HOME_SECTIONS: Record<string, SectionDefinition> = {
         required: true,
         colSpan: "w-full",
       },
-      {
-        name: "list",
-        label: "Home Services List",
-        type: "repeater",
-        addButtonText: "Add Service",
-
-        section: "Listing",
-        colSpan: "w-full",
-      },
     ],
     listFields: [
       {
@@ -105,6 +96,13 @@ export const HOME_SECTIONS: Record<string, SectionDefinition> = {
         type: "text",
         section: "Basic Information",
         required: true,
+        colSpan: "w-full",
+      },
+      {
+        name: "mainLabel",
+        label: "Image Watermark",
+        type: "text",
+        section: "Media",
         colSpan: "w-full",
       },
       {
@@ -181,6 +179,44 @@ export const HOME_SECTIONS: Record<string, SectionDefinition> = {
       },
     ],
   },
+  home_cities_section: {
+    name: "Cities Section",
+    layout: "full",
+    fields: [
+      {
+        name: "title.main",
+        label: "Section Title",
+        type: "text",
+        placeholder: "Our Value",
+        section: "Basic Information",
+        required: true,
+        colSpan: "w-[48%]",
+      },
+      {
+        name: "title.sub",
+        label: "Section Heading",
+        type: "text",
+        placeholder: "Built On Experience. Expanded With Intent",
+        section: "Basic Information",
+        colSpan: "w-[48%]",
+      },
+      {
+        name: "desktop_image",
+        label: "Desktop Image",
+        type: "image",
+        section: "Media",
+        required: true,
+        colSpan: "w-[48%]",
+      },
+      {
+        name: "mobile_image",
+        label: "Mobile Image",
+        type: "image",
+        section: "Media",
+        colSpan: "w-[48%]",
+      },
+    ],
+  },
   home_number_and_scale: {
     name: "Number and Scale",
     fields: [
@@ -243,7 +279,6 @@ export const HOME_SECTIONS: Record<string, SectionDefinition> = {
       },
     ],
   },
-
   home_our_value: {
     name: "Our Value",
     fields: [
@@ -392,6 +427,20 @@ export const HOME_SECTIONS: Record<string, SectionDefinition> = {
         placeholder: "Be the first to receive updates, tips, and more",
         section: "Basic Information",
         colSpan: "w-full",
+      },
+    ],
+  },
+  footer_description: {
+    name: "Footer Description",
+    fields: [
+      {
+        name: "title.description",
+        label: "Description",
+        type: "textarea",
+        placeholder: "Enter Description",
+        section: "Basic Information",
+        colSpan: "w-full",
+        required: true,
       },
     ],
   },
@@ -873,6 +922,13 @@ export const CSR_SECTIONS: Record<string, SectionDefinition> = {
         colSpan: "w-full",
       },
       {
+        name: "mainLabel",
+        label: "Image Watermark",
+        type: "text",
+        section: "Watermark",
+        colSpan: "w-full",
+      },
+      {
         name: "desktop_file",
         label: "Desktop Image",
         type: "image",
@@ -928,6 +984,13 @@ export const CSR_SECTIONS: Record<string, SectionDefinition> = {
         colSpan: "w-[100%]",
         dynamicSource: "events",
         excludeFromTable: true,
+      },
+      {
+        name: "mainLabel",
+        label: "Image Watermark",
+        type: "text",
+        section: "Watermark",
+        colSpan: "w-full",
       },
       {
         name: "desktop_file",
@@ -1302,6 +1365,12 @@ export const BLOG_SECTIONS: Record<string, SectionDefinition> = {
         label: "Body Data",
         section: "SEO Section",
       },
+      {
+        name: "mainLabel",
+        type: "text",
+        label: "Watermark",
+        section: "Media",
+      },
       // Files ========== //
       {
         name: "desktop_image",
@@ -1630,6 +1699,14 @@ export const INVESTOR_SECTIONS: Record<string, SectionDefinition> = {
         type: "textarea",
         placeholder: "Enter Section Description",
         section: "Basic Information",
+        colSpan: "w-full",
+      },
+      {
+        name: "title.mainLabel",
+        label: "Watermark",
+        type: "text",
+        placeholder: "Enter Watermark",
+        section: "Media",
         colSpan: "w-full",
       },
       {

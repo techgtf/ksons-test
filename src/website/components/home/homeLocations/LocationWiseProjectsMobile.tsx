@@ -4,12 +4,17 @@ import React, { useLayoutEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger, registerGSAP } from "@/src/website/utils/gsap";
 import { agency } from "@/src/app/fonts";
 import Link from "next/link";
+import { TriangleImg } from "../../common/VectorImages";
 
 type Props = {
   locations: any[];
+  mobile_file: string;
 };
 
-export default function LocationWiseProjectsMobile({ locations }: Props) {
+export default function LocationWiseProjectsMobile({
+  locations,
+  mobile_file,
+}: Props) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const mapWrapRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
@@ -19,12 +24,11 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
   const hintRef = useRef<HTMLDivElement>(null);
   const mapImgRef = useRef<HTMLImageElement>(null);
   const locationBadgeRef = useRef<HTMLDivElement>(null);
-  const locationTextRef = useRef<HTMLSpanElement>(null);
-  const locationImageRef = useRef<HTMLImageElement>(null);
-  const locationLinkRef = useRef<HTMLAnchorElement>(null);
   const currentLocIndexRef = useRef<number>(-1);
 
   const [selectedLocation, setSelectedLocation] = useState<string>("");
+  const [locationHeroImg, setLocationHeroImg] = useState<string>("");
+  const [hasProjects, setHasProjects] = useState<boolean>(true);
 
   useLayoutEffect(() => {
     registerGSAP();
@@ -142,21 +146,15 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
 
         const applyUpdate = () => {
           const loc = locations[index];
-          setSelectedLocation(loc.name);
           if (!loc) {
             hideBadge();
             return;
           }
 
           currentLocIndexRef.current = index;
-          if (locationTextRef.current)
-            locationTextRef.current.innerText = loc.name;
-          if (locationImageRef.current)
-            locationImageRef.current.src = loc.hero.img;
-
-          if (locationLinkRef.current) {
-            locationLinkRef.current.href = `/locations?location=${loc.name.toLowerCase()}`;
-          }
+          setSelectedLocation(loc.name);
+          setLocationHeroImg(loc.hero.img);
+          setHasProjects(loc.properties?.length > 0);
         };
 
         if (index === -1) {
@@ -309,7 +307,7 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
           >
             <img
               ref={mapImgRef}
-              src="/images/home/location-wise-pro/map-mob.webp"
+              src={mobile_file || "/images/home/location-wise-pro/map-mob.webp"}
               className="w-full h-full object-fill select-none pointer-events-none"
               draggable={false}
             />
@@ -383,30 +381,48 @@ export default function LocationWiseProjectsMobile({ locations }: Props) {
           className="absolute top-15 left-1/2 -translate-x-1/2 z-50 pointer-events-none invisible opacity-0 translate-y-2 flex flex-col items-center cursor-pointer"
         >
           <div className="bg-white p-3 w-[200px] badge-inner will-change-transform">
-            <Link
-              href={`/projects?location=${selectedLocation}`}
-              className="text-black "
-            >
-              <div className="w-full h-25  overflow-hidden border border-white/20 shrink-0 bg-white/5">
-                <img
-                  ref={locationImageRef}
-                  src="/images/"
-                  className="w-full h-full object-cover"
-                  alt="Location"
-                />
+            {hasProjects ? (
+              <Link
+                href={`/projects?location=${selectedLocation}`}
+                className="text-black pointer-events-auto block"
+              >
+                <div className="w-full h-25 overflow-hidden border border-white/20 shrink-0 bg-white/5">
+                  {locationHeroImg && (
+                    <img
+                      src={locationHeroImg}
+                      className="w-full h-full object-cover"
+                      alt="Location"
+                    />
+                  )}
+                </div>
+                <div className="flex flex-col pt-2 text-center">
+                  <span
+                    className={`${agency.className} text-black text-[12px] uppercase tracking-[0.2em] whitespace-nowrap leading-tight`}
+                  >
+                    {selectedLocation}
+                  </span>
+                  <span className="text-black text-[8px] uppercase tracking-[0.3em]">
+                    View Projects
+                  </span>
+                </div>
+              </Link>
+            ) : (
+              <div className="text-black pointer-events-none flex flex-col items-center">
+                <div className="w-full h-25 flex items-center justify-center border border-[#0F3C78]/10 shrink-0 bg-[#0F3C78]/5 relative">
+                  <TriangleImg size="w-[50px] lg:w-[50px]" />
+                </div>
+                <div className="flex flex-col pt-2 text-center w-full">
+                  <span
+                    className={`${agency.className} text-black text-[12px] uppercase tracking-[0.2em] whitespace-nowrap leading-tight`}
+                  >
+                    {selectedLocation}
+                  </span>
+                  <span className="text-[#0F3C78] text-[8px] font-bold uppercase tracking-[0.3em] mt-1">
+                    Coming Soon
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col pt-2 text-center">
-                <span
-                  ref={locationTextRef}
-                  className={`${agency.className} text-black text-[12px] uppercase tracking-[0.2em] whitespace-nowrap leading-tight`}
-                >
-                  Our Locations
-                </span>
-                <span className="text-black text-[8px] uppercase tracking-[0.3em]">
-                  View Projects
-                </span>
-              </div>
-            </Link>
+            )}
           </div>
         </div>
 

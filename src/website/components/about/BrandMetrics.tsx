@@ -109,7 +109,7 @@ export default function BrandMetrics({
   /* ================= STYLES ================= */
 
   const itemWrapper =
-    "flex items-center justify-start lg:justify-center lg:px-0";
+    "flex items-center justify-start lg:justify-centerd lg:px-0";
   const valueClass = `${agency.className} text-[24px] lg:text-[36px] font-normal`;
   const labelClass = `text-sm mt-1 ${blauerNue.className} font-medium tracking-[0.5px] text-start`;
 

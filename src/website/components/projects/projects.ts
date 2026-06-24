@@ -87,7 +87,6 @@ export type Project = {
   title: string;
   description: string;
   location: string;
-  cityName?: string;
   year: number;
   price?: number;
   area: string;
@@ -98,6 +97,8 @@ export type Project = {
   typology?: string;
   status?: "completed" | "delivered" | "ongoing" | "upcoming" | "new launch";
   short_description?: string;
+  featuredLabel?: string;
+  mainLabel?: string;
   // overview?: MicroOverView;
   highlights?: MicroHighlights;
   specifications?: MicroSpecification;
@@ -134,6 +135,7 @@ export type Category = {
       featured_mobile_file: string;
       desktop_file: string;
       mobile_file: string;
+      featuedLabel?: string;
     };
     headingArea?: string;
     peraArea?: string;

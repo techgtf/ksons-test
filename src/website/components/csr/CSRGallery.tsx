@@ -10,6 +10,8 @@ import "swiper/css/effect-fade";
 import { gsap, ScrollTrigger } from "@/src/website/utils/gsap";
 import { agency, blauerNue } from "@/src/app/fonts";
 import Image from "next/image";
+import WaterMark from "../common/WaterMark";
+import { getDisplayLabel } from "../../utils/getDisplayLabel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface EventItem {
@@ -17,7 +19,11 @@ interface EventItem {
   title: string;
   year: number;
   description: string[];
-  images: string[];
+  images: {
+    url: string;
+    mainLabel?: string;
+  }[];
+  mainLabel?: string;
 }
 
 interface CSRGalleryProps {
@@ -168,15 +174,22 @@ export default function CSRGallery({
                         className="rounded-[20px] overflow-hidden aspect-video"
                       >
                         {ev.images.map((img, idx) => (
-                          <SwiperSlide key={idx}>
+                          <SwiperSlide key={idx} className="relative">
                             <Image
-                              src={img}
+                              src={img.url}
                               alt={ev.title}
                               width={800}
                               height={500}
                               className="w-full h-full object-cover"
                               priority
                             />
+                            <div className="absolute  right-5  bottom-5">
+                              <WaterMark
+                                textColor="text-white"
+                                opacity="opacity-100"
+                                label={getDisplayLabel(img?.mainLabel || ev?.mainLabel || "")}
+                              />
+                            </div>
                           </SwiperSlide>
                         ))}
                       </Swiper>

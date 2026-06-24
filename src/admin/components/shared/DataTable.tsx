@@ -2,7 +2,11 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
+import {
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiOutlineExternalLink,
+} from "react-icons/hi";
 
 import Pagination from "./pagination";
 import { DataTableProps } from "../../types/dataTable";
@@ -41,6 +45,7 @@ interface ExtendedColumn<T> {
   showIcon?: boolean;
   badge?: boolean;
   truncate?: boolean;
+  isLink?: boolean;
 }
 
 interface ExtendedDataTableProps<T extends { id?: string }> extends Omit<
@@ -269,6 +274,30 @@ export default function DataTable<T extends { id?: string }>({
         : `/admin/project/${(row as any).projectId || rowId}/sections/${type}`;
 
       return <TableButton label="More Details" icon={true} href={href} />;
+    }
+
+    // 5. render links
+    if (column.isLink) {
+      const val = GetNestedValue(row as any, dataKey);
+      if (!val) return <span className="text-gray-400">-</span>;
+
+      const href = String(val);
+      const isAbsolute = /^(https?:\/\/|mailto:|tel:)/i.test(href);
+      const url = isAbsolute ? href : `https://${href}`;
+
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-blue-500 hover:text-blue-700 hover:underline font-medium text-sm transition-colors"
+        >
+          <span className="truncate max-w-[150px]" title={href}>
+            {href}
+          </span>
+          <HiOutlineExternalLink className="w-3.5 h-3.5 shrink-0" />
+        </a>
+      );
     }
 
     // 5. Fallback to CellValue

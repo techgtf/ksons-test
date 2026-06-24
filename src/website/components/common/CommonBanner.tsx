@@ -4,6 +4,8 @@ import Image from "next/image";
 import React, { useRef } from "react";
 import { useSlideY } from "../../hooks/useSlideY";
 import { useReveal } from "../../hooks/useReveal";
+import WaterMark from "./WaterMark";
+import { getDisplayLabel } from "../../utils/getDisplayLabel";
 
 export interface CommonBannerProps {
   tag?: string;
@@ -13,6 +15,7 @@ export interface CommonBannerProps {
   files: {
     desktop_file: string;
     mobile_file: string;
+    mainLabel?: string;
   };
   headingArea?: string;
   peraArea?: string;
@@ -84,7 +87,7 @@ export default function CommonBanner({
           {description}
         </p>
       </div>
-      <div ref={imgRef} className="img-main block lg:pt-20 pt-32">
+      <div ref={imgRef} className="img-main relative block lg:pt-20 pt-32">
         <picture>
           <source media="(max-width: 768px)" srcSet={files.mobile_file} />
 
@@ -94,6 +97,13 @@ export default function CommonBanner({
             className="w-full object-cover min-h-[400px] lg:min-h-[545px] HeaderOverlay"
           />
         </picture>
+        <div className="absolute right-5 bottom-5">
+          <WaterMark
+            textColor="text-black"
+            opacity="opacity-100"
+            label={getDisplayLabel(files.mainLabel || "")}
+          />
+        </div>
       </div>
     </div>
   );

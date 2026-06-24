@@ -12,12 +12,15 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { gsap, registerGSAP } from "../../utils/gsap";
 import { useSlideX } from "../../hooks/useSlideX";
 import MicroHeader from "../projects/micro/MicroHeader";
+import WaterMark from "../common/WaterMark";
+import { getDisplayLabel } from "../../utils/getDisplayLabel";
 
 export type TestimonialItem = {
   name: string;
   role: string;
   image: string;
   text: string;
+  mainLabel: string;
 };
 
 export type TestimonialsProps = {
@@ -93,7 +96,7 @@ export default function Testimonials({
       data-cursor="light"
       ref={wrapperRef}
       id="testimonials"
-      className="relative w-full lg:pt-12 pb-12 overflow-x-hidden"
+      className="relative w-full pt-8 lg:pt-12 pb-12 overflow-x-hidden"
     >
       {/* Glow Background */}
       <div
@@ -167,7 +170,7 @@ export default function Testimonials({
             <SwiperSlide key={i}>
               <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12 text-center md:text-left py-4">
                 {/* IMAGE */}
-                <div className="rounded-full flex items-center justify-center w-[300px] h-[300px] shrink-0">
+                <div className="rounded-full relative flex items-center justify-center w-[300px] h-[300px] shrink-0">
                   <Image
                     src={item.image}
                     alt={item.name}
@@ -175,11 +178,18 @@ export default function Testimonials({
                     height={300}
                     className="rounded-full object-cover"
                   />
+                  <div className="absolute left-0 right-0 mx-auto bottom-5">
+                    <WaterMark
+                      textColor="text-white"
+                      opacity="opacity-40"
+                      label={getDisplayLabel(item?.mainLabel)}
+                    />
+                  </div>
                 </div>
 
                 {/* TRIANGLE */}
                 <div
-                  className="hidden md:flex items-center justify-center self-center transition-transform duration-700 ease-in-out shrink-0 rotate-30"
+                  className="hidden md:flex items-center justify-center self-center transition-transform duration-700 ease-in-out shrink-0 "
                   style={{ transform: `rotate(${activeIndex * 120}deg)` }}
                 >
                   <Image

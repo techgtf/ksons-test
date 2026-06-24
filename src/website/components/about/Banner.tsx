@@ -5,6 +5,8 @@ import { blauerNue, agency } from "@/src/app/fonts";
 import { useRef, useLayoutEffect } from "react";
 import { gsap, registerGSAP } from "../../utils/gsap";
 import AnimatedTriangle from "../common/AnimatedTriangle";
+import WaterMark from "../common/WaterMark";
+import { getDisplayLabel } from "../../utils/getDisplayLabel";
 
 /* ================= TYPES ================= */
 
@@ -12,6 +14,7 @@ export type AboutBannerProps = {
   tag: string;
   heading: string;
   subtext: string;
+  mainLabel?: string;
 
   bulletImage: string;
   bannerImage: string;
@@ -28,6 +31,7 @@ export default function Banner({
   bulletImage,
   bannerImage,
   triangleImage,
+  mainLabel,
 }: AboutBannerProps) {
   registerGSAP();
 
@@ -80,7 +84,7 @@ export default function Banner({
       {/* Heading */}
       <div className="text-center absolute top-10 lg:top-4 2xl:top-10 z-10 pointer-events-none px-6 lg:px-75 flex flex-col w-full items-center">
         <div ref={headingTextRef}>
-          <div className="flex items-center justify-center gap-2 lg:gap-4">
+          <div className="flex relative items-center justify-center gap-2 lg:gap-4">
             <Image src={bulletImage} alt="bullet" height={16} width={16} />
             <p
               className={`${blauerNue.className} lg:text-[18px] tracking-[0.5px] lg:leading-[20px] capitalize`}
@@ -119,6 +123,13 @@ export default function Banner({
           src={triangleImage}
           className="absolute z-10 ml-29 lg:ml-40 -mb-0 lg:mb-0"
         />
+        <div className="absolute right-5 bottom-0">
+          <WaterMark
+            textColor="text-black"
+            opacity="opacity-40"
+            label={getDisplayLabel(mainLabel)}
+          />
+        </div>
       </div>
 
       {/* Bottom Text */}

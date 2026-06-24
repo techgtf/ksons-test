@@ -61,6 +61,7 @@ export interface FormField {
   maxItems?: number;
   minItems?: number;
   isFlatArray?: boolean;
+  allowSpecialChars?: boolean;
 }
 
 export interface FilterConfig {
@@ -278,6 +279,20 @@ export const PROJECT: ProjectSectionConfig = {
       name: "seoTags.bodyData",
       label: "Body Data",
       section: "SEO Settings",
+    },
+    {
+      name: "mainLabel",
+      label: "Desktop Image Label",
+      type: "text",
+      placeholder: "Residential",
+      section: "Images",
+    },
+    {
+      name: "featuredLabel",
+      label: "Featured Image Label",
+      type: "text",
+      placeholder: "Featured",
+      section: "Images",
     },
     // ---------------- FILES ----------------
     {
@@ -617,6 +632,14 @@ export const PROJECT_SECTION_LIST_FIELDS: Record<string, FormField[]> = {
       defaultValue: "image",
       section: "Gallery Details",
     },
+    {
+      name: "mainLabel",
+      label: "Watermark",
+      type: "text",
+      placeholder: "Artistic Impression",
+      section: "Gallery Details",
+      colSpan: "w-full",
+    },
     // Media Fields
     {
       name: "desktop_file",
@@ -642,6 +665,7 @@ export const PROJECT_SECTION_LIST_FIELDS: Record<string, FormField[]> = {
         value: "image",
       },
     },
+
     {
       name: "desktop_file",
       label: "Video",
@@ -685,6 +709,14 @@ export const PROJECT_SECTION_LIST_FIELDS: Record<string, FormField[]> = {
       required: true,
       section: "Amenity Icons and Title",
       colSpan: "w-[48%]",
+    },
+    {
+      name: "mainLabel",
+      label: "Watermark",
+      type: "text",
+      placeholder: "Artistic Impression",
+      section: "Amenity Icons and Title",
+      colSpan: "w-full",
     },
 
     {

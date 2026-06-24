@@ -10,11 +10,14 @@ import { ScrollTrigger } from "../../utils/gsap";
 import { lenisInstance } from "@/src/website/components/SmoothScroller";
 import { fetchPageData } from "../../utils/api";
 import { formatDate } from "../../utils/dateFormat";
+import WaterMark from "../common/WaterMark";
+import { getDisplayLabel } from "../../utils/getDisplayLabel";
 
 interface BlogItemProps {
   files: {
     desktop_image: string;
     mobile_image: string;
+    mainLabel?: string;
   };
   title: string;
   description: string;
@@ -54,6 +57,15 @@ const BlogItem: React.FC<BlogItemProps> = ({
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-110 ease-in-out hidden md:block"
           />
+        )}
+        {files?.mainLabel && (
+          <div className="absolute right-2 bottom-2 z-10">
+            <WaterMark
+              textColor="text-white"
+              opacity="opacity-60"
+              label={getDisplayLabel(files.mainLabel)}
+            />
+          </div>
         )}
       </div>
       <div className="flex flex-col justify-center">
@@ -104,6 +116,7 @@ const LatestBlogs = () => {
             files: {
               desktop_image: blog?.files?.desktop_image,
               mobile_image: blog?.files?.mobile_image,
+              mainLabel: blog?.files?.mainLabel,
             },
             title: blog?.title,
             description: blog?.description?.short,
@@ -146,6 +159,8 @@ const LatestBlogs = () => {
       });
     }
   };
+
+  console.log(blogs);
 
   if (loading) {
     return (
