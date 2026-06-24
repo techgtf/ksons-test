@@ -72,7 +72,7 @@ export default async function faq() {
   const pageData = pageRes?.data;
 
   const bannerData: CommonBannerProps = {
-    tag: "Faq",
+    tag: "FAQ",
 
     heading: pageData?.title?.heading,
 
@@ -80,6 +80,7 @@ export default async function faq() {
     files: {
       desktop_file: pageData?.files?.desktop_file,
       mobile_file: pageData?.files?.mobile_file,
+      mainLabel: pageData?.files?.mainLabel,
     },
     headingArea: "lg:w-[780px] 2xl:w-[850px]",
     // bottomText:

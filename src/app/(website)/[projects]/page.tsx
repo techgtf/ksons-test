@@ -150,6 +150,8 @@ export default async function page({
           activePlatter.files?.featured_mobile_file ||
           activePlatter.files?.mobile_image ||
           "",
+
+        mainLabel: activePlatter.files?.mainLabel || "",
       },
 
       headingArea: "lg:w-[850px]",
@@ -189,6 +191,7 @@ export default async function page({
 
         desktop_file: p.files?.desktop_image || "",
         mobile_file: p.files?.mobile_image || "",
+        featuredLabel: p.files?.featuredLabel || "",
 
         featured_img:
           p.files?.featured_desktop_file || p.files?.desktop_image || "",

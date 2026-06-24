@@ -2,7 +2,13 @@
 
 import SelectRows from "@/src/admin/components/shared/SelectRows";
 import { useRouter, useParams } from "next/navigation";
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import api from "@/src/admin/lib/axios";
 import DynamicForm from "@/src/admin/components/shared/DynamicForm/DynamicForm";
@@ -33,6 +39,7 @@ export default function PageSectionsPage() {
   const [selectedSectionId, setSelectedSectionId] = useState<string>("");
   const [selectedSectionType, setSelectedSectionType] = useState<string>("");
   const [editingRow, setEditingRow] = useState<any>(null);
+  const [allPageSections, setAllPageSections] = useState<any[]>([]);
 
   const {
     rows: pageSections,
@@ -46,7 +53,14 @@ export default function PageSectionsPage() {
     setFilters,
     setPage,
     setLimit,
-  } = useCrud("pageSections");
+  } = useCrud("pageSections", { slug: String(pageData?.slug || "") });
+
+  const filteredPageSections = useMemo(() => {
+    if (!pageData?.slug) return [];
+    return pageSections.filter(
+      (ps: any) => ps.pageSlug === pageData.slug || ps.slug === pageData.slug,
+    );
+  }, [pageSections, pageData?.slug]);
 
   const FetchPageDetails = async () => {
     try {
@@ -58,6 +72,20 @@ export default function PageSectionsPage() {
     }
   };
 
+  const fetchAllSections = useCallback(async () => {
+    if (!pageData?.slug) return;
+    try {
+      const res = await api.get(`/admin/page-sections`, {
+        params: { slug: pageData.slug, limit: 1000 },
+      });
+      const data = res.data?.data;
+      const rows = Array.isArray(data) ? data : data?.rows || [];
+      setAllPageSections(rows);
+    } catch (error) {
+      console.error("Failed to fetch all page sections", error);
+    }
+  }, [pageData?.slug]);
+
   useEffect(() => {
     if (pageId) {
       FetchPageDetails();
@@ -67,11 +95,12 @@ export default function PageSectionsPage() {
   useEffect(() => {
     if (pageData?.slug) {
       setFilters({ slug: pageData.slug });
+      fetchAllSections();
     }
-  }, [pageData?.slug]);
+  }, [pageData?.slug, fetchAllSections]);
 
   const filteredSectionOptions = useMemo(() => {
-    const existingTypes = pageSections.map((ps) => ps.type);
+    const existingTypes = allPageSections.map((ps) => ps.type);
 
     return sectionTypes
       .filter(
@@ -83,7 +112,7 @@ export default function PageSectionsPage() {
         value: s.id,
         label: s.name,
       }));
-  }, [sectionTypes, pageSections, editingRow]);
+  }, [sectionTypes, allPageSections, editingRow]);
 
   const handleSectionChange = (val: string) => {
     setSelectedSectionId(val);
@@ -153,6 +182,7 @@ export default function PageSectionsPage() {
       setSelectedSectionId("");
       setSelectedSectionType("");
       fetchList();
+      fetchAllSections();
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
     }
@@ -183,6 +213,7 @@ export default function PageSectionsPage() {
       await remove(String(row.id), { showToast: false });
       toast.success("Section deleted successfully");
       fetchList();
+      fetchAllSections();
     } catch (error: any) {
       toast.error(error.message || "Failed to delete section");
     }
@@ -292,7 +323,7 @@ export default function PageSectionsPage() {
             Page Sections List
           </h2>
           <span className="text-sm text-gray-500">
-            {pageSections.length} Items
+            {filteredPageSections.length} Items
           </span>
         </div>
 
@@ -300,7 +331,7 @@ export default function PageSectionsPage() {
           <AdminLoader />
         ) : (
           <DataTable
-            data={pageSections}
+            data={filteredPageSections}
             columns={columns}
             onEdit={handleEdit}
             onDelete={handleDelete}

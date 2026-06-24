@@ -126,6 +126,7 @@ const page = async () => {
     files: {
       desktop_file: pageData?.files?.desktop_file,
       mobile_file: pageData?.files?.mobile_file,
+      mainLabel: pageData?.files?.mainLabel,
     },
     headingArea: "lg:w-[850px]",
   };

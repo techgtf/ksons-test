@@ -82,16 +82,26 @@ const page = async () => {
   const eventsData = eventsRes?.data || [];
 
   const mappedEvents = eventsData.map((item: any) => {
-    const images: string[] = [];
+    const images: { url: string; mainLabel?: string }[] = [];
     if (item.eventGalleries && item.eventGalleries.length > 0) {
       item.eventGalleries.forEach((gallery: any) => {
         const img = gallery.files?.desktop_file || gallery.files?.mobile_file;
-        if (img) images.push(img);
+        if (img) {
+          images.push({
+            url: img,
+            mainLabel: gallery.files?.mainLabel || "",
+          });
+        }
       });
     }
     if (images.length === 0 && item.files) {
       const img = item.files.desktop_file || item.files.mobile_file;
-      if (img) images.push(img);
+      if (img) {
+        images.push({
+          url: img,
+          mainLabel: item.files?.mainLabel || "",
+        });
+      }
     }
     return {
       id: item.id,
@@ -99,6 +109,7 @@ const page = async () => {
       year: item.year,
       description: [item.description],
       images,
+      mainLabel: item.files?.mainLabel || "",
     };
   });
 
@@ -109,6 +120,7 @@ const page = async () => {
     files: {
       desktop_file: pageData?.files?.desktop_file,
       mobile_file: pageData?.files?.mobile_file,
+      mainLabel: pageData?.files?.mainLabel,
     },
   };
 

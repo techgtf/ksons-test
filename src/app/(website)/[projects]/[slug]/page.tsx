@@ -191,6 +191,7 @@ export default async function ProjectDetailPage({ params }: Props) {
       projectData.files?.mobile_image ||
       projectData.files?.featured_mobile_file ||
       "",
+    mainLabel: projectData.files?.mainLabel || "",
   };
 
   // --------------------------------

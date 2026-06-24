@@ -81,6 +81,7 @@ export default async function AboutUs() {
 
     bulletImage: "/images/about/about-bullet.png",
     bannerImage: pageData?.files?.desktop_file,
+    mainLabel: pageData?.files?.mainLabel || "",
     triangleImage: "/images/about/banner-triangle.png",
   };
 

@@ -17,7 +17,10 @@ import NumbersScales, {
   NumbersScalesProps,
 } from "@/src/website/components/home/NumbersScales";
 import SliderContainer from "@/src/website/components/home/Slider";
-import { LocationContainers } from "@/src/website/components/home/homeLocations/LocationContainers";
+import {
+  LocationContainers,
+  PageCitiesBasicData,
+} from "@/src/website/components/home/homeLocations/LocationContainers";
 import Blogs from "@/src/website/components/home/Blogs";
 
 import { Metadata } from "next";
@@ -77,6 +80,7 @@ export default async function Home() {
     pageRes,
     bannerRes,
     aboutSectionRes,
+    pageCitiesRes,
     serviceRes,
     valuesSectionRes,
     platterRes,
@@ -92,6 +96,7 @@ export default async function Home() {
     getHomePageData(),
     fetchPageData("website/home-banners"),
     fetchPageData("website/page-section/home_about_us"),
+    fetchPageData("website/page-section/home_cities_section"),
     fetchPageData("website/services"),
     fetchPageData("website/page-section/home_our_value"),
     fetchPageData("website/platter"),
@@ -136,6 +141,8 @@ export default async function Home() {
     smallText: aboutSectionData?.title?.small,
   };
 
+  const pageCitiesBasicData: PageCitiesBasicData = pageCitiesRes?.data?.[0];
+
   const serviceSectionData = serviceRes?.data || [];
 
   const servicesData: ServicesProps = {
@@ -145,6 +152,7 @@ export default async function Home() {
       files: {
         mobile: service.files?.mobile_file || "",
         desktop: service.files?.desktop_file || "",
+        mainLabel: service.files?.mainLabel || "",
       },
     })),
     scrollText: "SCROLL",
@@ -176,6 +184,8 @@ export default async function Home() {
     files: {
       featured_mobile_file: item?.files?.featured_mobile_file,
       featured_desktop_file: item?.files?.featured_desktop_file,
+      mainLabel: item?.files?.mainLabel,
+      featuredLabel: item?.files?.featuredLabel,
     },
   }));
 
@@ -185,12 +195,13 @@ export default async function Home() {
     (item: {
       name: string;
       designation: string;
-      files: { image: string };
+      files: { image: string; mainLabel: string };
       description: string;
     }) => ({
       name: item.name,
       role: item.designation,
       image: item.files?.image,
+      mainLabel: item.files?.mainLabel,
       text: item.description,
     }),
   );
@@ -272,6 +283,7 @@ export default async function Home() {
       title: item.title,
       year: item.year,
       image: item.files?.desktop_file || item.files?.mobile_file,
+      mainLabel: item?.files?.mainLabel || "",
     };
   });
 
@@ -294,7 +306,7 @@ export default async function Home() {
       {servicesData && <Services {...servicesData} />}
       {testimonialsData && <Testimonials {...testimonialsData} />}
 
-      <LocationContainers />
+      <LocationContainers pageCitiesBasicData={pageCitiesBasicData} />
       {/* <News {...newsData} /> */}
       {/* <Ventures {...venturesData} /> */}
       {csrData && <CSR {...csrData} />}

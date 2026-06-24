@@ -74,6 +74,7 @@ const HomeLoan = async () => {
     files: {
       desktop_file: pageData?.files?.desktop_file,
       mobile_file: pageData?.files?.mobile_file,
+      mainLabel: pageData?.files?.mainLabel,
     },
     headingArea: "lg:w-[800px] 2xl:w-[850px]",
   };

@@ -80,13 +80,14 @@ export default async function testimonials() {
     (item: {
       name: string;
       designation: string;
-      files: { image: string };
+      files: { image: string; mainLabel: string };
       description: string;
     }) => ({
       name: item.name,
       role: item.designation,
       image: item.files?.image,
       text: item.description,
+      mainLabel: item.files?.mainLabel,
     }),
   );
 
@@ -103,6 +104,7 @@ export default async function testimonials() {
     files: {
       desktop_file: pageData?.files?.desktop_file,
       mobile_file: pageData?.files?.mobile_file,
+      mainLabel: pageData?.files?.mainLabel,
     },
     headingArea: "lg:w-[850px]",
   };

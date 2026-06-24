@@ -72,12 +72,13 @@ export default async function page() {
   const pageData = pageRes?.data;
 
   const bannerData: CommonBannerProps = {
-    tag: "Emi Calculator",
+    tag: "EMI Calculator",
     heading: pageData?.title?.heading,
     description: pageData?.title?.sub_heading,
     files: {
       desktop_file: pageData?.files?.desktop_file,
       mobile_file: pageData?.files?.mobile_file,
+      mainLabel: pageData?.files?.mainLabel,
     },
   };
 

@@ -78,6 +78,7 @@ export default async function investor() {
     files: {
       desktop_file: pageData?.files?.desktop_file,
       mobile_file: pageData?.files?.mobile_file,
+      mainLabel: pageData?.files?.mainLabel,
     },
     headingArea: "lg:w-[650px] 2xl:w-[850px]",
   };
@@ -87,7 +88,10 @@ export default async function investor() {
     description: sectionData?.title?.description,
     icon: "/images/about/about-page-banner-bottom.png",
     image: sectionData?.files?.desktop_file,
+    mainLabel: sectionData?.title?.mainLabel,
   };
+
+  console.log(investorDescData);
 
   return (
     <>
